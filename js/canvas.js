@@ -67,7 +67,7 @@ function translateCanvas(x, y) {
     bridgeHasChanged = true
 }
 
-function scaleCanvas(mult) {
+function scaleCanvas(mult = 2) {
     canvasScale *= mult
     canvasScaleReciprocal = 1 / canvasScale
 
@@ -78,9 +78,18 @@ function scaleCanvas(mult) {
 }
 
 let canvasScalingFactor = 2 // if ever changed, change the button info as well
-function scaleCanvasUp() {scaleCanvas(2)}
+function scaleCanvasUp() {scaleCanvas()}
 function scaleCanvasDown() {scaleCanvas(1 / canvasScalingFactor)}
 function scaleCanvasZero() {scaleCanvas(canvasScaleReciprocal)}
+
+function scaleCanvasWithWheel(wheel) {
+    let sign = Math.sign(wheel.deltaY)
+    if (sign > 0) {
+        scaleCanvasDown()
+    } else if (sign < 0) {
+        scaleCanvasUp()
+    }
+}
 
 
 

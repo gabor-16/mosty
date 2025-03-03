@@ -24,22 +24,25 @@ let levelsList = [
 
         ],
     },
+
     {
         name: "0",
         desc: "l",
-        budget: 1e10, // in euro
+        budget: 1e10,
         difficulty: "Normal",
     },
+
     {
         name: "0",
         desc: "l",
-        budget: 1e10, // in euro
+        budget: 1e10,
         difficulty: "Hard",
     },
+
     {
         name: "0",
         desc: "l",
-        budget: 1e10, // in euro
+        budget: 1e10,
         difficulty: "Extreme",
     },
 ]

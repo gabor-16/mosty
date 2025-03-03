@@ -1,12 +1,11 @@
 const l = console.log
 const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
 
-// l(bridgeConnections, bridgeEdges, bridgeVertices)
 
 
 // 
 
-let selectedVertex = null // the index of the current vertex
+let bridgeSelectedVertex = null // the index of the current vertex
 let bridgeVertices = [ // contains vertices v_k where 
     // [x coord, y coord, type]
     [0, 0, "p"],
@@ -24,12 +23,85 @@ let bridgeEdges = [ // contains edges (l, k) where l != k
     [1, 3, "w"],
 ]
 
-let bridgeConnections = [ //
+let bridgeConnections = [ // connections between bridgeVertices[i] and every other vertex
     [1, 2, 3],
     [0, 2],
     [0, 1],
     [0, 1],
 ]
+
+let bridgeObjects = [ // a list of objects which don't move, but have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
+
+]
+
+
+
+let bridgeSave = {
+    levels: [
+        {
+            saveSelectedVertex: null,
+            savePreviousPlayerSetPoint: null,
+
+            saveVertices: [],
+            saveEdges: [],
+            saveConnections: [],
+            saveObjects: [],
+        },
+    ],
+}
+
+// don't change the first argument - it will make older saves unusable without a name change
+let localSaveAlias = "bridgesSave"
+function saveBridge(localSave = true) {
+    let i = selectedLevel
+
+    // copies the variables by value, not reference
+    bridgeSave.levels[i].saveSelectedVertex         = structuredClone(bridgeSelectedVertex)
+    bridgeSave.levels[i].savePreviousPlayerSetPoint = structuredClone(previousPlayerSetPoint)
+    bridgeSave.levels[i].saveVertices               = structuredClone(bridgeVertices)
+    bridgeSave.levels[i].saveEdges                  = structuredClone(bridgeEdges)
+    bridgeSave.levels[i].saveConnections            = structuredClone(bridgeConnections)
+    bridgeSave.levels[i].saveObjects                = structuredClone(bridgeObjects)
+
+    // if saving locally, push entire saved levels list to localStorage
+    if (localSave) {
+        localStorage.setItem(localSaveAlias + profileName, JSON.stringify(bridgeSave))
+
+        sendMessage(true, "savedData")
+    }
+}
+
+function loadBridge(localLoad = true) {
+    if (localLoad) {
+        bridgeSave = JSON.parse(localStorage.getItem(localSaveAlias + saveName))
+    }
+
+    let i = selectedLevel
+    if (bridgeSave.levels[i].saveEdges.length > 0) {
+        bridgeSelectedVertex   = null
+        previousPlayerSetPoint = null
+        bridgeVertices         = null
+        bridgeEdges            = null
+        bridgeConnections      = null
+        bridgeObjects          = null
+
+        bridgeSelectedVertex   = bridgeSave.levels[i].saveSelectedVertex
+        previousPlayerSetPoint = bridgeSave.levels[i].savePreviousPlayerSetPoint
+        bridgeVertices         = bridgeSave.levels[i].saveVertices
+        bridgeEdges            = bridgeSave.levels[i].saveEdges
+        bridgeConnections      = bridgeSave.levels[i].saveConnections
+        bridgeObjects          = bridgeSave.levels[i].saveObjects
+
+        bridgeHasChanged = true
+
+        if (localLoad) {
+            sendMessage(true, "loadedData")
+        }
+    }
+}
+
+
+
 
 // based on the two upper arrays, makes a bridgeConnections array:
 // let bridgeConnections = [
@@ -97,8 +169,7 @@ let edgeProperties = {
 function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     clearCanvas()
 
-    // draws the grid only if 
-    l(alignToGrid, showGrid)
+    // draws the grid only if you need to
     if (alignToGrid && showGrid) {
         drawGrid()
     }
@@ -121,8 +192,8 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     }
     ctx.fill()
 
-    if (selectedVertex !== null) {
-        let v = verticesArray[selectedVertex]
+    if (bridgeSelectedVertex !== null) {
+        let v = verticesArray[bridgeSelectedVertex]
         drawSelectedPoint(v[0], v[1], v[2])
     }
 }
@@ -217,7 +288,7 @@ function listAllowedEdgeTypes() {
             } else if (i == allowedEdgeTypes.length - 1) {
                 borderClass = "borderRadiusBottomLeft"
             }
-    
+
             edgesList += `<button id="edgeSelector${e.name}" class="menuButton ${borderClass}" onclick="setEdgeType('${allowedEdgeTypes[i]}')">${e.icon}</button>
             <div class="buttonDescription buttonDescriptionLeft">
                 <label for="edgeSelector${e.name}">
@@ -239,7 +310,6 @@ function setSelectedEdgeButton(edgeType) {
     let edgeName = edgeProperties[edgeType].name
     addClass("edgeSelector" + edgeName, "selected")
 }
-
 
 
 
@@ -281,6 +351,20 @@ function setContinuousBuilding() {
     playerContinuousBuilding = getBooleanValue("canContinuousBuilding")
 }
 
+let profileName = ""
+function setProfileName() {
+    profileName = "Default"
+
+    saveName = document.getElementById("profileName").value 
+    if (saveName.length > 0) {
+        profileName = saveName
+    }
+
+    document.getElementById("profileNameValue").innerText = profileName
+    document.getElementById("profileSaveDataName").innerText = profileName
+    document.getElementById("profileLoadDataName").innerText = profileName
+}
+
 function toggleArrowset() {
     if (getBooleanValue("showArrowset")) {
         removeClass("arrowMockupContainer", "blank")
@@ -317,6 +401,7 @@ function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
             return true
         }
     }
+    
     return false
 }
 
@@ -423,36 +508,37 @@ function checkIfVerticesConnect(v0, v1) {
      && bridgeConnections[v1] && bridgeConnections[v1].includes(v0)) {
         return true
     }
+
     return false
 }
 
 let playerSetPointsType = "n"
 let playerSetEdgesType = "w"
+let playerContinuousBuilding = true
 
 let previousPlayerSetPoint = null
-let playerContinuousBuilding = true
 let playerClickInaccuracy = 8 // px
 let bridgeHasChanged = false // updates to true if the bridge has been updated by the user
 function setPlayerPoint(x, y) {
     let nearPoints = detectNearPoints(x, y, playerClickInaccuracy)
     if (nearPoints.length != 0) {
         // makes the selected vertex equal to the first nearest point
-        selectedVertex = nearPoints[0]
+        bridgeSelectedVertex = nearPoints[0]
 
         if (previousPlayerSetPoint === null) {
             // no previous point
 
-            previousPlayerSetPoint = selectedVertex
+            previousPlayerSetPoint = bridgeSelectedVertex
         } else {
             // there was a previous point
 
-            addEdge(previousPlayerSetPoint, selectedVertex, playerSetEdgesType)
+            addEdge(previousPlayerSetPoint, bridgeSelectedVertex, playerSetEdgesType)
 
             if (playerContinuousBuilding) {
-                previousPlayerSetPoint = selectedVertex
+                previousPlayerSetPoint = bridgeSelectedVertex
             } else {
                 previousPlayerSetPoint = null
-                selectedVertex = null
+                bridgeSelectedVertex = null
             }
         }
     } else {
@@ -461,7 +547,7 @@ function setPlayerPoint(x, y) {
 
             previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
             addVertex(x, y, playerSetPointsType)
-            selectedVertex = previousPlayerSetPoint
+            bridgeSelectedVertex = previousPlayerSetPoint
         } else {
             // there was a previous point
 
@@ -475,7 +561,7 @@ function setPlayerPoint(x, y) {
                 previousPlayerSetPoint = null
             }
 
-            selectedVertex = currentPlayerSetPoint
+            bridgeSelectedVertex = currentPlayerSetPoint
         }
     }
 
@@ -485,6 +571,10 @@ function setPlayerPoint(x, y) {
 let alignToGrid = true
 let gridSize = 16
 function detectMouseOnCanvas(event) {
+    if (isSimulating) { // does exactly nothing when the bridge is being simulated (is collapsing)
+        return 0
+    }
+
     let boundingRect = document.getElementById("canvasBridge").getBoundingClientRect()
 
     let clickedX = -(canvasSizeHalf[0] - (event.clientX - boundingRect.x) - canvasTranslate[0]) * canvasScaleReciprocal
@@ -516,16 +606,16 @@ function detectNearPoints(x, y, threshold, verticesArray = bridgeVertices) {
 }
 
 function unSelectPoint() {
-    selectedVertex = null
+    bridgeSelectedVertex = null
     previousPlayerSetPoint = null
 
     bridgeHasChanged = true
 }
 
 function deleteSelectedPoint() {
-    if (selectedVertex !== null) {
-        if (!vertexProperties[bridgeVertices[selectedVertex][2]].isPermanent) {
-            deleteVertex(selectedVertex)
+    if (bridgeSelectedVertex !== null) {
+        if (!vertexProperties[bridgeVertices[bridgeSelectedVertex][2]].isPermanent) {
+            deleteVertex(bridgeSelectedVertex)
         } else {
             sendMessage(true, "vertexDeletion")
         }
@@ -535,15 +625,15 @@ function deleteSelectedPoint() {
 }
 
 function selectLastVertex() {
-    selectedVertex = bridgeVertices.length - 1
-    previousPlayerSetPoint = selectedVertex
+    bridgeSelectedVertex = bridgeVertices.length - 1
+    previousPlayerSetPoint = bridgeSelectedVertex
 
     bridgeHasChanged = true
 }
 
 let canvasStep = 16
 function move(direction) {
-    let step = canvasStep * canvasScaleReciprocal
+    let step = canvasStep * canvasScale
     if (event.shiftKey) {
         step *= 16
     }
@@ -561,25 +651,6 @@ function move(direction) {
     }
 }
 
-
-
-
-
-
-// //////////////////////////////////////////////////////////////////////
-// PHYSICS SIMULATION
-// //////////////////////////////////////////////////////////////////////
-
-let isSimulating = false
-function prepareBridgeForSimulation() {
-
-
-    isSimulating = true
-}
-
-function simulateBridge() {
-
-}
 
 
 
@@ -628,10 +699,17 @@ function gameLoop() {
     }
 }
 
+function lol() {
+    l("k")
+}
+
+// each tick of the game is 1/10 of a second
+const tickTime = 0.1 // of a second
 window.onload = function() {
     resetCanvas()
 
     document.getElementById("canvasBridge").addEventListener("click", detectMouseOnCanvas)
+    document.getElementById("canvasBridge").addEventListener("wheel", scaleCanvasWithWheel)
 
     // buttons
     document.getElementById("unselectPointButton").addEventListener("click", unSelectPoint)
@@ -651,6 +729,12 @@ window.onload = function() {
     document.getElementById("messageLogClear").addEventListener("click", clearMessages)
     document.getElementById("messageLogCopy").addEventListener("click", copyMessages)
 
+    document.getElementById("profileSaveData").addEventListener("click", saveBridge)
+    document.getElementById("profileLoadData").addEventListener("click", loadBridge)
+    
+    document.getElementById("topMenuStartSimulation").addEventListener("click", startSimulating)
+    document.getElementById("topMenuStopSimulation").addEventListener("click", stopSimulating)
+
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
     document.getElementById("optionsMenuCloseButton").addEventListener("click", toggleMenuOptions)
@@ -658,21 +742,26 @@ window.onload = function() {
     document.getElementById("levelSelectorOpenButton").addEventListener("click", toggleMenuLevels)
     document.getElementById("levelSelectorCloseButton").addEventListener("click", toggleMenuLevels)
 
-    // checkboxes
+    // checkboxes, inputs
     document.getElementById("canDeleteEdges").addEventListener("change", setEdgeDeletion)
     document.getElementById("canContinuousBuilding").addEventListener("change", setContinuousBuilding)
     document.getElementById("showArrowset").addEventListener("change", toggleArrowset)
     document.getElementById("canAlignToGrid").addEventListener("change", setAlignToGrid)
     document.getElementById("showGrid").addEventListener("change", setShowGrid)
 
+    document.getElementById("profileName").addEventListener("change", setProfileName)
+
+
+
+    setInterval(gameLoop, tickTime * 1000)
+
     setEdgeDeletion()
     setContinuousBuilding()
     setAlignToGrid()
     setShowGrid()
+    setProfileName()
 
-    drawBridge(bridgeVertices, bridgeEdges)
-    // each tick of the game is 1/10 of a second
-    setInterval(gameLoop, 100)
+    drawBridge()
 
     sendMessage(true, "welcome")
 
@@ -729,75 +818,87 @@ window.onkeyup = (event) => {
                 toggleMenuLevels()
                 break;
             }
+
+            case " ": {
+                toggleSimulating()
+                break;
+            }
         
             default: {break}
         }
     } else {
         if (event.key == "\`") {
             toggleMenuOptions()
-            canUseKeyboardShortcuts = true
+            // canUseKeyboardShortcuts = true
         } else if (event.key == "Q") {
             toggleMenuLevels()
-            canUseKeyboardShortcuts = true
+            // canUseKeyboardShortcuts = true
         }
     }
 }
 
 // movement of camera
 window.onkeydown = (event) => {
-    let step = canvasStep * canvasScaleReciprocal
-    if (event.shiftKey) {
-        step *= 16
-    }
-
-    switch (event.code) {
-        case "Numpad8":
-        case "ArrowUp":
-        case "KeyK":
-        case "KeyW": {
-            translateCanvas(0, -step); break;
+    if (canUseKeyboardShortcuts) {
+        let step = canvasStep
+        if (event.shiftKey) {
+            step *= 16
         }
-        
-        case "Numpad4":
-        case "ArrowLeft":
-        case "KeyH":
-        case "KeyA": {
-            translateCanvas(-step, 0); break;
-        }
-
-        case "Numpad2":
-        case "ArrowDown":
-        case "KeyJ":
-        case "KeyS": {
-            translateCanvas(0, step); break;
-        }
-
-        case "Numpad6":
-        case "ArrowRight":
-        case "KeyL":
-        case "KeyD": {
-            translateCanvas(step, 0); break;
-        }
-
-        case "Numpad7": {
-            translateCanvas(-step, -step); break;
-        }
-
-        case "Numpad9": {
-            translateCanvas(step, -step); break;
-        }
-
-        case "Numpad1": {
-            translateCanvas(-step, step); break;
-        }
-
-        case "Numpad3":{
-            translateCanvas(step, step); break;
-        }
-
-        case "Numpad5":
-        case "Numpad0": {
-            translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); break;
+    
+        switch (event.code) {
+            case "Numpad8":
+            case "ArrowUp":
+            case "KeyK":
+            case "KeyW": {
+                translateCanvas(0, -step); break;
+            }
+            
+            case "Numpad4":
+            case "ArrowLeft":
+            case "KeyH":
+            case "KeyA": {
+                translateCanvas(-step, 0); break;
+            }
+    
+            case "Numpad2":
+            case "ArrowDown":
+            case "KeyJ":
+            case "KeyS": {
+                translateCanvas(0, step); break;
+            }
+    
+            case "Numpad6":
+            case "ArrowRight":
+            case "KeyL":
+            case "KeyD": {
+                translateCanvas(step, 0); break;
+            }
+    
+            case "Numpad7": {
+                translateCanvas(-step, -step); break;
+            }
+    
+            case "Numpad9": {
+                translateCanvas(step, -step); break;
+            }
+    
+            case "Numpad1": {
+                translateCanvas(-step, step); break;
+            }
+    
+            case "Numpad3":{
+                translateCanvas(step, step); break;
+            }
+    
+            case "Numpad5": {
+                translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); break;
+            }
+    
+            case "Numpad0": {
+                translateCanvas(-canvasTranslate[0], -canvasTranslate[1])
+                scaleCanvasZero()
+                break;
+            }
         }
     }
 }
