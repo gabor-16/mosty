@@ -1,0 +1,478 @@
+
+/* ////////////////////////////////////////////////////////////////////// */
+/* MAIN */
+/* ////////////////////////////////////////////////////////////////////// */
+
+
+
+:root {
+    /* other values */
+    --border-radius: 0.5rem;
+
+
+    scroll-behavior: auto;
+    font-size: 16px;
+}
+
+
+
+/* STYLES */
+
+:root[colorScheme="Blueprint"] {
+    --background: #2294f3;
+    --background-dark: #0a65b2;
+    --background-darker: #085493;
+    --text: #dfdfdf;
+
+    --game-background: #0b74cc;
+
+    --black: #000000;
+    --grey-dark: #808080;
+    --grey: #c1c1c1;
+}
+
+:root[colorScheme="Greyscale"] {
+    --background: #606060;
+    --background-dark: #404040;
+    --background-darker: #000000;
+    --text: #dfdfdf;
+
+    --game-background: #a0a0a0;
+
+    --black: #dfdfdf;
+    --grey-dark: #dfdfdf;
+    --grey: #dfdfdf;
+}
+
+:root[colorScheme="Strawberry"] {
+    --background: #e39695;
+    --background-dark: #da5552;
+    --background-darker: #cc444b;
+    --text: #dfdfdf;
+
+    --game-background: #df7373;
+
+    --black: #dfdfdf;
+    --grey-dark: #dfdfdf;
+    --grey: #dfdfdf;
+}
+
+/*  */
+
+
+
+*, *::before, *::after, ::backdrop {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+
+    margin: 0;
+    overflow: overlay;
+
+    scrollbar-color: var(--background) var(--background-dark);
+}
+
+button, input {
+    cursor: pointer;
+}
+
+button {
+    border: none;
+    background-color: var(--background-dark);
+    color: var(--text);
+    margin: 0;
+}
+
+button:hover, button.selected {
+    background-color: var(--background-darker);
+}
+
+button:disabled {
+    visibility: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: var(--border-radius);
+}
+
+kbd, .booleanValue, .emphasis {
+    border-radius: calc(var(--border-radius) / 2);
+    background-color: var(--background-dark);
+    padding: 0 0.25rem;
+
+    font-family: monospace;
+}
+
+input[type="checkbox"] {
+    margin: 0.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
+
+    color: var(--text);
+    accent-color: var(--background-dark);
+}
+
+input[type="checkbox"]:hover {
+    accent-color: var(--background-darker);
+}
+
+input[type="checkbox"].option {
+    margin: 0 0.5rem;
+}
+
+dialog {
+    background-color: transparent;
+    border: none;
+    color: var(--text);
+
+    width: 100%;
+    height: 100vh;
+
+    overflow-y: visible;
+}
+
+dialog::backdrop {
+    background-color: var(--background);
+    opacity: 0.5;
+}
+
+hr {
+    border: 0.125rem solid var(--background-dark);
+    margin: 0.5rem;
+
+    border-radius: var(--border-radius);
+}
+
+ul, ol {
+    margin: 0.5rem;
+    padding-left: 2rem;
+}
+
+
+
+
+/* ////////////////////////////////////////////////////////////////////// */
+/* IDs */
+/* ////////////////////////////////////////////////////////////////////// */
+
+
+
+#gameWindows {
+    display: grid;
+
+    grid-template-columns: 2rem 1fr 2rem;
+    grid-template-rows: 2rem 1fr 2rem;
+    /* grid-template-rows: 1fr 1fr 2rem; */
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#gameContainer {
+    grid-row: 2 / -2;
+    grid-column: 2 / -2;
+}
+
+#canvasBridge {
+    cursor: crosshair;
+
+    aspect-ratio: 4 / 3;
+}
+
+#messageLog {
+    width: 32rem;
+    padding: 0.5rem;
+}
+
+
+
+/* ////////////////////////////////////////////////////////////////////// */
+/* CLASSes */
+/* ////////////////////////////////////////////////////////////////////// */
+
+.background {
+    background-color: var(--background);
+}
+
+.generalDiv {
+    padding: 0.25rem;
+}
+
+.dialogMenu {
+    width: 50vw;
+    height: fit-content;
+
+    grid-column: 2 / 3;
+}
+
+.windowBase {
+    display: grid;
+
+    grid-template-columns: 2rem 1fr 2rem;
+    width: fit-content;
+}
+
+.gridWide {
+    grid-column: 1 / -1;
+}
+
+.gridMiddle {
+    grid-column: 2 / -2;
+}
+
+.windowCentral {
+    border-radius: var(--border-radius);
+    outline: 0.125rem solid var(--background-dark);
+    background-color: var(--game-background);
+}
+
+.windowCentralLight {
+    border-radius: var(--border-radius);
+    outline: 0.125rem solid var(--background-dark);
+    background-color: var(--background);
+}
+
+.flex {
+    display: flex;
+}
+
+.flexCentered {
+    justify-content: center;
+}
+
+.flexColumn {
+    flex-direction: column;
+}
+
+.flexAlign {
+    align-items: center;
+}
+
+.flexWrap {
+    flex-wrap: wrap;
+}
+
+.flexGap {
+    gap: 0.25rem;
+}
+
+.fleRow {
+    flex-direction: row;
+}
+
+.flexColumn {
+    flex-direction: column;
+}
+
+.flexEnd {
+    margin-left: auto;
+}
+
+.topMargin {
+    margin-top: 1rem;
+}
+
+.topMarginSmall {
+    margin-top: 0.5rem;
+}
+
+.rightMargin {
+    margin-right: 1rem;
+}
+
+.bottomMargin {
+    margin-bottom: 0.25rem;
+}
+
+.menuContainer {
+    margin-top: 1rem;
+    position: relative;
+}
+
+.menuButton {
+    height: 2rem;
+    width: 2rem;
+}
+
+.tabButton {
+    width: 100%;
+    height: 2rem;
+
+    border-radius: var(--border-radius);
+}
+
+.levelButton {
+    height: 2rem;
+    width: 100%;
+    border-radius: var(--border-radius);
+}
+
+.colorSchemeButton {
+    min-width: 4rem;
+    height: 2rem;
+
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.buttonDescription {
+    border-radius: var(--border-radius);
+    outline: 0.125rem solid var(--background-dark);
+    background-color: var(--background);
+    width: 16rem;
+
+    position: absolute;
+
+    box-shadow: 0.25rem 0.25rem var(--background-darker);
+
+    z-index: 2;
+    display: none;
+}
+
+.buttonDescriptionLeft {
+    transform: translate(0, calc(-50% - 1rem));
+    left: 2.5rem;
+}
+
+.buttonDescriptionRight {
+    transform: translate(0, calc(-50% - 1rem));
+    right: 2.5rem;
+}
+
+.buttonDescriptionTop {
+    transform: translate(-50%, 0);
+    left: 50%;
+    top: 2.5rem;
+}
+
+:is(.menuButton, .tabButton, .levelButton):hover + .buttonDescription {
+    display: block;
+}
+
+.borderRadiusTabLeft {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.borderRadiusTabRight {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.borderRadiusTopLeft     {border-radius: var(--border-radius) 0 0 0;}
+.borderRadiusTopRight    {border-radius: 0 var(--border-radius) 0 0;}
+.borderRadiusBottomRight {border-radius: 0 0 var(--border-radius) 0;}
+.borderRadiusBottomLeft  {border-radius: 0 0 0 var(--border-radius);}
+
+.blank {
+    display: none;
+}
+
+.relative {
+    position: relative;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.shadow {
+    border-radius: var(--border-radius);
+    box-shadow: 0.25rem 0.25rem var(--background-darker);
+}
+
+.outline {
+    outline: 0.125rem solid var(--background-dark);
+}
+
+.fakeButton {
+    width: 2rem;
+    height: 2rem;
+}
+
+.small {
+    font-size: 0.85rem;
+}
+
+.big {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.noTop {
+    margin-top: 0;
+}
+
+.noBottom {
+    margin-bottom: 0;
+}
+
+.end {
+    text-align: end;
+}
+
+.center {
+    text-align: center;
+}
+
+.grid2Wide {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+}
+
+.grid3-2rem {
+    display: grid;
+
+    grid-template-columns: 2rem 2rem 2rem;
+}
+
+.grid2-2rem {
+    display: grid;
+
+    grid-template-columns: 2rem 2rem;
+}
+
+.diminished {
+    color: var(--background-darker);
+}
+
+.fitContent {
+    width: fit-content;
+}
+
+.centerDiv {
+    display: block;
+
+    margin: auto;
+}
+
+
+
+
+
+/* Difficulties */
+.difficultyEasy    {--diff-color: var(--text);}
+.difficultyNormal  {--diff-color: var(--grey);}
+.difficultyHard    {--diff-color: var(--grey-dark);}
+.difficultyExtreme {--diff-color: var(--black);}
+
+.difficult {
+    color: var(--diff-color);
+}
+
+
+/* Dev class */
+.seable {
+    border: 1px red solid;
+}
+
+
+
+
