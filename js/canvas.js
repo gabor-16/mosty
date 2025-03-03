@@ -40,6 +40,8 @@ const CANVASCOLORS = {
     "white": "#f0f7f3",
     "black": "#050403",
 
+    "grid": "#a0a0a0",
+
     "wooden": "#a97742",
     "road": "#a5a7a2",
     "steel": "#5b1a16",
@@ -82,6 +84,10 @@ function scaleCanvasZero() {scaleCanvas(canvasScaleReciprocal)}
 
 
 
+
+
+
+// DRAWING SMALLER COMPONENTS
 
 
 
@@ -152,4 +158,45 @@ function drawEmptyPointCont(x, y, r) {
     ctx.arc(x, y, r, 0, 2 * π)
 }
 
+
+
+// DRAWING BIGGER COMPONENTS
+
+
+
+function drawGrid() {
+    if (canvasScale <= 0.125 || canvasScale >= 128) { // don't draw grid if it's not needed (scale too big/too small/not wanted)
+        return 0
+    }
+
+    // set variables
+    let smallestX = (canvasTranslate[0] - canvasSizeHalf[0]) * canvasScaleReciprocal
+    let smallestY = (-canvasTranslate[1] - canvasSizeHalf[1]) * canvasScaleReciprocal
+
+    let biggestX = canvasScaleReciprocal * (canvasTranslate[0] + canvasSizeHalf[0])
+    let biggestY = canvasScaleReciprocal * (-canvasTranslate[1] + canvasSizeHalf[1])
+
+    let gridLinesYAmount = canvasSize[1] * canvasScaleReciprocal / gridSize
+    let firstYOffset = Math.abs(smallestY % gridSize)
+    let y = smallestY + firstYOffset
+
+    let gridLinesXAmount = canvasSize[0] * canvasScaleReciprocal / gridSize
+    let firstXOffset = Math.abs(smallestX % gridSize)
+    let x = smallestX + firstXOffset
+
+    // drawGrid
+    ctx.beginPath()
+    setCanvasStrokeColor("grid")
+    setCanvasStrokeWidth(1)
+    for (let i = 0; i <= gridLinesYAmount; i++) {
+        drawLineCont(smallestX, y + i * gridSize, biggestX, y + i * gridSize)
+    }
+
+    for (let i = 0; i <= gridLinesXAmount; i++) {
+        drawLineCont(x + i * gridSize, smallestY, x + i * gridSize, biggestY)
+    }
+    ctx.stroke()
+
+    // l(gridLinesXAmount, gridLinesYAmount)
+}
 

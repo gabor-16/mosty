@@ -97,6 +97,12 @@ let edgeProperties = {
 function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     clearCanvas()
 
+    // draws the grid only if 
+    l(alignToGrid, showGrid)
+    if (alignToGrid && showGrid) {
+        drawGrid()
+    }
+
     if (verticesArray.length >= 2) {
         for (let i = 0; i < edgesArray.length; i++) {
             let e = edgesArray[i]
@@ -283,6 +289,19 @@ function toggleArrowset() {
     }
 }
 
+function setAlignToGrid() {
+    alignToGrid = getBooleanValue("canAlignToGrid")
+
+    bridgeHasChanged = true
+}
+
+let showGrid = true
+function setShowGrid() {
+    showGrid = getBooleanValue("showGrid")
+
+    bridgeHasChanged = true
+}
+
 // returns true if it could add/remove an edge
 function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
     if (v0 != v1) {
@@ -439,17 +458,17 @@ function setPlayerPoint(x, y) {
     } else {
         if (previousPlayerSetPoint === null) {
             // no previous point
-    
+
             previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
-            bridgeVertices.push([x, y, playerSetPointsType])
+            addVertex(x, y, playerSetPointsType)
             selectedVertex = previousPlayerSetPoint
         } else {
             // there was a previous point
-    
+
             let currentPlayerSetPoint = bridgeVertices.length
             addVertex(x, y, playerSetPointsType)
             addEdge(previousPlayerSetPoint, currentPlayerSetPoint, playerSetEdgesType)
-    
+
             if (playerContinuousBuilding) {
                 previousPlayerSetPoint = currentPlayerSetPoint
             } else {
@@ -463,12 +482,23 @@ function setPlayerPoint(x, y) {
     bridgeHasChanged = true
 }
 
+let alignToGrid = true
+let gridSize = 16
 function detectMouseOnCanvas(event) {
     let boundingRect = document.getElementById("canvasBridge").getBoundingClientRect()
 
     let clickedX = -(canvasSizeHalf[0] - (event.clientX - boundingRect.x) - canvasTranslate[0]) * canvasScaleReciprocal
     let clickedY = (canvasSizeHalf[1] - (event.clientY - boundingRect.y) - canvasTranslate[1]) * canvasScaleReciprocal
-    setPlayerPoint(clickedX, clickedY)
+
+    if (alignToGrid) {
+        // when aligning, find the nearest grid-point coordinates
+        let gridX = gridSize * Math.round(clickedX / gridSize)
+        let gridY = gridSize * Math.round(clickedY / gridSize)
+
+        setPlayerPoint(gridX, gridY)
+    } else {
+        setPlayerPoint(clickedX, clickedY)
+    }
 }
 
 // returns indices of points that are closer than threshold to (x, y)
@@ -519,9 +549,9 @@ function move(direction) {
     }
 
     switch (direction) {
-        case "ul": {translateCanvas(step, -step); break;} case "u": {translateCanvas(0, -step); break;} case "ur": {translateCanvas(-step, -step); break;}
-        case  "l": {translateCanvas(step, 0);     break;}                                               case  "r": {translateCanvas(-step, 0);     break;}
-        case "dl": {translateCanvas(step, step);  break;} case "d": {translateCanvas(0, step);  break;} case "dr": {translateCanvas(-step, step);  break;}
+        case "ul": {translateCanvas(-step, -step); break;} case "u": {translateCanvas(0, -step); break;} case "ur": {translateCanvas(step, -step); break;}
+        case  "l": {translateCanvas(-step, 0);     break;}                                               case  "r": {translateCanvas(step, 0);     break;}
+        case "dl": {translateCanvas(-step, step);  break;} case "d": {translateCanvas(0, step);  break;} case "dr": {translateCanvas(step, step);  break;}
 
         case "0": {
             translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); 
@@ -545,6 +575,10 @@ function prepareBridgeForSimulation() {
 
 
     isSimulating = true
+}
+
+function simulateBridge() {
+
 }
 
 
@@ -579,7 +613,7 @@ function listStyles() {
 
 
 
-// 
+// //////////////////////////////////////////////////////////////////////
 
 
 
@@ -628,9 +662,13 @@ window.onload = function() {
     document.getElementById("canDeleteEdges").addEventListener("change", setEdgeDeletion)
     document.getElementById("canContinuousBuilding").addEventListener("change", setContinuousBuilding)
     document.getElementById("showArrowset").addEventListener("change", toggleArrowset)
+    document.getElementById("canAlignToGrid").addEventListener("change", setAlignToGrid)
+    document.getElementById("showGrid").addEventListener("change", setShowGrid)
 
     setEdgeDeletion()
     setContinuousBuilding()
+    setAlignToGrid()
+    setShowGrid()
 
     drawBridge(bridgeVertices, bridgeEdges)
     // each tick of the game is 1/10 of a second

@@ -1,26 +1,17 @@
 
 
 
-more edges:
-    - steel
-    - roads
-
 
 edge size restrictions - you can lift them off, but the level doesn't count when finished - make it show a circle around the first point with proper radius, clicking outside the circle will make the edge with max lenght and proper angle
 
 delete also replaces (when the edge type is different) maybe????, it will be harder to check the lenght requirement, maybe leave it in?
 
-edge max amount
+edge max amount (i meant max amount of edges...)
 
 physics simulation
 
 point-line intersections in math.js
-
-
-
-
-
-
+    - check if point under/over/on the line
 
 
 
@@ -32,8 +23,8 @@ Difficulty levels: Different types of cars/people/machines that need to cross yo
     - 
     - 
     - 
-    - 
-    - A Tesla cybertruck [3025kg] (it blows up under the smallest complication with the road)
+    - A mfing train [200000kg]
+    - A Tesla cybertruck [3025kg] (it blows up under the smallest complication with the road) [It's funny, that's why]
 
 Types of budget management for each level:
     - Infinite budget (You don't have to worry about it at all)

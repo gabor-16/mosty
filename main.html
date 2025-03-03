@@ -53,10 +53,19 @@
                     <div class="buttonDescription buttonDescriptionLeft">
                         <label for="showArrowset">
                             <p><b>Show Arrowset?</b></p>
-                            <p>When <span class="booleanValue">true</span>, a  set of arrows that can be used to move the camera appears under the game screen.</p>
+                            <p>When <span class="booleanValue">true</span>, a set of arrows that can be used to move the camera appears under the game screen.</p>
                         </label>
                     </div>
                     <label for="showArrowset">Show Arrowset</label>
+                    <br>
+                    <input type="checkbox" id="showGrid" class="option menuButton" checked>
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="showGrid">
+                            <p><b>Show Grid when Aligning?</b></p>
+                            <p>When <span class="booleanValue">true</span>, shows Grid when Aligning to it.</p>
+                        </label>
+                    </div>
+                    <label for="showArrowset">Show Grid</label>
                 </div>
             </div>
 
@@ -64,7 +73,7 @@
                 <h2>Styling Options</h2>
                 <hr>
                 <div>
-                    <p class="big noBottom">Color Scheme</p>
+                    <p class="big noBottom">Color Schemes</p>
                     <div id="colorSchemes" class="flex flexCentered flexGap flexWrap generalDiv">
                         <!-- filled with js -->
                     </div>
@@ -330,7 +339,7 @@
                             <label for="scaleControlZero">
                                 <p><b>Reset Camera View</b></p>
                                 <p>Resets the Camera View to it's original size.</p>
-                                <p>Keybind: <kbd>x</kbd></p>
+                                <p>Keybinds: <kbd>⓪ Numpad 0</kbd>, <kbd>x</kbd></p>
                             </label>
                         </div>
                     </div>
@@ -412,6 +421,14 @@
                     <label for="canContinuousBuilding">
                         <p><b>Build Continuously?</b></p>
                         <p>When <span class="booleanValue">true</span>, you build edges as a string of edges connected by vertices.<br>When <span class="booleanValue">false</span>, you build edges as pairs of vertices.</p>
+                    </label>
+                </div>
+
+                <input type="checkbox" id="canAlignToGrid" class="menuButton">
+                <div class="buttonDescription buttonDescriptionRight">
+                    <label for="canAlignToGrid">
+                        <p><b>Align Points to Grid?</b></p>
+                        <p>When <span class="booleanValue">true</span>, vertices can be made only at predefined points.</p>
                     </label>
                 </div>
             </div>
