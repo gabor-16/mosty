@@ -3,7 +3,7 @@
 
 
 - move canvas center on click
-- change scale on scroll
+- function that build the level gradually, to make it automatically compute things, and also to make it more immersive (with an animation maybe?)
 
 
 

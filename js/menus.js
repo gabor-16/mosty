@@ -34,6 +34,11 @@ function toggleMenuOptions() {
 function toggleMenuLevels() {
     if (toggleDialog("levelSelectorMenu")) {
         canUseKeyboardShortcuts = false
+
+        // stop the simulation when opening the dialog
+        if (isSimulating) {
+            stopSimulating()
+        }
     } else {
         canUseKeyboardShortcuts = true
     }
@@ -100,6 +105,7 @@ let userMessages = {
 
     // errors, info
     "vertexDeletion": "Can't delete permenent vertices!",
+
     "savedData": "Data saved in the memory.",
     "loadedData": "Data loaded from memory.",
 }

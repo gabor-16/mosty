@@ -1,5 +1,7 @@
 
 
+let currentLevel = 0
+
 let selectedLevel = 0
 let levelsList = [
     {
@@ -8,9 +10,44 @@ let levelsList = [
         budget: 1000, // in euro
         difficulty: "Easy",
 
-        allowedEdges: ["w"], // sets level's allowed edges
+        allowedEdges: ["w", "s", "r"], // sets level's allowed edges
 
         // the starting values for all of the bridge values
+        vertices: [
+            [0, 0, "p"],
+            [0, 128, "n"],
+            [64, 64, "n"],
+            [-64, 64, "n"],
+        ],
+
+        edges: [
+            [0, 1, "w"],
+            [0, 2, "w"],
+            [1, 2, "w"],
+            [0, 3, "w"],
+            [1, 3, "w"],
+        ],
+
+        connections: [
+            [1, 2, 3],
+            [0, 2],
+            [0, 1],
+            [0, 1],
+        ],
+
+        objects: [
+
+        ],
+    },
+
+    {
+        name: "0",
+        desc: "l",
+        budget: 1e10,
+        difficulty: "Normal",
+
+        allowedEdges: ["w", "r"],
+
         vertices: [
 
         ],
@@ -29,14 +66,22 @@ let levelsList = [
         name: "0",
         desc: "l",
         budget: 1e10,
-        difficulty: "Normal",
-    },
-
-    {
-        name: "0",
-        desc: "l",
-        budget: 1e10,
         difficulty: "Hard",
+
+        allowedEdges: ["s"],
+
+        vertices: [
+
+        ],
+        edges: [
+
+        ],
+        connections: [
+            
+        ],
+        objects: [
+
+        ],
     },
 
     {
@@ -44,6 +89,21 @@ let levelsList = [
         desc: "l",
         budget: 1e10,
         difficulty: "Extreme",
+
+        allowedEdges: ["w", "r", "s"],
+
+        vertices: [
+
+        ],
+        edges: [
+
+        ],
+        connections: [
+            
+        ],
+        objects: [
+
+        ],
     },
 ]
 
@@ -104,5 +164,29 @@ function displayLevelInfo(levelId = selectedLevel) {
 }
 
 function playSelectedLevel() {
+    setCurrentLevel()
 
+    toggleMenuLevels()
+}
+
+function setCurrentLevel(levelId = selectedLevel) {
+    currentLevel = selectedLevel
+
+    saveBridge(false)
+
+    let level = levelsList[currentLevel]
+
+    bridgeSelectedVertex   = null
+    previousPlayerSetPoint = null
+    bridgeVertices         = structuredClone(level.vertices)
+    bridgeEdges            = structuredClone(level.edges)
+    bridgeConnections      = structuredClone(level.connections)
+    bridgeObjects          = structuredClone(level.objects)
+
+    allowedEdgeTypes = structuredClone(level.allowedEdges)
+
+    listAllowedEdgeTypes()
+    setEdgeType(allowedEdgeTypes[0]) // sets the selected edge type to the first available one
+
+    bridgeHasChanged = true
 }

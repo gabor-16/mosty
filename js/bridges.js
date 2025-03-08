@@ -3,31 +3,17 @@ const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
 
 
 
-// 
-
+// values come from the levels.
 let bridgeSelectedVertex = null // the index of the current vertex
 let bridgeVertices = [ // contains vertices v_k where 
-    // [x coord, y coord, type]
-    [0, 0, "p"],
-    [0, 150, "n"],
-    [50, 100, "n"],
-    [-50, 100, "n"],
+    // [x coord, y coord, type, lenght, mass]
 ]
 
 let bridgeEdges = [ // contains edges (l, k) where l != k
     // [index of v1, index of v2, type]
-    [0, 1, "w"],
-    [0, 2, "w"],
-    [1, 2, "w"],
-    [0, 3, "w"],
-    [1, 3, "w"],
 ]
 
 let bridgeConnections = [ // connections between bridgeVertices[i] and every other vertex
-    [1, 2, 3],
-    [0, 2],
-    [0, 1],
-    [0, 1],
 ]
 
 let bridgeObjects = [ // a list of objects which don't move, but have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
@@ -54,6 +40,10 @@ let bridgeSave = {
 let localSaveAlias = "bridgesSave"
 function saveBridge(localSave = true) {
     let i = selectedLevel
+
+    if (bridgeSave.levels[i] === undefined) {
+        bridgeSave.levels[i] = {}
+    }
 
     // copies the variables by value, not reference
     bridgeSave.levels[i].saveSelectedVertex         = structuredClone(bridgeSelectedVertex)
@@ -141,26 +131,36 @@ let vertexProperties = {
 let allowedEdgeTypes = ["r", "w", "s"]
 let edgeProperties = {
     w: { // wood
-        name: "Wood",
+        name: "Wooden Beam",
+        description: "Strong, cheap, and - most importantly - cheap.<br>Wood is the ideal material for creating small, durable constructions.",
         icon: "-",
-        width: 4,
-    },
-    s: { // steel
-        name: "Steel",
-        icon: "—",
-        width: 5,
-    },
-    r: { // road
-        name: "Road",
-        icon: "_",
-        width: 6,
+
+        radius: 2, // in centimeters (pixels)
+        maxLength: 6, // in meters (100ths of pixels) // chapter 5 of https://alsyedconstruction.com/maximum-beam-span-for-residential-construction/
+        cylinderVolume: 12.566370614359172, // π * radius², computed with js
+        density: 0.85, // g/cm³ // oak wood from https://educatoral.com/density_of_substances.html
     },
 
-    // maybe??????
-    rr: { // reinforced road
-        name: "ReinforcedRoad",
-        icon: "‗",
-        width: 7,
+    s: { // steel
+        name: "Steel Beam",
+        description: "A material on the stronger side of things.<br>Steel can be used when a small structure has to support a lot of weight.",
+        icon: "—",
+
+        radius: 2.5,
+        maxLength: 18, // https://steelconstruction.info/Long-span_beams
+        cylinderVolume: 19.634954084936208,
+        density: 7.75, // bottom value from https://en.wikipedia.org/wiki/Steel
+    },
+
+    r: { // road
+        name: "Concrete Road",
+        description: "Material tested and prepared for carrying heavy loads.",
+        icon: "_",
+
+        radius: 3,
+        maxLength: 7, // https://www.quora.com/What-is-the-maximum-span-for-a-simply-supported-concrete-beam
+        cylinderVolume: 28.274333882308138,
+        density: 2.4, // https://en.wikipedia.org/wiki/Properties_of_concrete
     },
 }
 
@@ -219,19 +219,19 @@ function drawEdge(p0, p1, type) {
     switch (type) {
         case "r": { // road
             setCanvasStrokeColor("road")
-            setCanvasStrokeWidth(edgeProperties.r.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
         case "w": { // wooden beam edge
             setCanvasStrokeColor("wooden")
-            setCanvasStrokeWidth(edgeProperties.w.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
         case "s": { // steel beam edge
             setCanvasStrokeColor("steel")
-            setCanvasStrokeWidth(edgeProperties.s.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
@@ -242,8 +242,8 @@ function drawEdge(p0, p1, type) {
 
 // draw a shape around the currently selected vertex
 function drawSelectedPoint(x, y, type) {
-        setCanvasStrokeWidth(2)
-        switch (type) {
+    setCanvasStrokeWidth(2)
+    switch (type) {
         case "n": { // normal vertex
             setCanvasStrokeColor("white")
             drawEmptyPoint(x, y, vertexProperties.n.selectedRadius)
@@ -257,6 +257,10 @@ function drawSelectedPoint(x, y, type) {
 
         default: {break}
     }
+
+    setCanvasStrokeWidth(1)
+    setCanvasStrokeColor("grid")
+    drawEmptyPoint(x, y, edgeProperties[playerSetEdgesType].maxLength * 100)
 }
 
 // sets playerSetEdgesType
@@ -264,6 +268,8 @@ function setEdgeType(edgeType) {
     playerSetEdgesType = edgeType
 
     setSelectedEdgeButton(edgeType)
+
+    bridgeHasChanged = true
 }
 
 function listAllowedEdgeTypes() {
@@ -275,7 +281,9 @@ function listAllowedEdgeTypes() {
         edgesList = `<button id="edgeSelector${e.name}" class="menuButton borderRadiusTabLeft" onclick="setEdgeType('${allowedEdgeTypes[0]}')">${e.icon}</button>
             <div class="buttonDescription buttonDescriptionLeft">
                 <label for="edgeSelector${e.name}">
-                    <p><b>Set Edge Type to ${e.name}</b></p>
+                    <p><b>Set Edge Type to<br>${e.name}</b></p>
+                    <p>${e.description}</p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
                 </label>
             </div>`
     } else {
@@ -292,7 +300,9 @@ function listAllowedEdgeTypes() {
             edgesList += `<button id="edgeSelector${e.name}" class="menuButton ${borderClass}" onclick="setEdgeType('${allowedEdgeTypes[i]}')">${e.icon}</button>
             <div class="buttonDescription buttonDescriptionLeft">
                 <label for="edgeSelector${e.name}">
-                    <p><b>Set Edge Type to ${e.name}</b></p>
+                    <p><b>Set Edge Type to<br>${e.name}</b></p>
+                    <p>${e.description}</p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
                 </label>
             </div>`
         }
@@ -386,8 +396,7 @@ function setShowGrid() {
     bridgeHasChanged = true
 }
 
-// returns true if it could add/remove an edge
-function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
+function addEdge(v0, v1, type, vertexArray = bridgeVertices, edgesArray = bridgeEdges) {
     if (v0 != v1) {
         if (checkIfVerticesConnect(v0, v1)) {
             if (canDeleteEdges) {
@@ -395,14 +404,21 @@ function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
                 return true
             }
         } else {
-            edgesArray.push([v0, v1, type])
+            let edgeTypeProperties = edgeProperties[type]
+
+            let p0 = vertexArray[v0]
+            let p1 = vertexArray[v1]
+            let edgeLength = pointDistance(p0, p1)
+            let edgeMass = edgeTypeProperties.cylinderVolume * edgeLength * edgeTypeProperties.density
+
+            edgesArray.push([v0, v1, type, edgeLength, edgeMass])
             addBridgeConnection(v0, v1)
             addBridgeConnection(v1, v0)
             return true
         }
     }
-    
-    return false
+
+    return false // returns true if it could add/remove an edge
 }
 
 function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
@@ -423,7 +439,15 @@ function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
 }
 
 function addVertex(x, y, type, vertexArray = bridgeVertices) {
-    vertexArray.push([x, y, type])
+    if (alignToGrid) {
+        // when aligning, find the nearest grid-point coordinates
+        x = gridSize * Math.round(x / gridSize)
+        y = gridSize * Math.round(y / gridSize)
+
+        vertexArray.push([x, y, type])
+    } else {
+        vertexArray.push([x, y, type])
+    }
 }
 
 function deleteVertex(index, verticesArray = bridgeVertices, edgesArray = bridgeEdges, connectionsArray = bridgeConnections) {
@@ -512,6 +536,9 @@ function checkIfVerticesConnect(v0, v1) {
     return false
 }
 
+let infiniteEdgeLengths = false
+let makeLongerEdgesShorter = true
+
 let playerSetPointsType = "n"
 let playerSetEdgesType = "w"
 let playerContinuousBuilding = true
@@ -532,6 +559,16 @@ function setPlayerPoint(x, y) {
         } else {
             // there was a previous point
 
+            if (!infiniteEdgeLengths) {
+                let lastVertex = bridgeVertices[previousPlayerSetPoint]
+                let selectedVertex = bridgeVertices[bridgeSelectedVertex]
+                let pointToPointLength = pointDistance(lastVertex, selectedVertex)
+
+                if (pointToPointLength > (edgeProperties[playerSetEdgesType].maxLength * 100)) {
+                    return null
+                }
+            }
+
             addEdge(previousPlayerSetPoint, bridgeSelectedVertex, playerSetEdgesType)
 
             if (playerContinuousBuilding) {
@@ -550,6 +587,33 @@ function setPlayerPoint(x, y) {
             bridgeSelectedVertex = previousPlayerSetPoint
         } else {
             // there was a previous point
+
+            if (!infiniteEdgeLengths) {
+                let lastVertex = bridgeVertices[previousPlayerSetPoint]
+                let pointToPointLength = pointDistance([x, y], lastVertex)
+                let lengthMax = edgeProperties[playerSetEdgesType].maxLength * 100
+
+                if (pointToPointLength > lengthMax) {
+                    let mult = lengthMax / pointToPointLength
+
+                    let distanceX = lastVertex[0] - x
+                    let distanceY = lastVertex[1] - y
+                    let currentPlayerSetPoint = bridgeVertices.length
+
+                    addVertex(lastVertex[0] - (distanceX * mult), lastVertex[1] - (distanceY * mult), playerSetPointsType)
+                    addEdge(previousPlayerSetPoint, currentPlayerSetPoint, playerSetEdgesType)
+
+                    if (playerContinuousBuilding) {
+                        previousPlayerSetPoint = currentPlayerSetPoint
+                    } else {
+                        previousPlayerSetPoint = null
+                    }
+
+                    bridgeSelectedVertex = currentPlayerSetPoint
+                    bridgeHasChanged = true
+                    return null
+                }
+            }
 
             let currentPlayerSetPoint = bridgeVertices.length
             addVertex(x, y, playerSetPointsType)
@@ -580,15 +644,12 @@ function detectMouseOnCanvas(event) {
     let clickedX = -(canvasSizeHalf[0] - (event.clientX - boundingRect.x) - canvasTranslate[0]) * canvasScaleReciprocal
     let clickedY = (canvasSizeHalf[1] - (event.clientY - boundingRect.y) - canvasTranslate[1]) * canvasScaleReciprocal
 
-    if (alignToGrid) {
-        // when aligning, find the nearest grid-point coordinates
-        let gridX = gridSize * Math.round(clickedX / gridSize)
-        let gridY = gridSize * Math.round(clickedY / gridSize)
+    setPlayerPoint(clickedX, clickedY)
+}
 
-        setPlayerPoint(gridX, gridY)
-    } else {
-        setPlayerPoint(clickedX, clickedY)
-    }
+function simulateMouseOnCanvas(x, y) {
+    let boundingRect = document.getElementById("canvasBridge").getBoundingClientRect()
+    detectMouseOnCanvas({clientX: x + boundingRect.x, clientY: y + boundingRect.y})
 }
 
 // returns indices of points that are closer than threshold to (x, y)
@@ -661,9 +722,11 @@ function move(direction) {
 
 let currentStyle = 1
 let gameStyles = [
+    ["Black & White", "#000000"],
     ["Greyscale", "#606060"],
     ["Blueprint", "#2294f3"],
     ["Strawberry", "#e39695"],
+    ["Blood", "#dd0c39"],
 ]
 
 function applyStyle(styleId) {
@@ -694,13 +757,9 @@ function gameLoop() {
         bridgeHasChanged = false
     }
 
-    if (isSimulating) {
+    if (isSimulating && !isSimulationPaused) {
         simulateBridge() // TODO
     }
-}
-
-function lol() {
-    l("k")
 }
 
 // each tick of the game is 1/10 of a second
@@ -731,9 +790,12 @@ window.onload = function() {
 
     document.getElementById("profileSaveData").addEventListener("click", saveBridge)
     document.getElementById("profileLoadData").addEventListener("click", loadBridge)
-    
+
     document.getElementById("topMenuStartSimulation").addEventListener("click", startSimulating)
     document.getElementById("topMenuStopSimulation").addEventListener("click", stopSimulating)
+
+    document.getElementById("topMenuSimulationStartedPause").addEventListener("click", toggleSimulationPause)
+    document.getElementById("topMenuSimulationStartedForward").addEventListener("click", forwardSimulation)
 
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
@@ -741,6 +803,8 @@ window.onload = function() {
 
     document.getElementById("levelSelectorOpenButton").addEventListener("click", toggleMenuLevels)
     document.getElementById("levelSelectorCloseButton").addEventListener("click", toggleMenuLevels)
+
+    document.getElementById("playSelectedLevelButton").addEventListener("click", playSelectedLevel)
 
     // checkboxes, inputs
     document.getElementById("canDeleteEdges").addEventListener("change", setEdgeDeletion)
@@ -761,18 +825,13 @@ window.onload = function() {
     setShowGrid()
     setProfileName()
 
-    drawBridge()
-
     sendMessage(true, "welcome")
 
-    listAllowedEdgeTypes()
-    setEdgeType(allowedEdgeTypes[0]) // sets the selected edge type to the first one
+    setCurrentLevel(0)
+    drawBridge()
 
     listStyles()
     displayLevelInfo(selectedLevel)
-
-    // DEV
-    // toggleDialog("optionsMenu")
 }
 
 window.onkeyup = (event) => {

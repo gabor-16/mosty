@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Mosty</title>
+    <title>Most(l)y Done</title>
 
     <link type="image/x-icon"   rel="icon"          href="img/fav.svg">
     <link type="text/css"       rel="stylesheet"    href="css/styles.css">
@@ -224,7 +224,6 @@
                 <div class="buttonDescription buttonDescriptionTop">
                     <label for="playSelectedLevelButton">
                         <p><b>Play the Selected Level</b></p>
-                        <!-- <p>Keybind: <kbd>`</kbd></p> -->
                     </label>
                 </div>
             </div>
@@ -242,9 +241,9 @@
 
 <div id="gameContainer" class="flex flexCentered">
     <div>
-        <div id="topMenu" class="topMenu flex flexGap flexAlign">
+        <div id="topMenu" class="topMenu flex flexAlign">
             <div id="topMenuStartSimulationContainer" class="fitContent relative">
-                <button id="topMenuStartSimulation" class="menuButton borderRadius bigButton">▶</button>
+                <button id="topMenuStartSimulation" class="menuButton borderRadius bigButton outline shadow">▶</button>
                 <div class="buttonDescription buttonDescriptionLeftBig">
                     <label for="topMenuStartSimulation">
                         <p><b>Start the Physical Simulation</b></p>
@@ -254,18 +253,42 @@
             </div>
 
             <div id="topMenuStopSimulationContainer" class="fitContent relative blank">
-                <button id="topMenuStopSimulation" class="menuButton borderRadius bigButton ">⏹</button>
+                <button id="topMenuStopSimulation" class="menuButton borderRadius bigButton outline shadow">⏹</button>
                 <div class="buttonDescription buttonDescriptionLeftBig">
-                    <label for="topMenuStartSimulation">
+                    <label for="topMenuStopSimulation">
                         <p><b>Stop the Physical Simulation</b></p>
                         <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
             </div>
 
-            <header>
+            <header id="topMenuSimulationStopped">
                 <h1>Bridges for MSC⁵</h1>
             </header>
+
+            <div id="topMenuSimulationStarted" class="blank leftMarginSmall">
+                <div class="grid2-2rem outline shadow">
+                    <div class="relative">
+                        <button id="topMenuSimulationStartedPause" class="menuButton borderRadiusTabLeft">⏸</button>
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="topMenuSimulationStartedPause">
+                                <p><b>Pause the Physical Simulation</b></p>
+                                <p>The Simulation is <span id="simulationState" class="emphasis"></span></p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button id="topMenuSimulationStartedForward" class="menuButton borderRadiusTabRight">⏩︎</button>
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="topMenuSimulationStartedForward">
+                                <p><b>Forward the Physical Simulation</b></p>
+                                <p>Current Simulation Tick: <span id="simulationTick" class="emphasis">0</span></p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="mainGame" class="windowBase">

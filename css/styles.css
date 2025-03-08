@@ -50,9 +50,35 @@
 
     --game-background: #df7373;
 
-    --black: #dfdfdf;
-    --grey-dark: #dfdfdf;
-    --grey: #dfdfdf;
+    --black: #ffffc2;
+    --grey-dark: #ffff60;
+    --grey: #fdfd00;
+}
+
+:root[colorScheme="Blood"] {
+    --background: #dd0c39;
+    --background-dark: #c10b32;
+    --background-darker: #b20a2e;
+    --text: #ffffff;
+
+    --game-background: #e80d3c;
+
+    --black: #ffffff;
+    --grey-dark: #ffffff;
+    --grey: #ffffff;
+}
+
+:root[colorScheme="Black & White"] {
+    --background: #202020;
+    --background-dark: #101010;
+    --background-darker: #000000;
+    --text: #ffffff;
+
+    --game-background: #111111;
+
+    --black: #ffffff;
+    --grey-dark: #ffffff;
+    --grey: #ffffff;
 }
 
 /*  */
@@ -294,6 +320,10 @@ ul, ol {
     margin-top: 0.5rem;
 }
 
+.leftMarginSmall {
+    margin-left: 0.5rem;
+}
+
 .rightMargin {
     margin-right: 1rem;
 }
@@ -473,7 +503,7 @@ ul, ol {
 }
 
 .topMenu {
-    margin: 0.25rem 3rem;
+    margin: 0 3rem 0.5rem;
 }
 
 .bigButton {
