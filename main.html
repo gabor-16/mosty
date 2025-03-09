@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="html" colorScheme="Blueprint">
+<html lang="en" id="html" colorScheme="Blueprint" class="background backgroundImage">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,6 +107,17 @@
                             <p>Sets the Savefile's Name.</p>
                             <p>Value: <span id="profileNameValue" class="emphasis"></span></p>
                         </label>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileResetData" class="menuButton borderRadius">&times;</button>
+                        <div class="buttonDescription buttonDescriptionRight">
+                            <label for="profileResetData">
+                                <p><b>Reset All Bridges</b></p>
+                                <p>Resets the Progress saved locally from the computer.</p>
+                                <p class="big">Warning! This Action is non-reversable.</p>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -235,18 +246,18 @@
 
 </div>
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////// -->
-<div id="gameWindows" class="background">
+<div id="gameWindows" class="background backgroundImage">
 
 
 
 <div id="gameContainer" class="flex flexCentered">
     <div>
-        <div id="topMenu" class="topMenu flex flexAlign">
+        <div id="topMenu" class="topMenu flex flexAlign flexGap">
             <div id="topMenuStartSimulationContainer" class="fitContent relative">
-                <button id="topMenuStartSimulation" class="menuButton borderRadius bigButton outline shadow">▶</button>
+                <button id="topMenuStartSimulation" class="menuButton borderRadius bigButton outline shadow" autofocus>▶</button>
                 <div class="buttonDescription buttonDescriptionLeftBig">
                     <label for="topMenuStartSimulation">
-                        <p><b>Start the Physical Simulation</b></p>
+                        <p><b>Start the Simulation</b></p>
                         <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
@@ -256,14 +267,15 @@
                 <button id="topMenuStopSimulation" class="menuButton borderRadius bigButton outline shadow">⏹</button>
                 <div class="buttonDescription buttonDescriptionLeftBig">
                     <label for="topMenuStopSimulation">
-                        <p><b>Stop the Physical Simulation</b></p>
+                        <p><b>Stop the Simulation</b></p>
                         <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
             </div>
 
-            <header id="topMenuSimulationStopped">
-                <h1>Bridges for MSC⁵</h1>
+            <header id="topMenuSimulationStopped" class="bigButtonHeight">
+                <h1 class="noBottom">Bridges for MSC⁵</h1>
+                <p class="noTop">It's <b>M</b>ost(l)y <b>D</b>one <b>R</b>ight!</p>
             </header>
 
             <div id="topMenuSimulationStarted" class="blank leftMarginSmall">
@@ -272,8 +284,9 @@
                         <button id="topMenuSimulationStartedPause" class="menuButton borderRadiusTabLeft">⏸</button>
                         <div class="buttonDescription buttonDescriptionLeft">
                             <label for="topMenuSimulationStartedPause">
-                                <p><b>Pause the Physical Simulation</b></p>
-                                <p>The Simulation is <span id="simulationState" class="emphasis"></span></p>
+                                <p><b>Pause the Simulation</b></p>
+                                <p>Keybind: <kbd>⇧ Shift</kbd> + <kbd>␣ Space</kbd></p>
+                                <p>The Simulation is <span id="simulationState" class="emphasis"></span>.</p>
                             </label>
                         </div>
                     </div>
@@ -282,10 +295,26 @@
                         <button id="topMenuSimulationStartedForward" class="menuButton borderRadiusTabRight">⏩︎</button>
                         <div class="buttonDescription buttonDescriptionLeft">
                             <label for="topMenuSimulationStartedForward">
-                                <p><b>Forward the Physical Simulation</b></p>
+                                <p><b>Forward the Simulation</b></p>
+                                <p>Keybind: <kbd>Control</kbd> + <kbd>␣ Space</kbd></p>
                                 <p>Current Simulation Tick: <span id="simulationTick" class="emphasis">0</span></p>
                             </label>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="topMenuBudgetControlMenu" class="flexEnd shadow outline relative wide generalDiv background">
+                <p class="noBottom center"><span class="big emphasis"><span id="budgetControlAmount"></span>€</span></p>
+                <div class="margin relative">
+                    <progress value="0" max="0" id="budgetControlProgress" class="otherButton"></progress>
+                    <div class="buttonDescription buttonDescriptionTop">
+                        <label for="budgetControlProgress">
+                            <p><b>Bridge Cost</b></p>
+                            <p>The Bridge has to be built with it's cost smaller or equal to it's maximal Budget.</p>
+                            <p>To make sure the Budget is correct, click this bar.</p>
+                            <p>Maximal Budget: <span class="emphasis"><span id="budgetControlMax"></span>€</span></p>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -466,7 +495,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="messageLog" class="shadow outline topMarginSmall">
+                    <div id="messageLog" class="shadow outline topMarginSmall background">
                         <!-- filled by js -->
                     </div>
                 </div>
@@ -494,8 +523,8 @@
                     <button id="selectLastVertex" class="menuButton borderRadiusBottomRight">&ofcir;</button>
                     <div class="buttonDescription buttonDescriptionRight">
                         <label for="selectLastVertex">
-                            <p><b>Select Last Vertex</b></p>
-                            <p>Selects Last Vertex from the Vertices List.<br>(Might not match with the vertex creation sequence).</p>
+                            <p><b>Select Previous Vertex</b></p>
+                            <p>Selects Previous Vertex from the Vertices List.<br>(Might not match with the vertex creation sequence).</p>
                             <p>Keybind: <kbd>↵ Enter</kbd></p>
                         </label>
                     </div>

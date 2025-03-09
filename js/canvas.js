@@ -20,6 +20,7 @@ let canvasScaleReciprocal = 1 / canvasScale
 function resetCanvas() {
     ctx.fillStyle = "#050403"
     ctx.lineWidth = "2"
+    ctx.lineJoin = "round"
 
     resetCanvasTransform()
 }
@@ -37,21 +38,72 @@ function clearCanvas() {
 // resetting canvas's values //////////////////////////////////////////////////////////////////////
 
 const CANVASCOLORS = {
-    "white": "#f0f7f3",
-    "black": "#050403",
+    "Black & White": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
 
-    "grid": "#a0a0a0",
+        "grid": "#a0a0a0",
 
-    "wooden": "#a97742",
-    "road": "#a5a7a2",
-    "steel": "#5b1a16",
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Greyscale": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Blueprint": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Strawberry": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Blood": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
 }
 function setCanvasFillColor(color) {
-    ctx.fillStyle = CANVASCOLORS[color]
+    ctx.fillStyle = CANVASCOLORS[currentStyleName][color]
 }
 
 function setCanvasStrokeColor(color) {
-    ctx.strokeStyle = CANVASCOLORS[color]
+    ctx.strokeStyle = CANVASCOLORS[currentStyleName][color]
 }
 
 function setCanvasStrokeWidth(size) {
@@ -65,6 +117,10 @@ function translateCanvas(x, y) {
     resetCanvasTransform()
 
     bridgeHasChanged = true
+}
+
+function translateCanvasReset() {
+    translateCanvas(-canvasTranslate[0], -canvasTranslate[1])
 }
 
 function scaleCanvas(mult = 2) {
@@ -143,6 +199,11 @@ function drawEmptyPoint(x, y, r) {
     ctx.arc(x, y, r, 0, 2 * π)
     ctx.stroke()
 }
+
+function drawEllipse(x, y, rx, ry, angle) {
+    ctx.ellipse(x, y, rx, ry, angle, 0, 2 * π)
+}
+
 
 
 // Continious versions of some of the above functions:

@@ -6,44 +6,37 @@ const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
 // values come from the levels.
 let bridgeSelectedVertex = null // the index of the current vertex
 let bridgeVertices = [ // contains vertices v_k where 
-    // [x coord, y coord, type, lenght, mass]
+    // [x coord, y coord, type, velocity[vx, vy] ]
 ]
 
 let bridgeEdges = [ // contains edges (l, k) where l != k
-    // [index of v1, index of v2, type]
+    // [index of v1, index of v2, type, lenght, mass]
 ]
 
 let bridgeConnections = [ // connections between bridgeVertices[i] and every other vertex
 ]
 
-let bridgeObjects = [ // a list of objects which don't move, but have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
+let bridgeObjects = [ // a list of objects that have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
 
 ]
 
 
-
+let bridgeSaveBasis = {
+    levels: [],
+}
 let bridgeSave = {
-    levels: [
-        {
-            saveSelectedVertex: null,
-            savePreviousPlayerSetPoint: null,
-
-            saveVertices: [],
-            saveEdges: [],
-            saveConnections: [],
-            saveObjects: [],
-        },
-    ],
+    levels: [],
 }
 
-// don't change the first argument - it will make older saves unusable without a name change
-let localSaveAlias = "bridgesSave"
+let localSaveAlias = "bridgesSave" // don't change this value - it will make older saves unusable without a name change
 function saveBridge(localSave = true) {
     let i = selectedLevel
 
     if (bridgeSave.levels[i] === undefined) {
         bridgeSave.levels[i] = {}
     }
+
+    checkBudget()
 
     // copies the variables by value, not reference
     bridgeSave.levels[i].saveSelectedVertex         = structuredClone(bridgeSelectedVertex)
@@ -52,6 +45,7 @@ function saveBridge(localSave = true) {
     bridgeSave.levels[i].saveEdges                  = structuredClone(bridgeEdges)
     bridgeSave.levels[i].saveConnections            = structuredClone(bridgeConnections)
     bridgeSave.levels[i].saveObjects                = structuredClone(bridgeObjects)
+    bridgeSave.levels[i].saveCost                   = structuredClone(cost)
 
     // if saving locally, push entire saved levels list to localStorage
     if (localSave) {
@@ -67,13 +61,14 @@ function loadBridge(localLoad = true) {
     }
 
     let i = selectedLevel
-    if (bridgeSave.levels[i].saveEdges.length > 0) {
+    if (bridgeSave !== null && bridgeSave.levels[i].saveEdges.length > 0) {
         bridgeSelectedVertex   = null
         previousPlayerSetPoint = null
         bridgeVertices         = null
         bridgeEdges            = null
         bridgeConnections      = null
         bridgeObjects          = null
+        cost                   = null
 
         bridgeSelectedVertex   = bridgeSave.levels[i].saveSelectedVertex
         previousPlayerSetPoint = bridgeSave.levels[i].savePreviousPlayerSetPoint
@@ -81,6 +76,9 @@ function loadBridge(localLoad = true) {
         bridgeEdges            = bridgeSave.levels[i].saveEdges
         bridgeConnections      = bridgeSave.levels[i].saveConnections
         bridgeObjects          = bridgeSave.levels[i].saveObjects
+        cost                   = bridgeSave.levels[i].saveCost
+
+        updateBudget()
 
         bridgeHasChanged = true
 
@@ -88,6 +86,14 @@ function loadBridge(localLoad = true) {
             sendMessage(true, "loadedData")
         }
     }
+}
+
+function resetBridge(localSave = true) {
+    if (localSave) {
+        localStorage.removeItem(localSaveAlias + saveName)
+    }
+
+    bridgeSave = structuredClone(bridgeSaveBasis)
 }
 
 
@@ -119,12 +125,16 @@ let vertexProperties = {
     n: { // normal
         radius: 4,
         selectedRadius: 6,
-        isPermanent: false,
+        mass: 1,
+
+        isSolid: false,
     },
     p: { // permanent
         radius: 6,
         selectedRadius: 8,
-        isPermanent: true,
+        mass: Infinity,
+
+        isSolid: true,
     },
 }
 
@@ -138,7 +148,9 @@ let edgeProperties = {
         radius: 2, // in centimeters (pixels)
         maxLength: 6, // in meters (100ths of pixels) // chapter 5 of https://alsyedconstruction.com/maximum-beam-span-for-residential-construction/
         cylinderVolume: 12.566370614359172, // π * radius², computed with js
+        cost: 0.002940, // per cm³
         density: 0.85, // g/cm³ // oak wood from https://educatoral.com/density_of_substances.html
+        stiffness: 0,
     },
 
     s: { // steel
@@ -149,7 +161,9 @@ let edgeProperties = {
         radius: 2.5,
         maxLength: 18, // https://steelconstruction.info/Long-span_beams
         cylinderVolume: 19.634954084936208,
+        cost: 0.010775,
         density: 7.75, // bottom value from https://en.wikipedia.org/wiki/Steel
+        stiffness: 0,
     },
 
     r: { // road
@@ -160,7 +174,9 @@ let edgeProperties = {
         radius: 3,
         maxLength: 7, // https://www.quora.com/What-is-the-maximum-span-for-a-simply-supported-concrete-beam
         cylinderVolume: 28.274333882308138,
+        cost: 0.005685,
         density: 2.4, // https://en.wikipedia.org/wiki/Properties_of_concrete
+        stiffness: 0,
     },
 }
 
@@ -169,30 +185,37 @@ let edgeProperties = {
 function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     clearCanvas()
 
+    // draw objects
+    for (let i = 0; i < bridgeObjects.length; i++) {
+        let o = bridgeObjects[i]
+        drawObject(o)
+    }
+
     // draws the grid only if you need to
     if (alignToGrid && showGrid) {
         drawGrid()
     }
 
-    if (verticesArray.length >= 2) {
-        for (let i = 0; i < edgesArray.length; i++) {
-            let e = edgesArray[i]
-    
-            // get vertices from the vertex array
-            let p0 = verticesArray[e[0]]
-            let p1 = verticesArray[e[1]]
-            drawEdge(p0, p1, e[2])
-        }
+    // draw edges
+    for (let i = 0; i < edgesArray.length; i++) {
+        let e = edgesArray[i]
+
+        // get vertices from the vertex array
+        let p0 = verticesArray[e[0]]
+        let p1 = verticesArray[e[1]]
+        drawEdge(p0, p1, e[2])
     }
 
-    ctx.beginPath()
+    // draw vertices
     for (let i = 0; i < verticesArray.length; i++) {
         let v = verticesArray[i]
+        ctx.beginPath()
         drawVertex(v[0], v[1], v[2])
+        ctx.fill()
     }
-    ctx.fill()
 
-    if (bridgeSelectedVertex !== null) {
+    // draw selected vertex
+    if (bridgeSelectedVertex !== null && !isSimulating) {
         let v = verticesArray[bridgeSelectedVertex]
         drawSelectedPoint(v[0], v[1], v[2])
     }
@@ -223,12 +246,14 @@ function drawEdge(p0, p1, type) {
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
+
         case "w": { // wooden beam edge
             setCanvasStrokeColor("wooden")
             setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
+
         case "s": { // steel beam edge
             setCanvasStrokeColor("steel")
             setCanvasStrokeWidth(2 * edgeProperties.r.radius)
@@ -249,6 +274,7 @@ function drawSelectedPoint(x, y, type) {
             drawEmptyPoint(x, y, vertexProperties.n.selectedRadius)
             break;
         }
+
         case "p": { // permanent vertex
             setCanvasStrokeColor("black")
             drawEmptySquare(x, y, vertexProperties.p.selectedRadius)
@@ -284,6 +310,7 @@ function listAllowedEdgeTypes() {
                     <p><b>Set Edge Type to<br>${e.name}</b></p>
                     <p>${e.description}</p>
                     <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
     } else {
@@ -303,6 +330,7 @@ function listAllowedEdgeTypes() {
                     <p><b>Set Edge Type to<br>${e.name}</b></p>
                     <p>${e.description}</p>
                     <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
         }
@@ -319,6 +347,47 @@ function setSelectedEdgeButton(edgeType) {
 
     let edgeName = edgeProperties[edgeType].name
     addClass("edgeSelector" + edgeName, "selected")
+}
+
+function drawObject(o) {
+    switch (o[0]) {
+        case "p": { // polygon
+            ctx.beginPath()
+            for (let i = 0; i < o[2].length; i++) {
+                ctx.lineTo(o[2][i][0], o[2][i][1])
+            }
+            ctx.closePath()
+            break
+        }
+
+        case "e": { // ellipse
+            ctx.beginPath()
+            drawEllipse(
+                o[2][0],
+                o[2][1],
+                o[2][2],
+                o[2][3] || o[2][2], // if there's no yradius, it's the same as xradius
+                -o[2][4] || 0 // defaultAngle = 0
+            )
+            ctx.closePath()
+            break
+        }
+
+        default: {break}
+    }
+
+    if (o[1][0] !== undefined) {
+        setCanvasStrokeColor(o[1][0])
+        setCanvasStrokeWidth(o[1][1])
+
+        ctx.stroke()
+    }
+
+    if (o[1][2] !== undefined) {
+        setCanvasFillColor(o[1][2])
+
+        ctx.fill()
+    }
 }
 
 
@@ -409,9 +478,13 @@ function addEdge(v0, v1, type, vertexArray = bridgeVertices, edgesArray = bridge
             let p0 = vertexArray[v0]
             let p1 = vertexArray[v1]
             let edgeLength = pointDistance(p0, p1)
-            let edgeMass = edgeTypeProperties.cylinderVolume * edgeLength * edgeTypeProperties.density
+            let edgeVolume = edgeTypeProperties.cylinderVolume * edgeLength
+            let edgeMass = edgeVolume * edgeTypeProperties.density
 
-            edgesArray.push([v0, v1, type, edgeLength, edgeMass])
+            let edgeCost = edgeTypeProperties.cost * edgeVolume
+            updateBudget(edgeCost)
+
+            edgesArray.push([v0, v1, type, edgeLength, edgeMass, edgeCost])
             addBridgeConnection(v0, v1)
             addBridgeConnection(v1, v0)
             return true
@@ -428,6 +501,8 @@ function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
 
             if ((e[0] == p0 || e[0] == p1) && (e[1] == p0 || e[1] == p1)) {
                 edgesArray.splice(i, 1)
+
+                updateBudget(-e[5])
             }
         }
 
@@ -438,15 +513,16 @@ function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
     }
 }
 
+let startVelocity = [0, 0]
 function addVertex(x, y, type, vertexArray = bridgeVertices) {
     if (alignToGrid) {
         // when aligning, find the nearest grid-point coordinates
         x = gridSize * Math.round(x / gridSize)
         y = gridSize * Math.round(y / gridSize)
 
-        vertexArray.push([x, y, type])
+        vertexArray.push([x, y, type, startVelocity])
     } else {
-        vertexArray.push([x, y, type])
+        vertexArray.push([x, y, type, startVelocity])
     }
 }
 
@@ -510,6 +586,8 @@ function deleteVertex(index, verticesArray = bridgeVertices, edgesArray = bridge
 
     connectionsArray[index] = connectionsArray[lastIndex]
     connectionsArray.pop()
+
+    // checkBudget()
 
     bridgeHasChanged = true
 }
@@ -675,7 +753,7 @@ function unSelectPoint() {
 
 function deleteSelectedPoint() {
     if (bridgeSelectedVertex !== null) {
-        if (!vertexProperties[bridgeVertices[bridgeSelectedVertex][2]].isPermanent) {
+        if (!vertexProperties[bridgeVertices[bridgeSelectedVertex][2]].isSolid) {
             deleteVertex(bridgeSelectedVertex)
         } else {
             sendMessage(true, "vertexDeletion")
@@ -686,9 +764,17 @@ function deleteSelectedPoint() {
 }
 
 function selectLastVertex() {
-    bridgeSelectedVertex = bridgeVertices.length - 1
-    previousPlayerSetPoint = bridgeSelectedVertex
+    if (bridgeSelectedVertex === null) {
+        bridgeSelectedVertex = bridgeVertices.length - 1
+    } else {
+        if (bridgeSelectedVertex != 0) {
+            bridgeSelectedVertex -= 1
+        } else {
+            bridgeSelectedVertex = bridgeVertices.length - 1
+        }
+    }
 
+    previousPlayerSetPoint = bridgeSelectedVertex
     bridgeHasChanged = true
 }
 
@@ -705,7 +791,7 @@ function move(direction) {
         case "dl": {translateCanvas(-step, step);  break;} case "d": {translateCanvas(0, step);  break;} case "dr": {translateCanvas(step, step);  break;}
 
         case "0": {
-            translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); 
+            translateCanvasReset(); 
             break;
         }
         default: {break;}
@@ -720,7 +806,8 @@ function move(direction) {
 // STYLING THE GAME
 // //////////////////////////////////////////////////////////////////////
 
-let currentStyle = 1
+let currentStyle = 2
+let currentStyleName = "Blueprint"
 let gameStyles = [
     ["Black & White", "#000000"],
     ["Greyscale", "#606060"],
@@ -731,7 +818,10 @@ let gameStyles = [
 
 function applyStyle(styleId) {
     currentStyle = styleId
-    document.getElementById("html").setAttribute("colorScheme", gameStyles[currentStyle][0])
+    currentStyleName = gameStyles[currentStyle][0]
+    document.getElementById("html").setAttribute("colorScheme", currentStyleName)
+
+    bridgeHasChanged = true
 }
 
 function listStyles() {
@@ -758,14 +848,14 @@ function gameLoop() {
     }
 
     if (isSimulating && !isSimulationPaused) {
-        simulateBridge() // TODO
+        simulateBridge()
     }
 }
 
-// each tick of the game is 1/10 of a second
-const tickTime = 0.1 // of a second
 window.onload = function() {
     resetCanvas()
+
+    applyStyle(currentStyle)
 
     document.getElementById("canvasBridge").addEventListener("click", detectMouseOnCanvas)
     document.getElementById("canvasBridge").addEventListener("wheel", scaleCanvasWithWheel)
@@ -790,12 +880,15 @@ window.onload = function() {
 
     document.getElementById("profileSaveData").addEventListener("click", saveBridge)
     document.getElementById("profileLoadData").addEventListener("click", loadBridge)
+    document.getElementById("profileResetData").addEventListener("click", resetBridge)
 
     document.getElementById("topMenuStartSimulation").addEventListener("click", startSimulating)
     document.getElementById("topMenuStopSimulation").addEventListener("click", stopSimulating)
 
     document.getElementById("topMenuSimulationStartedPause").addEventListener("click", toggleSimulationPause)
     document.getElementById("topMenuSimulationStartedForward").addEventListener("click", forwardSimulation)
+    
+    document.getElementById("budgetControlProgress").addEventListener("click", checkBudget)
 
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
@@ -878,8 +971,19 @@ window.onkeyup = (event) => {
                 break;
             }
 
+            // simulation
             case " ": {
-                toggleSimulating()
+                if (event.ctrlKey) {
+                    forwardSimulation()
+                    break
+                }
+
+                if (!event.shiftKey) {
+                    toggleSimulating()
+                } else {
+                    toggleSimulationPause()
+                }
+
                 break;
             }
         
@@ -911,50 +1015,50 @@ window.onkeydown = (event) => {
             case "KeyW": {
                 translateCanvas(0, -step); break;
             }
-            
+
             case "Numpad4":
             case "ArrowLeft":
             case "KeyH":
             case "KeyA": {
                 translateCanvas(-step, 0); break;
             }
-    
+
             case "Numpad2":
             case "ArrowDown":
             case "KeyJ":
             case "KeyS": {
                 translateCanvas(0, step); break;
             }
-    
+
             case "Numpad6":
             case "ArrowRight":
             case "KeyL":
             case "KeyD": {
                 translateCanvas(step, 0); break;
             }
-    
+
             case "Numpad7": {
                 translateCanvas(-step, -step); break;
             }
-    
+
             case "Numpad9": {
                 translateCanvas(step, -step); break;
             }
-    
+
             case "Numpad1": {
                 translateCanvas(-step, step); break;
             }
-    
+
             case "Numpad3":{
                 translateCanvas(step, step); break;
             }
-    
+
             case "Numpad5": {
                 translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); break;
             }
-    
+
             case "Numpad0": {
-                translateCanvas(-canvasTranslate[0], -canvasTranslate[1])
+                translateCanvasReset()
                 scaleCanvasZero()
                 break;
             }

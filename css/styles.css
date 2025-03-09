@@ -27,6 +27,8 @@
     --black: #000000;
     --grey-dark: #808080;
     --grey: #c1c1c1;
+
+    --backgroundImg: url(../img/blueprintBg.svg);
 }
 
 :root[colorScheme="Greyscale"] {
@@ -107,6 +109,10 @@ button, input {
     user-select: none;
 }
 
+label {
+    cursor: text;
+}
+
 button {
     border: none;
     background-color: var(--background-dark);
@@ -159,6 +165,15 @@ input[type="text"] {
     text-align: center;
 
     cursor: text;
+}
+
+progress {
+    height: 1rem;
+    width: 100%;
+    background-color: var(--text);
+
+    border: none;
+    border-radius: var(--border-radius);
 }
 
 dialog {
@@ -228,6 +243,10 @@ ul, ol {
     padding: 0.5rem;
 }
 
+#topMenuBudgetControlMenu {
+    height: 4rem;
+}
+
 
 
 /* ////////////////////////////////////////////////////////////////////// */
@@ -236,6 +255,11 @@ ul, ol {
 
 .background {
     background-color: var(--background);
+}
+
+.backgroundImage {
+    background-image: var(--backgroundImg);
+    background-repeat: repeat;
 }
 
 .generalDiv {
@@ -398,7 +422,7 @@ ul, ol {
     top: 2.5rem;
 }
 
-:is(.menuButton, .tabButton, .levelButton):hover + .buttonDescription {
+:is(.menuButton, .tabButton, .levelButton, .otherButton):hover + .buttonDescription {
     display: block;
 }
 
@@ -513,6 +537,18 @@ ul, ol {
     font-size: 2rem;
 
     text-align: center;
+}
+
+.wide {
+    min-width: 16rem;
+}
+
+.bigButtonHeight {
+    height: 4rem;
+}
+
+.margin {
+    margin: 0 var(--border-radius) var(--border-radius);
 }
 
 

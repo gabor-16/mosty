@@ -1,0 +1,22 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+    <rect x="0" y="31.5" width="128" height="1" fill="#a0a0a0"></rect>
+    <rect x="31.5" y="0" width="1" height="128" fill="#a0a0a0"></rect>
+    <rect x="0" y="95.5" width="128" height="1" fill="#a0a0a0"></rect>
+    <rect x="95.5" y="0" width="1" height="128" fill="#a0a0a0"></rect>
+
+    <!-- <rect x="39.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="47.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="55.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="63.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="71.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="79.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+    <rect x="87.5" y="32.5" width="1" height="63" fill="#dfdfdf80"></rect>
+
+    <rect x="32.5" y="39.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="47.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="55.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="63.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="71.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="79.5" width="63" height="1" fill="#dfdfdf80"></rect>
+    <rect x="32.5" y="87.5" width="63" height="1" fill="#dfdfdf80"></rect> -->
+</svg>
