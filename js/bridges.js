@@ -219,6 +219,10 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
         let v = verticesArray[bridgeSelectedVertex]
         drawSelectedPoint(v[0], v[1], v[2])
     }
+
+    // draws the car
+    drawCar()
+
 }
 
 function drawVertex(x, y, type) {

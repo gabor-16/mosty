@@ -10,6 +10,7 @@ let levelsList = [
         budget: 1000, // in euro
         currentCost: 0,
         difficulty: "Easy",
+        // TODO: maxEdges: number, max ammount of edges allowed on level
 
         cameraScale: 2,
         cameraPosition: [0, 0],
