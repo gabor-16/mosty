@@ -130,6 +130,7 @@ function simulateBridge() {
         }
 
         deltaPositions = []
+        carGravity()
     }
 
 

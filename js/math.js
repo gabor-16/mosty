@@ -58,6 +58,11 @@ function vectorAdd(v0, v1) {
     return [v0[0] + v1[0], v0[1] + v1[1]]
 }
 
+// made for car gravity since you have to flip it and y is reversed
+function vectorAddReverse(v0, v1){
+    return [v0[0] + v1[0], v0[1] - v1[1]]
+}
+
 function vectorSub(v0, v1) {
     return vectorAdd(v0, vectorNeg(v1))
 }
