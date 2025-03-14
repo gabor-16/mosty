@@ -222,8 +222,8 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
 
     // draws the car
     // for now its called twice so the car will appear
-    drawCar(carsList[0].carModel)
-    drawCar(carsList[0].carModel)
+    drawCar(carsList[0].carModel, 0)
+    
 }
 
 function drawVertex(x, y, type) {

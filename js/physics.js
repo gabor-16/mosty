@@ -74,7 +74,6 @@ function setGravity(v) {
     gravityValue = v
 }
 
-// let gravityValue = [0, 0] // m/s²
 let gravityValue = [0, -9.807] // m/s²
 let constraintResolveSubStepAmount = 4
 
@@ -130,7 +129,8 @@ function simulateBridge() {
         }
 
         deltaPositions = []
-        carGravity()
+        
+        carGravity(undefined, 0)
     }
 
 

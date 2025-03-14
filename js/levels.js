@@ -48,6 +48,7 @@ let levelsList = [
 
             // ["e", ["gray", 2, "gray"], [0, -10000000000, 10000000000, 10000000000]], // the rendering breaks for very large values and coordinates
         ],
+        allowedCars: ["basicCar"],
     },
 
     {
