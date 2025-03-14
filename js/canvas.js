@@ -1,10 +1,10 @@
-const c = document.getElementById("canvasBridge")
-const ctx = c.getContext("2d")
+let c = document.getElementById("canvasBridge")
+let ctx = c.getContext("2d")
 
 
 // All drawing functions assume 1200 x 800 canvas
-const canvasSize = [1200, 800]
-const canvasSizeHalf = [600, 400]
+let canvasSize = [1200, 800]
+let canvasSizeHalf = [600, 400]
 let canvasTranslate = [0, 0] // used to translate the canvas
 let canvasScale = 1 // used to scale the canvas
 let canvasScaleReciprocal = 1 / canvasScale
@@ -43,7 +43,7 @@ const CANVASCOLORS = {
         "black": "#050403",
         "gray": "#808080",
 
-        "grid": "#a0a0a0",
+        "grid": "#ffffff",
 
         "wooden": "#a97742",
         "road": "#a5a7a2",
@@ -136,7 +136,7 @@ function scaleCanvas(mult = 2) {
 let canvasScalingFactor = 2 // if ever changed, change the button info as well
 function scaleCanvasUp() {scaleCanvas()}
 function scaleCanvasDown() {scaleCanvas(1 / canvasScalingFactor)}
-function scaleCanvasZero() {scaleCanvas(canvasScaleReciprocal)}
+function scaleCanvasZero() {scaleCanvas(canvasScaleReciprocal); scaleCanvas(levelsList[currentLevel].cameraScale)}
 
 function scaleCanvasWithWheel(wheel) {
     let sign = Math.sign(wheel.deltaY)
@@ -270,3 +270,58 @@ function drawGrid() {
     // l(gridLinesXAmount, gridLinesYAmount)
 }
 
+
+// 
+// 
+// 
+
+function setDrawingCanvas(id, width, height) {
+    c = document.getElementById(id)
+    ctx = c.getContext("2d")
+
+    canvasSize = [width, height]
+    canvasSizeHalf = [width / 2, height / 2]
+}
+
+function toggleDrawingCanvas(levelId) {
+    // Change canvas and draw the required level
+    setDrawingCanvas("levelSelectorCanvas", 600, 400)
+
+    let pastScale = canvasScale
+    scaleCanvasZero()
+    scaleCanvasDown() // because the level canvas is (should be) 2x smaller
+
+    clearCanvas()
+    drawBridgeLevelWindow(levelId)
+
+    // Change canvas back
+    setDrawingCanvas("canvasBridge", 1200, 800)
+    scaleCanvasZero()
+    scaleCanvas(pastScale)
+}
+
+function drawBridgeLevelWindow(levelId) {
+    // draw level on the small canvas
+
+    let levelData = levelsList[levelId]
+
+    for (let i = 0; i < levelData.objects.length; i++) {
+        let o = levelData.objects[i]
+        drawObject(o)
+    }
+
+    for (let i = 0; i < levelData.edges.length; i++) {
+        let e = levelData.edges[i]
+
+        let p0 = levelData.vertices[e[0]]
+        let p1 = levelData.vertices[e[1]]
+        drawEdge(p0, p1, e[2])
+    }
+
+    for (let i = 0; i < levelData.vertices.length; i++) {
+        let v = levelData.vertices[i]
+        ctx.beginPath()
+        drawVertex(v[0], v[1], v[2])
+        ctx.fill()
+    }
+}

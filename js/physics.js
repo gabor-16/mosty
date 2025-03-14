@@ -62,20 +62,33 @@ function toggleSimulationPause() {
     }
 }
 
-function forwardSimulation(event, count = 1) {
-    for (let i = 0; i < count; i++) {
+function simulateTick() {
+    for (let i = 0; i < currentSpeed; i++) {
         simulateBridge()
+
+        simulatePhysicals()
     }
 }
 
 
 
-function setGravity(v) {
-    gravityValue = v
+function gravityEarth(x, y) {
+    return [0, -9.807]
 }
 
-// let gravityValue = [0, 0] // m/s²
-let gravityValue = [0, -9.807] // m/s²
+function gravityCentered(x, y) {
+    let d = Math.sqrt(x**2 + y**2)
+    let m2 = 1
+    let G = 1000
+    let Gm2d = G * m2 / d**2
+    return [-x * Gm2d, -y * Gm2d]
+}
+
+function setGravity(fv) {
+    gravityValue = fv
+}
+
+let gravityValue = () => {} // m/s²
 let constraintResolveSubStepAmount = 4
 
 // each tick of the game is 1/10 of a second
@@ -89,9 +102,11 @@ function simulateBridge() {
     for (let i = 0; i < constraintResolveSubStepAmount; i++) {
         for (let i = 0; i < bridgeVertices.length; i++) {
             let v = bridgeVertices[i];
+            let vertex = vertexProperties[v[2]]
 
-            if (!vertexProperties[v[2]].isSolid) {
-                v[3] = vectorAdd(v[3], vectorMul(deltaTime, gravityValue))
+            if (!vertex.isSolid) {
+                let vertexMass = vertex.mass // maybe mass equal to 0.5 * (mass of all connected edges) ?
+                v[3] = vectorAdd(v[3], vectorMul(deltaTime, vectorMul(vertexMass, gravityValue(v[0], v[1]))))
             }
 
             previousPositions[i] = [v[0], v[1]]
@@ -117,7 +132,7 @@ function simulateBridge() {
         for (let i = 0; i < bridgeVertices.length; i++) {
             let v = bridgeVertices[i];
 
-            // set the position th average of deltas from deltaPositions
+            // set the position to the average of deltas from deltaPositions
             let averageDelta = [0, 0]
             if (deltaPositions[i]) {
                 averageDelta = averageVector(deltaPositions[i])
@@ -134,7 +149,8 @@ function simulateBridge() {
 
 
 
-    simulationTick += constraintResolveSubStepAmount
+    // simulationTick += constraintResolveSubStepAmount
+    simulationTick += 1
     document.getElementById("simulationTick").innerText = simulationTick
 
     bridgeHasChanged = true
@@ -189,3 +205,86 @@ function solveDistanceConstraint(i0, i1, l0, type) {
     return extent
 }
 
+function changeSimulationSpeed() {
+    let newSpeed = Number(document.getElementById("topMenuSimulationStartedSpeedChange").value)
+
+    currentSpeed = newSpeed
+    document.getElementById("simulationSpeed").innerText = currentSpeed
+}
+
+function resetSimulationSpeed() {
+    document.getElementById("topMenuSimulationStartedSpeedChange").value = "4"
+
+    changeSimulationSpeed()
+}
+
+
+
+
+
+// //////////////////////////////////////////////////////////////////////
+// PHYSICAL OBJECTS OTHER THAN THE BRIDGE
+// //////////////////////////////////////////////////////////////////////
+
+function addPhysical(x, y, type, objectName) {
+    switch (type) {
+        case "auto": {
+            let objectSize = autosList[objectName].size
+
+            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0]])
+            break
+        }
+
+        default: {break}
+    }
+}
+
+function drawPhysical(physicalObject) {
+    switch (physicalObject[2]) {
+        case "auto": {
+            let car = autosList[physicalObject[3]]
+
+            switch (car.name) {
+                case "Bicycle": {
+                    setCanvasFillColor("black")
+                    setCanvasStrokeWidth(0)
+                    drawRect(physicalObject[0] - (car.size[0] / 2), physicalObject[1] - (car.size[1] / 2), car.size[0], car.size[1])
+
+                    break;
+                }
+
+                default: {break}
+            }
+
+            break
+        }
+    }
+}
+
+function simulatePhysicals() {
+    for (let i = 0; i < bridgePhysicals.length; i++) {
+        let p = bridgePhysicals[i]
+        let physicalType = p[2]
+
+        switch (physicalType) {
+            case "auto": {
+                let auto = autosList[p[3]]
+
+                p[4] = vectorAdd(p[4], vectorMul(deltaTime, vectorMul(auto.mass, gravityValue(p[0], p[1]))))
+
+                let updatedPosition = vectorAdd([p[0], p[1]], vectorMul(deltaTime, p[4]))
+                p[0] = updatedPosition[0]
+                p[1] = updatedPosition[1]
+            }
+
+            default: {break}
+        }
+
+
+
+        // TODO: SIMULATE PHYSICAL'S PHYSICS
+
+
+
+    }
+}

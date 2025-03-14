@@ -1,4 +1,6 @@
 
+- dampening forces and 
+- limit of the number of edges of certain type
 
 
 
@@ -17,6 +19,8 @@ point-line intersections in math.js
 - check if point under/over/on the line
 
 
+
+- winning conditions, winning screens
 
 
 A couple of levels

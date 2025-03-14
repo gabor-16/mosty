@@ -57,7 +57,7 @@
                             <p>When <span class="booleanValue">true</span>, a set of arrows that can be used to move the camera appears under the game screen.</p>
                         </label>
                     </div>
-                    <label for="showArrowset">Show Arrowset</label>
+                    <label for="showArrowset">Show Arrowset?</label>
                     <br>
                     <input type="checkbox" id="showGrid" class="option menuButton" checked>
                     <div class="buttonDescription buttonDescriptionLeft">
@@ -66,7 +66,17 @@
                             <p>When <span class="booleanValue">true</span>, displays a Grid when Align to Grid is <span class="booleanValue">true</span>.</p>
                         </label>
                     </div>
-                    <label for="showArrowset">Show Grid</label>
+                    <label for="showGrid">Show Grid?</label>
+                    <br>
+                    <input type="checkbox" id="canSetRandomPoints" class="option menuButton">
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="canSetRandomPoints">
+                            <p><b>Set Vertices Anywhere?</b></p>
+                            <p>When <span class="booleanValue">true</span>, you can create a new Vertex anywhere.</p>
+                            <p>When <span class="booleanValue">false</span>, you have to start Edge creation from an already created (or permanent) Vertex.</p>
+                        </label>
+                    </div>
+                    <label for="showGrid">Set Vertices Anywhere?</label>
                 </div>
                 <hr>
                 <p class="big">Profile Options</p>
@@ -114,7 +124,7 @@
                         <div class="buttonDescription buttonDescriptionRight">
                             <label for="profileResetData">
                                 <p><b>Reset All Bridges</b></p>
-                                <p>Resets the Progress saved locally from the computer.</p>
+                                <p>Deletes the Progress saved locally from the computer.</p>
                                 <p class="big">Warning! This Action is non-reversable.</p>
                             </label>
                         </div>
@@ -125,10 +135,52 @@
             <div id="optionsDialogMenuStyling" class="blank">
                 <h2>Styling Options</h2>
                 <hr>
-                <div>
+                <div class="relative bottomMargin">
                     <p class="big noBottom">Color Schemes</p>
                     <div id="colorSchemes" class="flex flexCentered flexGap flexWrap generalDiv">
                         <!-- filled with js -->
+                    </div>
+                    <hr>
+                    <p class="big noTop">Additional Color Filters</p>
+                    <div>
+                        <input type="checkbox" id="invertColors" class="option menuButton">
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="invertColors">
+                                <p><b>Invert Colors?</b></p>
+                                <p>When <span class="booleanValue">true</span>, all colors are inverted.</p>
+                            </label>
+                        </div>
+                        <label for="invertColors">Invert Colors</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="turnContrastUp" class="option menuButton">
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="turnContrastUp">
+                                <p><b>Increase Contrast?</b></p>
+                                <p>When <span class="booleanValue">true</span>, all colors are easier to distinguish.</p>
+                            </label>
+                        </div>
+                        <label for="turnContrastUp">Increase Contrast</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="turnBrightnessUp" class="option menuButton">
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="turnBrightnessUp">
+                                <p><b>Increase Brightness?</b></p>
+                                <p>When <span class="booleanValue">true</span>, all colors are brighter.</p>
+                            </label>
+                        </div>
+                        <label for="turnBrightnessUp">Increase Brightness</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="turnSaturationUp" class="option menuButton">
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="turnSaturationUp">
+                                <p><b>Increase Saturation?</b></p>
+                                <p>When <span class="booleanValue">true</span>, all colors are more saturated.</p>
+                            </label>
+                        </div>
+                        <label for="turnSaturationUp">Increase Saturation</label>
                     </div>
                 </div>
             </div>
@@ -142,14 +194,6 @@
 </dialog>
 
 <dialog id="levelSelectorMenu" class="flex flexCentered flexColumn flexAlign" closed>
-    <div class="windowBase bottomMargin">
-        <div class="dialogMenu generalDiv gridMiddle">
-            <div class="relative flex flexCentered flexGap">
-                <button class="tabButton" onclick="switchOptionsDialogLevel('Level')">Level Selection</button>
-                <button class="tabButton" onclick="switchOptionsDialogLevel('Options')">Level Options</button>
-            </div>
-        </div>
-    </div>
     <div class="windowBase bottomMargin">
         <div>
             <div class="menuContainer">
@@ -175,37 +219,26 @@
                 </div>
             </div>
         </div>
-        <div class="windowCentralLight dialogMenu generalDiv">
-            <div id="optionsLevelSelectorLevel">
-                <h2>Level Selection</h2>
-                <hr class="noBottom">
-                <div id="levelSelectorInfo">
-                    <div class="flex">
-                        <div>
-                            <p class="noBottom big"><span id="levelSelectorSelectedLevelName"></span></p>
-                            <p class="small noTop">Implicit Difficulty: <span id="levelSelectorDifficulty" class="difficult emphasis"></span></p>
-                        </div>
-                        <div class="flexEnd">
-                            <p class="noBottom">Budget: <span class="big difficult emphasis"><span id="levelSelectorBugdetAmount"></span>€</span></p>
-                            <p class="small noTop end">Level #<span id="levelSelectorLevelNumber"></span></p>
-                        </div>
-                    </div>
-                    <hr class="noTop">
-                    <div class="grid2Wide">
-                        <div class="generalDiv flex flexCentered">
-                            <canvas id="levelSelectorCanvas" class="windowCentral" width="450" height="225"></canvas>
-                        </div>
-                        <div>
-                            <hr class="noBottom">
-                            <p id="levelSelectorDesc" class="center"></p>
-                        </div>
-                    </div>
+        <div id="levelSelectorInfo" class="generalDiv dialogMenu windowCentralLight">
+            <h2>Level Selection</h2>
+            <hr class="noBottom">
+            <div class="flex">
+                <div>
+                    <p class="noBottom big"><span id="levelSelectorSelectedLevelName"></span></p>
+                    <p class="small noTop">Level Difficulty: <span id="levelSelectorDifficulty" class="difficult emphasis"></span></p>
+                </div>
+                <div class="flexEnd">
+                    <p class="noBottom">Budget: <span class="big difficult emphasis"><span id="levelSelectorBugdetAmount"></span>€</span></p>
+                    <p class="small noTop end">Level #<span id="levelSelectorLevelNumber"></span></p>
                 </div>
             </div>
-
-            <div id="optionsLevelSelectorOptions" class="blank">
-                <h2>Level Options</h2>
-                <hr>
+            <hr class="noTop">
+            <div id="levelSelectorLevelProperties" class="generalDiv flex flexCentered relative">
+                <canvas id="levelSelectorCanvas" class="windowCentral" width="600" height="400"></canvas>
+                <div class="absolute absoluteCenter generalDiv backgroundTrans borderRadius">
+                    <p id="levelSelectorDesc" class="center"></p>
+                    <p class="center">Available Beams: <span id="levelSelectorBeams"></span></p>
+                </div>
             </div>
         </div>
         <div>
@@ -228,6 +261,55 @@
             </div>
         </div>
     </div>
+
+    <div class="windowBase bottomMargin">
+        <div>
+            <div class="menuContainer" id="autoSelectorLeft">
+                <button id="autoSelectorPreviousButton" class="menuButton borderRadiusTopLeft">&LeftTriangle;</button>
+                <div class="buttonDescription buttonDescriptionRight">
+                    <label for="autoSelectorPreviousButton">
+                        <p><b>Select the Previous Auto</b></p>
+                    </label>
+                </div>
+                <button id="autoSelectorFirstButton" class="menuButton borderRadiusBottomLeft">&LeftTriangleEqual;</button>
+                <div class="buttonDescription buttonDescriptionRight">
+                    <label for="autoSelectorFirstButton">
+                        <p><b>Select the First Auto</b></p>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="autoSelectorInfo" class="generalDiv dialogMenu windowCentralLight topMarginSmall">
+            <h2>Level Auto</h2>
+            <hr class="noBottom">
+            <div class="flex">
+                <div>
+                    <p id="optionsAutoSelectorName" class="noBottom big"></p>
+                    <p class="noTop small">Auto Difficulty: <span id="optionsAutoSelectorDifficulty" class="difficult emphasis"></span></p>
+                </div>
+                <div class="flexEnd">
+                    <p>Driven by: <span id="optionsAutoSelectorStig" class="big difficult emphasis"></span></p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="menuContainer" id="autoSelectorRight">
+                <button id="autoSelectorNextButton" class="menuButton borderRadiusTopRight">&RightTriangle;</button>
+                <div class="buttonDescription buttonDescriptionLeft">
+                    <label for="autoSelectorNextButton">
+                        <p><b>Select the Next Auto</b></p>
+                    </label>
+                </div>
+                <button id="autoSelectorLastButton" class="menuButton borderRadiusBottomRight">&RightTriangleEqual;</button>
+                <div class="buttonDescription buttonDescriptionLeft">
+                    <label for="autoSelectorLastButton">
+                        <p><b>Select the Last Auto</b></p>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="windowBase">
         <div class="dialogMenu generalDiv gridMiddle">
             <div class="relative">
@@ -235,9 +317,28 @@
                 <div class="buttonDescription buttonDescriptionTop">
                     <label for="playSelectedLevelButton">
                         <p><b>Play the Selected Level</b></p>
+                        <p class="big">Warning! Remember to Save any changes made to the Bridge as to not loose them.</p>
                     </label>
                 </div>
             </div>
+        </div>
+    </div>
+</dialog>
+
+<dialog id="winMenu" class="flex flexCentered flexColumn flexAlign inverted">
+    <div class="windowBase">
+        <div>
+            <div class="menuContainer">
+                <button id="winMenuCloseButton" class="menuButton borderRadiusTabLeft" autofocus>&times;</button>
+                <div class="buttonDescription buttonDescriptionLeft">
+                    <label for="winMenuCloseButton">
+                        <p><b>Stop Celebrating</b></p>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="windowCentralLight dialogMenu generalDiv">
+            <h1>You Won</h1>
         </div>
     </div>
 </dialog>
@@ -278,7 +379,7 @@
                 <p class="noTop">It's <b>M</b>ost(l)y <b>D</b>one <b>R</b>ight!</p>
             </header>
 
-            <div id="topMenuSimulationStarted" class="blank leftMarginSmall">
+            <div id="topMenuSimulationStarted" class="blank leftMarginSmall flex flexGap flexAlign">
                 <div class="grid2-2rem outline shadow">
                     <div class="relative">
                         <button id="topMenuSimulationStartedPause" class="menuButton borderRadiusTabLeft">⏸</button>
@@ -302,6 +403,39 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="outline shadow leftMarginSmall backgroundDark high flex flexAlign">
+                    <div class="relative generalDiv">
+                        <input id="topMenuSimulationStartedSpeedChange" class="otherButton" type="range" min="1" value="4" max="64" step="1" list="topMenuSimulationStartedSpeedChangePowers">
+                        <div class="buttonDescription buttonDescriptionTop">
+                            <label for="topMenuSimulationStartedSpeedChange">
+                                <p><b>Change the Simulation Speed</b></p>
+                                <p>Current Simulation Speed: <span class="emphasis"><span id="simulationSpeed">4</span>&times;</span></p>
+                                <p class="big">Warning! On higher speeds, the Simulation might need more resources that the Computer is able to provide, which can lead to Lag and/or increased latency between Simulation updates.</p>
+                            </label>
+                        </div>
+
+                        <datalist id="topMenuSimulationStartedSpeedChangePowers">
+                            <option value="1"></option>
+                            <option value="2"></option>
+                            <option value="4"></option>
+                            <option value="8"></option>
+                            <option value="16"></option>
+                            <option value="32"></option>
+                            <option value="64"></option>
+                        </datalist>
+                    </div>
+
+                    <div class="relative">
+                        <button id="topMenuSimulationStartedSpeedReset" class="menuButton borderRadiusTabRight">&times;</button>
+                        <div class="buttonDescription buttonDescriptionLeft">
+                            <label for="topMenuSimulationStartedSpeedReset">
+                                <p><b>Reset the Simulation Speed</b></p>
+                                <p>Resets Smulation Speed to <span class="emphasis">4&times;</span>.</p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="topMenuBudgetControlMenu" class="flexEnd shadow outline relative wide generalDiv background">
@@ -312,7 +446,7 @@
                         <label for="budgetControlProgress">
                             <p><b>Bridge Cost</b></p>
                             <p>The Bridge has to be built with it's cost smaller or equal to it's maximal Budget.</p>
-                            <p>To make sure the Budget is correct, click this bar.</p>
+                            <p class="small">To make sure the Budget is correct, click this bar.</p>
                             <p>Maximal Budget: <span class="emphasis"><span id="budgetControlMax"></span>€</span></p>
                         </label>
                     </div>
@@ -331,7 +465,7 @@
                         </label>
                     </div>
                 </div>
-    
+
                 <div id="levelSelectorButtonContainer" class="menuContainer">
                     <button id="levelSelectorOpenButton" class="menuButton borderRadiusTabLeft">#</button>
                     <div class="buttonDescription buttonDescriptionLeft">
@@ -341,10 +475,13 @@
                         </label>
                     </div>
                 </div>
-    
-                <div id="edgeSelectorButtonContainer" class="menuContainer">
-                    <!-- filled with js -->
+
+                <div class="menuContainer">
+                    <div id="edgeSelectorButtonContainer">
+                        <!-- filled with js -->
+                    </div>
                 </div>
+
             </div>
             <div>
                 <canvas id="canvasBridge" class="windowCentral" width="1200" height="800"></canvas>
@@ -357,7 +494,7 @@
                                 <label for="arrowMockupUpLeft">
                                     <p><b>Move Camera Up-Left</b></p>
                                     <p>Keybind: <kbd>⑦ Numpad 7</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -367,7 +504,7 @@
                                 <label for="arrowMockupUp">
                                     <p><b>Move Camera Up</b></p>
                                     <p>Keybinds:<br><kbd>w</kbd>, <kbd>k</kbd>,<br><kbd>↑ Arrow up</kbd>, <kbd>⑧ Numpad 8</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -377,7 +514,7 @@
                                 <label for="arrowMockupUpRight">
                                     <p><b>Move Camera Up-Right</b></p>
                                     <p>Keybind: <kbd>⑨ Numpad 9</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -388,7 +525,7 @@
                                 <label for="arrowMockupLeft">
                                     <p><b>Move Camera Left</b></p>
                                     <p>Keybinds:<br><kbd>a</kbd>, <kbd>h</kbd>,<br><kbd>→ Arrow left</kbd>, <kbd>④ Numpad 4</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -407,7 +544,7 @@
                                 <label for="arrowMockupRight">
                                     <p><b>Move Camera Right</b></p>
                                     <p>Keybinds:<br><kbd>d</kbd>, <kbd>l</kbd>,<br><kbd>← Arrow right</kbd>, <kbd>⑥ Numpad 6</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -418,7 +555,7 @@
                                 <label for="arrowMockupDownLeft">
                                     <p><b>Move Camera Down-Left</b></p>
                                     <p>Keybind: <kbd>① Numpad 1</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -428,7 +565,7 @@
                                 <label for="arrowMockupDown">
                                     <p><b>Move Camera Down</b></p>
                                     <p>Keybinds:<br><kbd>s</kbd>, <kbd>j</kbd>,<br><kbd>↓ Arrow down</kbd>, <kbd>② Numpad 2</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -438,7 +575,7 @@
                                 <label for="arrowMockupDownRight">
                                     <p><b>Move Camera Down-Right</b></p>
                                     <p>Keybind: <kbd>③ Numpad 3</kbd></p>
-                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                    <p class="small">(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
                                 </label>
                             </div>
                         </div>
@@ -483,6 +620,7 @@
                             <div class="buttonDescription buttonDescriptionLeft">
                                 <label for="messageLogClear">
                                     <p><b>Clear Message Log</b></p>
+                                    <p>Clears all sent Messages.</p>
                                 </label>
                             </div>
                         </div>
@@ -491,6 +629,7 @@
                             <div class="buttonDescription buttonDescriptionLeft">
                                 <label for="messageLogCopy">
                                     <p><b>Copy Message Log</b></p>
+                                    <p>Copies the entire Message Log to the System Clipboard.</p>
                                 </label>
                             </div>
                         </div>
@@ -541,7 +680,8 @@
                     <div class="buttonDescription buttonDescriptionRight">
                         <label for="canContinuousBuilding">
                             <p><b>Build Continuously?</b></p>
-                            <p>When <span class="booleanValue">true</span>, you build edges as a string of edges connected by vertices.<br>When <span class="booleanValue">false</span>, you build edges as pairs of vertices.</p>
+                            <p>When <span class="booleanValue">true</span>, you build edges as a string of edges connected by vertices.</p>
+                            <p>When <span class="booleanValue">false</span>, you build edges as pairs of vertices.</p>
                         </label>
                     </div>
     

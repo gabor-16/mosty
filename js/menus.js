@@ -51,19 +51,12 @@ function switchOptionsDialogMenu(tabId) {
     removeClass("optionsDialogMenu" + tabId, "blank")
 }
 
-function switchOptionsDialogLevel(tabId) {
-    addClass("optionsLevelSelectorLevel", "blank")
-    addClass("optionsLevelSelectorOptions", "blank")
-
-    removeClass("optionsLevelSelector" + tabId, "blank")
-
-    if (tabId == "Options") {
-        addAttribute("levelSelectorNextButton", "disabled")
-        addAttribute("levelSelectorLastButton", "disabled")
-        addAttribute("levelSelectorPreviousButton", "disabled")
-        addAttribute("levelSelectorFirstButton", "disabled")
+let win = toggleMenuWin
+function toggleMenuWin() {
+    if (toggleDialog("winMenu")) {
+        canUseKeyboardShortcuts = false
     } else {
-        displayLevelInfo()
+        canUseKeyboardShortcuts = true
     }
 }
 
