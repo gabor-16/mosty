@@ -1,6 +1,6 @@
 const l = console.log
 const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
-
+let car = new Car("Basic Car", "It's a normal car, it drives.", 1500, "../img/cars/samochodzik_2.png", "None", 1, [-350, -100], [0, 0], [], 0, [10, 0])
 
 
 // values come from the levels.
@@ -63,6 +63,7 @@ function loadBridge(localLoad = true) {
     let i = selectedLevel
     if (bridgeSave !== null && bridgeSave.levels[i].saveEdges.length > 0) {
         bridgeSelectedVertex   = null
+        previousPlayerSetPoint = null
         previousPlayerSetPoint = null
         bridgeVertices         = null
         bridgeEdges            = null
@@ -222,8 +223,8 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
 
     // draws the car
     // for now its called twice so the car will appear
-    drawCar(carsList[0].carModel)
-    drawCar(carsList[0].carModel)
+    car.drawCar()
+    car.carHitbox()
 }
 
 function drawVertex(x, y, type) {
