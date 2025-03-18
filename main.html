@@ -16,6 +16,7 @@
     <script defer src="js/canvas.js"></script>
     <script defer src="js/math.js"></script>
 
+    <script defer src="js/music.js"></script>
     <script defer src="js/tests.js"></script>
 </head>
 <body id="body">
@@ -28,8 +29,8 @@
     <div class="windowBase bottomMargin">
         <div class="dialogMenu generalDiv gridMiddle">
             <div class="relative flex flexCentered flexGap">
-                <button class="tabButton" onclick="switchOptionsDialogMenu('General')">General Options</button>
-                <button class="tabButton" onclick="switchOptionsDialogMenu('Styling')">Styling Options</button>
+                <button class="tabButton shadow" onclick="switchOptionsDialogMenu('General')">General Options</button>
+                <button class="tabButton shadow" onclick="switchOptionsDialogMenu('Styling')">Styling Options</button>
                 <!-- <button class="tabButton" onclick="switchOptionsDialogMenu('')"></button> -->
             </div>
         </div>
@@ -313,7 +314,7 @@
     <div class="windowBase">
         <div class="dialogMenu generalDiv gridMiddle">
             <div class="relative">
-                <button id="playSelectedLevelButton" class="tabButton gridWide">Play</button>
+                <button id="playSelectedLevelButton" class="tabButton gridWide shadow">Play</button>
                 <div class="buttonDescription buttonDescriptionTop">
                     <label for="playSelectedLevelButton">
                         <p><b>Play the Selected Level</b></p>
@@ -386,8 +387,8 @@
                         <div class="buttonDescription buttonDescriptionLeft">
                             <label for="topMenuSimulationStartedPause">
                                 <p><b>Pause the Simulation</b></p>
-                                <p>Keybind: <kbd>⇧ Shift</kbd> + <kbd>␣ Space</kbd></p>
                                 <p>The Simulation is <span id="simulationState" class="emphasis"></span>.</p>
+                                <p>Keybind: <kbd>⇧ Shift</kbd> + <kbd>␣ Space</kbd></p>
                             </label>
                         </div>
                     </div>
@@ -397,8 +398,8 @@
                         <div class="buttonDescription buttonDescriptionLeft">
                             <label for="topMenuSimulationStartedForward">
                                 <p><b>Forward the Simulation</b></p>
-                                <p>Keybind: <kbd>Control</kbd> + <kbd>␣ Space</kbd></p>
                                 <p>Current Simulation Tick: <span id="simulationTick" class="emphasis">0</span></p>
+                                <p>Keybind: <kbd>Control</kbd> + <kbd>␣ Space</kbd></p>
                             </label>
                         </div>
                     </div>
@@ -613,7 +614,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="messageContainer" class="floatLeft topMarginSmall">
+                <div id="messageContainer" class="floatLeft topMarginSmall rightMargin">
                     <div id="messageLogButtons" class="shadow outline grid2-2rem fitContent">
                         <div class="relative">
                             <button id="messageLogClear" class="menuButton borderRadiusTabLeft">&times;</button>
@@ -634,9 +635,75 @@
                             </div>
                         </div>
                     </div>
-                    <div id="messageLog" class="shadow outline topMarginSmall background">
+                    <div id="messageLog" class="shadow outline topMarginSmall background log">
                         <!-- filled by js -->
                     </div>
+                </div>
+                <div id="audioLog" class="floatLeft topMarginSmall background shadow outline log">
+                    <div class="flex">
+                        <div>
+                            <p class="noBottom noMargin"><span class="big emphasis" id="audioLogName"></span></p>
+                            <p class="small noMargin" id="audioLogAuthorContainer">(By <span class="emphasis" id="audioLogAuthor"></span>)</p>
+                        </div>
+                        <p class="small noMargin flexEnd">#<span id="audioLogNumber"></span></p>
+                    </div>
+
+                    <div class="high flex flexAlign outline shadow backgroundDark topMarginSmall">
+                        <div class="grid2-2rem">
+                            <div class="relative">
+                                <button id="audioLogPrevious" class="menuButton borderRadiusTabLeft">&LeftTriangle;</button>
+                                <div class="buttonDescription buttonDescriptionRight">
+                                    <label for="audioLogPrevious">
+                                        <p><b>Previous Song</b></p>
+                                        <p>Number of Songs that can be recalled is: <span id="audioLogMaxSongsNumber" class="emphasis"></span></p>
+                                        <p>Keybind: <kbd>,</kbd></p>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="relative">
+                                <button id="audioLogNext" class="menuButton borderRadiusTabRight">&RightTriangle;</button>
+                                <div class="buttonDescription buttonDescriptionRight">
+                                    <label for="audioLogNext">
+                                        <p><b>Next Song</b></p>
+                                        <p>Keybind: <kbd>.</kbd></p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative width high">
+                            <audio class="flexGrow" id="audioLogMusic" src="mus/loop beepbox FM expert layered.mp3" controls></audio>
+                            <div class="buttonDescription buttonDescriptionTop">
+                                <label for="audioLogMusic">
+                                    <p><b>Change the Simulation Speed</b></p>
+                                    <p>Current Simulation Speed: <span class="emphasis"><span id="simulationSpeed">4</span>&times;</span></p>
+                                    <p class="big">Warning! On higher speeds, the Simulation might need more resources that the Computer is able to provide, which can lead to Lag and/or increased latency between Simulation updates.</p>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="relative flexEnd">
+                            <input type="checkbox" id="autoplayMusic" class="menuButton">
+                            <div class="buttonDescription buttonDescriptionRight">
+                                <label for="autoplayMusic">
+                                    <p><b>Autoplay Music</b></p>
+                                    <p>Starts playing Music automatically after a restart.</p>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="relative flexEnd">
+                            <input type="checkbox" id="shouldMusicLoop" class="menuButton">
+                            <div class="buttonDescription buttonDescriptionRight">
+                                <label for="shouldMusicLoop">
+                                    <p><b>Loop Current Song</b></p>
+                                    <p>Plays the same Song until stopped.<br>(It is possible for a Song to play a few times in a row simply because of the way the Songs are chosen).</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Filled with js -->
                 </div>
             </div>
             <div id="rightMenu">

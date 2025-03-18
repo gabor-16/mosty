@@ -230,8 +230,9 @@ function addPhysical(x, y, type, objectName) {
     switch (type) {
         case "auto": {
             let objectSize = autosList[objectName].size
+            let objectPoints = autosList[objectName].points
 
-            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0]])
+            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0], 0, objectPoints])
             break
         }
 
@@ -246,10 +247,13 @@ function drawPhysical(physicalObject) {
 
             switch (car.name) {
                 case "Bicycle": {
-                    setCanvasFillColor("black")
                     setCanvasStrokeWidth(0)
-                    drawRect(physicalObject[0] - (car.size[0] / 2), physicalObject[1] - (car.size[1] / 2), car.size[0], car.size[1])
+                    setCanvasFillColor("black")
+                    drawPolygon(arrayOfVectorsAddVector(car.points, [physicalObject[0], physicalObject[1]]))
+                    ctx.fill()
 
+                    setCanvasFillColor("white")
+                    drawText(physicalObject[0], physicalObject[1], "Bicykl", "center")
                     break;
                 }
 
@@ -258,9 +262,28 @@ function drawPhysical(physicalObject) {
 
             break
         }
+
+        case "shape": {
+            switch (physicalObject[3]) {
+                case "polygon": {
+                    setCanvasFillColor(physicalObject[1])
+                    drawPolygon(physicalObject[6])
+                    ctx.fill()
+
+                    break
+                }
+
+                default: {break}
+            }
+
+            break
+        }
+
+        default: {break}
     }
 }
 
+let maxCarDistanceFromCenter = 10000
 function simulatePhysicals() {
     for (let i = 0; i < bridgePhysicals.length; i++) {
         let p = bridgePhysicals[i]
@@ -275,6 +298,13 @@ function simulatePhysicals() {
                 let updatedPosition = vectorAdd([p[0], p[1]], vectorMul(deltaTime, p[4]))
                 p[0] = updatedPosition[0]
                 p[1] = updatedPosition[1]
+
+                // if the car is gone, stop the simulation
+                if (vectorLength([p[0], p[1]] > maxCarDistanceFromCenter)) {
+                    stopSimulating()
+
+                    sendMessage(true, "carLost")
+                }
             }
 
             default: {break}
@@ -282,9 +312,37 @@ function simulatePhysicals() {
 
 
 
-        // TODO: SIMULATE PHYSICAL'S PHYSICS
+        // SIMULATE PHYSICAL'S PHYSICS
+        // check for collisions, and then make them not colliding
 
+        let poly0
+        switch (physicalType) {
+            case "auto": {
+                poly0 = arrayOfVectorsAddVector(p[6], [p[0], p[1]])
+                break
+            }
 
+            default: {break}
+        }
 
+        if (poly0) { // if the polygon is set
+            // collisions with other physicals
+            for (let j = 0; j < bridgePhysicals.length; j++) {
+                if (j !== i) {
+                    doPolygonsCollide(poly0, bridgePhysicals[j][6])
+                }
+            }
+
+            // collisions with the bridge
+            for (let j = 0; j < bridgeEdges.length; j++) {
+                let e = bridgeEdges[i]
+    
+                let v0 = bridgeVertices[e[0]]
+                let v1 = bridgeVertices[e[1]]
+    
+                let edgePoints = [[v0[0], v0[1]], [v1[0], v1[1]]]
+                doPolygonsCollide(poly0, edgePoints)
+            }
+        }
     }
 }

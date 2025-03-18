@@ -20,7 +20,9 @@ let bridgeObjects = [ // a list of objects that have an inpact on the level look
 ]
 
 let bridgePhysicals = [ // a list of all physical objects, such as autos
-    // [x, y, object type, object name, velocity [vx, vy]]
+    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points]
+    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points, [centerX, centerY, maxRadius]]
+    // shapes: [, fill color, object type, object name, , , points]
 ]
 
 
@@ -119,25 +121,6 @@ function resetBridge(localSave = true) {
 
 
 
-
-// based on the two upper arrays, makes a bridgeConnections array:
-// let bridgeConnections = [
-//     // index for a point is equal in bridgeConnections and bridgeVertices, the values are arrays representing the indices of points in bridgeVertices who share a connection via the bridgeEdges
-//     [1, 2],
-//     [0, 2],
-//     [0, 1],
-// ] // above is the example for a graph of a triangle (0 is connected to 1 and 2, 1 is connected to 0 and 2, 2, is connected to 0 and 1)
-function makeBridgeConnections(edgesArray = bridgeEdges) {
-    for (let i = 0; i < edgesArray.length; i++) {
-        let e = edgesArray[i]
-
-        // Both vertices are connected to each other via the edge
-        addBridgeConnection(e[0], e[1])
-        addBridgeConnection(e[1], e[0])
-    }
-}
-
-
 // //////////////////////////////////////////////////////////////////////
 // DRAWING THE GAME
 // //////////////////////////////////////////////////////////////////////
@@ -217,6 +200,13 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
         drawGrid()
     }
 
+    // draw physical objects
+    for (let i = 0; i < bridgePhysicals.length; i++) {
+        let p = bridgePhysicals[i]
+
+        drawPhysical(p)
+    }
+
     // draw edges
     for (let i = 0; i < edgesArray.length; i++) {
         let e = edgesArray[i]
@@ -233,13 +223,6 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
         ctx.beginPath()
         drawVertex(v[0], v[1], v[2])
         ctx.fill()
-    }
-
-    // draw physical objects
-    for (let i = 0; i < bridgePhysicals.length; i++) {
-        let p = bridgePhysicals[i]
-
-        drawPhysical(p)
     }
 
     // draw selected vertex
@@ -380,11 +363,7 @@ function setSelectedEdgeButton(edgeType) {
 function drawObject(o) {
     switch (o[0]) {
         case "p": { // polygon
-            ctx.beginPath()
-            for (let i = 0; i < o[2].length; i++) {
-                ctx.lineTo(o[2][i][0], o[2][i][1])
-            }
-            ctx.closePath()
+            drawPolygon(o[2])
             break
         }
 
@@ -695,6 +674,8 @@ function setPlayerPoint(x, y) {
             // no previous point
 
             if (!playerCanMakeRandomVertices) {
+                sendMessage(true, "cantMakeVertex")
+
                 return null
             } else {
                 previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
@@ -956,6 +937,9 @@ window.onload = function() {
     document.getElementById("turnBrightnessUp").addEventListener("click", applyStyles)
     document.getElementById("turnSaturationUp").addEventListener("click", applyStyles)
 
+    document.getElementById("audioLogNext").addEventListener("click", nextMusicFromList)
+    document.getElementById("audioLogPrevious").addEventListener("click", previousMusicFromList)
+
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
     document.getElementById("optionsMenuCloseButton").addEventListener("click", toggleMenuOptions)
@@ -977,6 +961,9 @@ window.onload = function() {
 
     document.getElementById("profileName").addEventListener("change", setProfileName)
 
+    document.getElementById("shouldMusicLoop").addEventListener("click", setLoopMusic)
+    document.getElementById("autoplayMusic").addEventListener("click", setAutoplayMusic)
+
 
 
     setInterval(gameLoop, tickTime * 1000)
@@ -994,7 +981,6 @@ window.onload = function() {
     sendMessage(true, "welcome")
 
     setCurrentLevel(0)
-    drawBridge()
 
     listStyles()
     displayLevelInfo(selectedLevel)
@@ -1034,6 +1020,17 @@ window.onkeyup = (event) => {
 
             case "c": {
                 scaleCanvasDown()
+                break;
+            }
+
+            // music
+            case ",": {
+                previousMusicFromList()
+                break;
+            }
+
+            case ".": {
+                nextMusicFromList()
                 break;
             }
 

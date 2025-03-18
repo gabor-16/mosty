@@ -21,6 +21,14 @@ let autosList = {
         // other properties like speed, weight, size, etc.
         speed: 5, // m/s
         size: [200, 200], // [width, height]
+        points: [
+            [80, -100],
+            [-80, -100],
+            [-100, 50],
+            [-80, 100],
+            [80, 100],
+            [100, 50],
+        ],
         mass: 6, // kg
     },
 
@@ -146,8 +154,8 @@ let levelsList = [
 
         cameraScale: 1,
         cameraPosition: [0, 0],
-        autoStartPosition: [-384, 16],
-        autoEndPosition: [384, 16],
+        autoStartPosition: [-384, 0],
+        autoEndPosition: [384, 0],
         // gravity: [0, -9.807],
         // gravity: gravityEarth,
         gravity: gravityEarth,
@@ -168,7 +176,7 @@ let levelsList = [
 
         ],
         objects: [
-            // all non-moving objects have simillar structure:
+            // all of the decoration objects have simillar structure:
             // [type, color & drawing options, parameteres]
 
             // color & drawing options:
@@ -187,7 +195,9 @@ let levelsList = [
             // ["e", ["gray", 2, "gray"], [0, -10000000000, 10000000000, 10000000000]], // the rendering breaks for very large values and coordinates
         ],
         physicals: [
-
+            // used for just AND ONLY colliding things, the properties' order is confusing, I know, I'm sorry, I was sad when making these
+            [null, "gray", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
+            [null, "gray", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
         ],
     },
 
@@ -441,8 +451,8 @@ function listBeams(levelId) {
     let beamLengths = levelsList[levelId].maxEdgesAmount
     for (let i = 0; i < allBeams.length; i++) {
         let b = edgeProperties[allBeams[i]].name
-        
-        let maxAmount = beamLengths[i]
+
+        let maxAmount = beamLengths && beamLengths[i] || Infinity
         if (maxAmount == Infinity) {
             maxAmount = "&infin;"
         }

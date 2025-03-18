@@ -204,6 +204,22 @@ function drawEllipse(x, y, rx, ry, angle) {
     ctx.ellipse(x, y, rx, ry, angle, 0, 2 * π)
 }
 
+function drawText(x, y, text, align = "center", font = "48px sans-serif") {
+    ctx.textAlign = align
+    ctx.font = font
+
+    ctx.transform(1, 0, 0, -1, 0, 0)
+    ctx.fillText(text, x, -y)
+    ctx.transform(1, 0, 0, -1, 0, 0)
+}
+
+function drawPolygon(points) {
+    ctx.beginPath()
+    for (let i = 0; i < points.length; i++) {
+        ctx.lineTo(points[i][0], points[i][1])
+    }
+    ctx.closePath()
+}
 
 
 // Continious versions of some of the above functions:

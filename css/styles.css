@@ -211,6 +211,13 @@ input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb
 
 /* input[type="range"]:hover::-webkit-slider-thumb, input[type="range"]:hover::-moz-range-thumb {} */
 
+audio {
+    height: 2rem;
+    width: 100%;
+
+    border-radius: var(--border-radius);
+}
+
 progress {
     height: 1rem;
     width: 100%;
@@ -299,11 +306,6 @@ ul, ol {
     aspect-ratio: 3 / 2;
 }
 
-#messageLog {
-    width: 32rem;
-    padding: 0.5rem;
-}
-
 #topMenuBudgetControlMenu {
     height: 4rem;
 }
@@ -317,6 +319,15 @@ ul, ol {
 /* ////////////////////////////////////////////////////////////////////// */
 /* CLASSes */
 /* ////////////////////////////////////////////////////////////////////// */
+
+.log {
+    width: 32rem;
+    padding: 0.5rem;
+}
+
+.noMargin {
+    margin: 0;
+}
 
 .inverted {
     filter: invert(1);
@@ -407,8 +418,12 @@ ul, ol {
     gap: 0.25rem;
 }
 
-.fleRow {
+.flexRow {
     flex-direction: row;
+}
+
+.flexGrow {
+    flex-grow: 2;
 }
 
 .flexColumn {
@@ -509,6 +524,10 @@ ul, ol {
     display: block;
 }
 
+.width {
+    width: 100%;
+}
+
 .borderRadius {
     border-radius: var(--border-radius);
 }
@@ -576,6 +595,10 @@ ul, ol {
 
 .noBottom {
     margin-bottom: 0;
+}
+
+.noLeft {
+    margin-left: 0;
 }
 
 .end {
