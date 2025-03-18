@@ -6,7 +6,7 @@ let carsList = [
         weight: 1, // in tons
         carModel: "../img/cars/samochodzik_2.png", // put here model of the car
         specialQuirk: "None", // diffrent cars may have special properties, maybe ???
-        speed: 10, // diffrent cars can have diffrent speeds
+        speed: [10, 0], // diffrent cars can have diffrent speeds
         vertex: [0, 0], // cars verticle position
         velocity: [0,0],
         hitboxes: [[], []], // cords for polygon making the hitbox
@@ -17,7 +17,7 @@ let carsList = [
         weight: 1,
         carModel: "../img/cars/pojazd.png",
         specialQuirk: "Ery nice",
-        speed: 5,
+        speed: [5, 0],
         vertex: [-50, -50],
         velocity: [0,0],
         hitboxes: [[], []],
@@ -30,12 +30,12 @@ function addCarVertex(x, y, vertexArray = carsList[0].vertex) {
 
 // FIXME: you have to call this thing twice for it to work, idk why, the car sometimes appears sometimes not, hard to find the cause
 // TODO: make the car reappear at default cords when simulation ends
-function drawCar(source, loadedCar) {
+function drawCar(source, selectedCar) {
     const img = new Image()
     img.src = source
     ctx.save()
     ctx.scale(1, -1)
-    ctx.drawImage(img, carsList[loadedCar].vertex[0], carsList[loadedCar].vertex[1], 80, 80)
+    ctx.drawImage(img, carsList[selectedCar].vertex[0], carsList[selectedCar].vertex[1], 80, 80)
     ctx.restore()
     bridgeHasChanged = true
 }
@@ -46,9 +46,14 @@ function rectangleTest() {
 // can change it to cars speed for drifting properties
 let carGravityValue = [0,1]
 // gravity for car, cars y is reversed since the whole canvases y is reversed
+// TODO: Make collision change behavior
 function carGravity(v = carsList, loadedCar) {
     // l(v[0].vertex) //for testing
     carGravityValue[1] = carsList[loadedCar].weight * gravityValue[1]
-    v[loadedCar].velocity = vectorAddReverse(v[0].velocity, vectorMul(deltaTime, carGravityValue))
-    v[loadedCar].vertex = vectorAdd(v[0].vertex, v[0].velocity)
+    v[loadedCar].velocity = vectorAddReverse(v[loadedCar].velocity, vectorMul(deltaTime, carGravityValue))
+    v[loadedCar].vertex = vectorAdd(v[loadedCar].vertex, v[loadedCar].velocity)
+}
+// makes car go forward
+function carDrive(v = carsList, loadedCar) {
+    v[loadedCar].vertex = vectorAdd(v[loadedCar].vertex, v[loadedCar].speed)
 }

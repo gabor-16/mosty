@@ -221,7 +221,7 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     }
 
     // draws the car
-    // for now its called twice so the car will appear
+    // FIXME: sometimes it doesnt draw the car
     drawCar(carsList[0].carModel, 0)
     
 }
