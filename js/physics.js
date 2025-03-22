@@ -36,9 +36,6 @@ function stopSimulating() {
     isSimulating = false
     isSimulationPaused = true
     toggleSimulationPause()
-    car.position = [-350, -100]
-    car.velocity = [0, 0]
-    car.speed = 0
 }
 
 function toggleSimulating() {
@@ -149,18 +146,6 @@ function simulateBridge() {
         }
 
         deltaPositions = []
-        car.carGravity(deltaTime)
-        car.moveCar(deltaTime)
-        // car.carMoveForward(deltaTime)
-        
-        car.carCollisionResolution(levelsList[0].objects[0][2])
-        car.carCollisionResolution(levelsList[0].objects[1][2])
-        for(let i = 0; i < bridgeEdges.length; i++) {
-            car.carCollisionResolution([[bridgeVertices[bridgeEdges[i][0]][0], bridgeVertices[bridgeEdges[i][0]][1]], [bridgeVertices[bridgeEdges[i][1]][0], bridgeVertices[bridgeEdges[i][1]][1]]])
-        }
-        
-        
-
     }
 
 
