@@ -140,8 +140,6 @@ function simulateBridge() {
         
         car.carCollisionResolution(levelsList[0].objects[0][2])
         car.carCollisionResolution(levelsList[0].objects[1][2])
-        l(car.velocity)
-        l(car.position)
         for(let i = 0; i < bridgeEdges.length; i++) {
             car.carCollisionResolution([[bridgeVertices[bridgeEdges[i][0]][0], bridgeVertices[bridgeEdges[i][0]][1]], [bridgeVertices[bridgeEdges[i][1]][0], bridgeVertices[bridgeEdges[i][1]][1]]])
         }

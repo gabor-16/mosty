@@ -1,6 +1,6 @@
 const l = console.log
 const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
-let car = new Car("Basic Car", "It's a normal car, it drives.", 1500, "../img/cars/samochodzik_2.png", "None", 1, [-350, -100], [0, 0], [], 0, [10, 0])
+let car = new Car("Basic Car", "It's a normal car, it drives.", 1500, "../img/cars/samochodzik_2.png", "None", 1, [-350, -100], [0, 0], [], 0, [60, 0])
 
 
 // values come from the levels.
