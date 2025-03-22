@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" id="html" colorScheme="Blueprint">
+<html lang="en" id="html" colorScheme="Blueprint" class="background backgroundImage">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Mosty</title>
+    <title>Most(l)y Done</title>
 
     <link type="image/x-icon"   rel="icon"          href="img/fav.svg">
     <link type="text/css"       rel="stylesheet"    href="css/styles.css">
 
+    <script defer src="js/cars.js"></script>
+    <script defer src="js/physics.js"></script>
     <script defer src="js/bridges.js"></script> <!-- the main file -->
     <script defer src="js/levels.js"></script>
     <script defer src="js/menus.js"></script>
@@ -23,7 +25,7 @@
 
 
 
-<dialog id="optionsMenu" class="flex flexCentered flexColumn flexAlign">
+<dialog id="optionsMenu" class="flex flexCentered flexColumn flexAlign" closed>
     <div class="windowBase bottomMargin">
         <div class="dialogMenu generalDiv gridMiddle">
             <div class="relative flex flexCentered flexGap">
@@ -62,10 +64,62 @@
                     <div class="buttonDescription buttonDescriptionLeft">
                         <label for="showGrid">
                             <p><b>Show Grid when Aligning?</b></p>
-                            <p>When <span class="booleanValue">true</span>, shows Grid when Aligning to it.</p>
+                            <p>When <span class="booleanValue">true</span>, displays a Grid when Align to Grid is <span class="booleanValue">true</span>.</p>
                         </label>
                     </div>
                     <label for="showArrowset">Show Grid</label>
+                </div>
+                <hr>
+                <p class="big">Profile Options</p>
+                <div class="relative bottomMargin generalDiv flex flexGap">
+                    <div id="profileDataControl" class="grid2-2rem">
+                        <div class="relative">
+                            <button id="profileSaveData" class="menuButton borderRadiusTabLeft">&UpArrowBar;</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="profileSaveData">
+                                    <p><b>Save Bridges</b></p>
+                                    <p>Saves the Progress locally, on the computer, using the Local Storage.</p>
+                                    <p class="small">
+                                        To delete that data, go to the Developer Tools (press <kbd>F12</kbd>), go to the Storage Tab, and in the Local Storage the data is saved as<br>
+                                        <span class="emphasis">bridgesSave<span id="profileSaveDataName"></span></span>.
+                                    </p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="profileLoadData" class="menuButton borderRadiusTabRight">&DownArrowBar;</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="profileLoadData">
+                                    <p><b>Load Bridges</b></p>
+                                    <p>Loads the Progress locally, from the computer, using the Local Storage.</p>
+                                    <p class="small">
+                                        To delete that data, go to the Developer Tools (press <kbd>F12</kbd>), go to the Storage Tab, and in the Local Storage the data is saved as<br>
+                                        <span class="emphasis">bridgesSave<span id="profileLoadDataName"></span></span>.
+                                    </p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="text" id="profileName" class="option menuButton" placeholder="Profile Name">
+                    <div class="buttonDescription buttonDescriptionTop">
+                        <label for="profileName">
+                            <p><b>Your Profile Name</b></p>
+                            <p>Sets the Savefile's Name.</p>
+                            <p>Value: <span id="profileNameValue" class="emphasis"></span></p>
+                        </label>
+                    </div>
+
+                    <div class="relative">
+                        <button id="profileResetData" class="menuButton borderRadius">&times;</button>
+                        <div class="buttonDescription buttonDescriptionRight">
+                            <label for="profileResetData">
+                                <p><b>Reset All Bridges</b></p>
+                                <p>Resets the Progress saved locally from the computer.</p>
+                                <p class="big">Warning! This Action is non-reversable.</p>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -88,7 +142,7 @@
     </div>
 </dialog>
 
-<dialog id="levelSelectorMenu" class="flex flexCentered flexColumn flexAlign">
+<dialog id="levelSelectorMenu" class="flex flexCentered flexColumn flexAlign" closed>
     <div class="windowBase bottomMargin">
         <div class="dialogMenu generalDiv gridMiddle">
             <div class="relative flex flexCentered flexGap">
@@ -182,7 +236,6 @@
                 <div class="buttonDescription buttonDescriptionTop">
                     <label for="playSelectedLevelButton">
                         <p><b>Play the Selected Level</b></p>
-                        <!-- <p>Keybind: <kbd>`</kbd></p> -->
                     </label>
                 </div>
             </div>
@@ -194,242 +247,312 @@
 
 </div>
 <!-- /////////////////////////////////////////////////////////////////////////////////////////////// -->
-<div id="gameWindows" class="background">
+<div id="gameWindows" class="background backgroundImage">
 
 
 
 <div id="gameContainer" class="flex flexCentered">
-    <div id="mainGame" class="windowBase">
-        <div id="leftMenu">
-            <div id="optionsMenuButtonContainer" class="menuContainer">
-                <button id="optionsMenuOpenButton" class="menuButton borderRadiusTabLeft">&equiv;</button>
-                <div class="buttonDescription buttonDescriptionLeft">
-                    <label for="optionsMenuOpenButton">
-                        <p><b>Open the Options Menu</b></p>
-                        <p>Keybind: <kbd>`</kbd></p>
+    <div>
+        <div id="topMenu" class="topMenu flex flexAlign flexGap">
+            <div id="topMenuStartSimulationContainer" class="fitContent relative">
+                <button id="topMenuStartSimulation" class="menuButton borderRadius bigButton outline shadow" autofocus>▶</button>
+                <div class="buttonDescription buttonDescriptionLeftBig">
+                    <label for="topMenuStartSimulation">
+                        <p><b>Start the Simulation</b></p>
+                        <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
             </div>
 
-            <div id="levelSelectorButtonContainer" class="menuContainer">
-                <button id="levelSelectorOpenButton" class="menuButton borderRadiusTabLeft">#</button>
-                <div class="buttonDescription buttonDescriptionLeft">
-                    <label for="levelSelectorOpenButton">
-                        <p><b>Open the Level Selector</b></p>
-                        <p>Keybind: <kbd>Q</kbd></p>
+            <div id="topMenuStopSimulationContainer" class="fitContent relative blank">
+                <button id="topMenuStopSimulation" class="menuButton borderRadius bigButton outline shadow">⏹</button>
+                <div class="buttonDescription buttonDescriptionLeftBig">
+                    <label for="topMenuStopSimulation">
+                        <p><b>Stop the Simulation</b></p>
+                        <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
             </div>
 
-            <div id="edgeSelectorButtonContainer" class="menuContainer">
-                <!-- filled with js -->
-            </div>
-        </div>
-        <div>
-            <canvas id="canvasBridge" class="windowCentral" width="1200" height="800"></canvas>
-            <div></div>
-            <div id="arrowMockupContainer" class="floatLeft rightMargin">
-                <div id="arrowMockup" class="shadow outline grid3-2rem topMarginSmall">
+            <header id="topMenuSimulationStopped" class="bigButtonHeight">
+                <h1 class="noBottom">Bridges for MSC⁵</h1>
+                <p class="noTop">It's <b>M</b>ost(l)y <b>D</b>one <b>R</b>ight!</p>
+            </header>
+
+            <div id="topMenuSimulationStarted" class="blank leftMarginSmall">
+                <div class="grid2-2rem outline shadow">
                     <div class="relative">
-                        <button id="arrowMockupUpLeft" class="menuButton borderRadiusTopLeft" onclick="move('ul')">↖</button>
+                        <button id="topMenuSimulationStartedPause" class="menuButton borderRadiusTabLeft">⏸</button>
                         <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupUpLeft">
-                                <p><b>Move Camera Up-Left</b></p>
-                                <p>Keybind: <kbd>⑦ Numpad 7</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                            <label for="topMenuSimulationStartedPause">
+                                <p><b>Pause the Simulation</b></p>
+                                <p>Keybind: <kbd>⇧ Shift</kbd> + <kbd>␣ Space</kbd></p>
+                                <p>The Simulation is <span id="simulationState" class="emphasis"></span>.</p>
                             </label>
                         </div>
                     </div>
+
                     <div class="relative">
-                        <button id="arrowMockupUp" class="menuButton" onclick="move('u')">↑</button>
+                        <button id="topMenuSimulationStartedForward" class="menuButton borderRadiusTabRight">⏩︎</button>
                         <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupUp">
-                                <p><b>Move Camera Up</b></p>
-                                <p>Keybinds:<br><kbd>w</kbd>, <kbd>k</kbd>,<br><kbd>↑ Arrow up</kbd>, <kbd>⑧ Numpad 8</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="arrowMockupUpRight" class="menuButton borderRadiusTopRight" onclick="move('ur')">↗</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupUpRight">
-                                <p><b>Move Camera Up-Right</b></p>
-                                <p>Keybind: <kbd>⑨ Numpad 9</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-    
-                    <div class="relative">
-                        <button id="arrowMockupLeft" class="menuButton" onclick="move('l')">←</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupLeft">
-                                <p><b>Move Camera Left</b></p>
-                                <p>Keybinds:<br><kbd>a</kbd>, <kbd>h</kbd>,<br><kbd>→ Arrow left</kbd>, <kbd>④ Numpad 4</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="arrowMockupZero" class="menuButton" onclick="move('0')">·</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupZero">
-                                <p><b>Reset Camera</b></p>
-                                <p>Keybinds:<br><kbd>⓪ Numpad 0</kbd>, <kbd>⑤ Numpad 5</kbd></p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="arrowMockupRight" class="menuButton" onclick="move('r')">→</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupRight">
-                                <p><b>Move Camera Right</b></p>
-                                <p>Keybinds:<br><kbd>d</kbd>, <kbd>l</kbd>,<br><kbd>← Arrow right</kbd>, <kbd>⑥ Numpad 6</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-    
-                    <div class="relative">
-                        <button id="arrowMockupDownLeft" class="menuButton borderRadiusBottomLeft" onclick="move('dl')">↙</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupDownLeft">
-                                <p><b>Move Camera Down-Left</b></p>
-                                <p>Keybind: <kbd>① Numpad 1</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="arrowMockupDown" class="menuButton" onclick="move('d')">↓</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupDown">
-                                <p><b>Move Camera Down</b></p>
-                                <p>Keybinds:<br><kbd>s</kbd>, <kbd>j</kbd>,<br><kbd>↓ Arrow down</kbd>, <kbd>② Numpad 2</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="arrowMockupDownRight" class="menuButton borderRadiusBottomRight" onclick="move('dr')">↘</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="arrowMockupDownRight">
-                                <p><b>Move Camera Down-Right</b></p>
-                                <p>Keybind: <kbd>③ Numpad 3</kbd></p>
-                                <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div id="scaleControlButtons" class="shadow outline grid3-2rem topMarginSmall">
-                    <div class="relative">
-                        <button id="scaleControlUp" class="menuButton borderRadiusTabLeft">+</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="scaleControlUp">
-                                <p><b>Enlarge Objects</b></p>
-                                <p>Scale Camera View by 0.5 Times</p>
-                                <p>Keybind: <kbd>z</kbd></p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="scaleControlZero" class="menuButton">0</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="scaleControlZero">
-                                <p><b>Reset Camera View</b></p>
-                                <p>Resets the Camera View to it's original size.</p>
-                                <p>Keybinds: <kbd>⓪ Numpad 0</kbd>, <kbd>x</kbd></p>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="scaleControlDown" class="menuButton borderRadiusTabRight">-</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="scaleControlDown">
-                                <p><b>Shrink Objects</b></p>
-                                <p>Scale Camera View by 2 Times</p>
-                                <p>Keybind: <kbd>c</kbd></p>
+                            <label for="topMenuSimulationStartedForward">
+                                <p><b>Forward the Simulation</b></p>
+                                <p>Keybind: <kbd>Control</kbd> + <kbd>␣ Space</kbd></p>
+                                <p>Current Simulation Tick: <span id="simulationTick" class="emphasis">0</span></p>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="messageContainer" class="floatLeft topMarginSmall">
-                <div id="messageLogButtons" class="shadow outline grid2-2rem fitContent">
-                    <div class="relative">
-                        <button id="messageLogClear" class="menuButton borderRadiusTabLeft">&times;</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="messageLogClear">
-                                <p><b>Clear Message Log</b></p>
-                            </label>
-                        </div>
+
+            <div id="topMenuBudgetControlMenu" class="flexEnd shadow outline relative wide generalDiv background">
+                <p class="noBottom center"><span class="big emphasis"><span id="budgetControlAmount"></span>€</span></p>
+                <div class="margin relative">
+                    <progress value="0" max="0" id="budgetControlProgress" class="otherButton"></progress>
+                    <div class="buttonDescription buttonDescriptionTop">
+                        <label for="budgetControlProgress">
+                            <p><b>Bridge Cost</b></p>
+                            <p>The Bridge has to be built with it's cost smaller or equal to it's maximal Budget.</p>
+                            <p>To make sure the Budget is correct, click this bar.</p>
+                            <p>Maximal Budget: <span class="emphasis"><span id="budgetControlMax"></span>€</span></p>
+                        </label>
                     </div>
-                    <div class="relative">
-                        <button id="messageLogCopy" class="menuButton borderRadiusTabRight">c</button>
-                        <div class="buttonDescription buttonDescriptionLeft">
-                            <label for="messageLogCopy">
-                                <p><b>Copy Message Log</b></p>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div id="messageLog" class="shadow outline topMarginSmall">
-                    <!-- filled by js -->
                 </div>
             </div>
         </div>
-        <div id="rightMenu">
-            <div id="bridgeModifiersContainer" class="menuContainer">
-                <button id="deletePointButton" class="menuButton borderRadiusTopRight">&olcross;</button>
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="deletePointButton">
-                        <p><b>Delete Selected Vertex</b></p>
-                        <p>Deletes currently selected vertex,together with all of its connected edges.</p>
-                        <p>Keybind: <kbd>Delete</kbd></p>
-                    </label>
-                </div>
 
-                <button id="unselectPointButton" class="menuButton">&xcirc;</button>
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="unselectPointButton">
-                        <p><b>Unselect Selected Vertex</b></p>
-                        <p>Gets rid of the selection around the current vertex.</p>
-                        <p>Keybind: <kbd>⌫ Backspace</kbd></p>
-                    </label>
+        <div id="mainGame" class="windowBase">
+            <div id="leftMenu">
+                <div id="optionsMenuButtonContainer" class="menuContainer">
+                    <button id="optionsMenuOpenButton" class="menuButton borderRadiusTabLeft">&equiv;</button>
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="optionsMenuOpenButton">
+                            <p><b>Open the Options Menu</b></p>
+                            <p>Keybind: <kbd>`</kbd></p>
+                        </label>
+                    </div>
                 </div>
-
-                <button id="selectLastVertex" class="menuButton borderRadiusBottomRight">&ofcir;</button>
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="selectLastVertex">
-                        <p><b>Select Last Vertex</b></p>
-                        <p>Selects Last Vertex from the Vertices List.<br>(Might not match with the vertex creation sequence).</p>
-                        <p>Keybind: <kbd>↵ Enter</kbd></p>
-                    </label>
+    
+                <div id="levelSelectorButtonContainer" class="menuContainer">
+                    <button id="levelSelectorOpenButton" class="menuButton borderRadiusTabLeft">#</button>
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="levelSelectorOpenButton">
+                            <p><b>Open the Level Selector</b></p>
+                            <p>Keybind: <kbd>Q</kbd></p>
+                        </label>
+                    </div>
                 </div>
-
-                <input type="checkbox" id="canDeleteEdges" class="menuButton" checked>
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="canDeleteEdges">
-                        <p><b>Delete Edges?</b></p>
-                        <p>When <span class="booleanValue">true</span>, you are able to delete edges by clicking on their vertices.</p>
-                    </label>
+    
+                <div id="edgeSelectorButtonContainer" class="menuContainer">
+                    <!-- filled with js -->
                 </div>
-
-                <input type="checkbox" id="canContinuousBuilding" class="menuButton">
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="canContinuousBuilding">
-                        <p><b>Build Continuously?</b></p>
-                        <p>When <span class="booleanValue">true</span>, you build edges as a string of edges connected by vertices.<br>When <span class="booleanValue">false</span>, you build edges as pairs of vertices.</p>
-                    </label>
+            </div>
+            <div>
+                <canvas id="canvasBridge" class="windowCentral" width="1200" height="800"></canvas>
+                <div></div>
+                <div id="arrowMockupContainer" class="floatLeft rightMargin">
+                    <div id="arrowMockup" class="shadow outline grid3-2rem topMarginSmall">
+                        <div class="relative">
+                            <button id="arrowMockupUpLeft" class="menuButton borderRadiusTopLeft" onclick="move('ul')">↖</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupUpLeft">
+                                    <p><b>Move Camera Up-Left</b></p>
+                                    <p>Keybind: <kbd>⑦ Numpad 7</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupUp" class="menuButton" onclick="move('u')">↑</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupUp">
+                                    <p><b>Move Camera Up</b></p>
+                                    <p>Keybinds:<br><kbd>w</kbd>, <kbd>k</kbd>,<br><kbd>↑ Arrow up</kbd>, <kbd>⑧ Numpad 8</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupUpRight" class="menuButton borderRadiusTopRight" onclick="move('ur')">↗</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupUpRight">
+                                    <p><b>Move Camera Up-Right</b></p>
+                                    <p>Keybind: <kbd>⑨ Numpad 9</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+        
+                        <div class="relative">
+                            <button id="arrowMockupLeft" class="menuButton" onclick="move('l')">←</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupLeft">
+                                    <p><b>Move Camera Left</b></p>
+                                    <p>Keybinds:<br><kbd>a</kbd>, <kbd>h</kbd>,<br><kbd>→ Arrow left</kbd>, <kbd>④ Numpad 4</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupZero" class="menuButton" onclick="move('0')">·</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupZero">
+                                    <p><b>Reset Camera</b></p>
+                                    <p>Keybinds:<br><kbd>⓪ Numpad 0</kbd>, <kbd>⑤ Numpad 5</kbd></p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupRight" class="menuButton" onclick="move('r')">→</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupRight">
+                                    <p><b>Move Camera Right</b></p>
+                                    <p>Keybinds:<br><kbd>d</kbd>, <kbd>l</kbd>,<br><kbd>← Arrow right</kbd>, <kbd>⑥ Numpad 6</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+        
+                        <div class="relative">
+                            <button id="arrowMockupDownLeft" class="menuButton borderRadiusBottomLeft" onclick="move('dl')">↙</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupDownLeft">
+                                    <p><b>Move Camera Down-Left</b></p>
+                                    <p>Keybind: <kbd>① Numpad 1</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupDown" class="menuButton" onclick="move('d')">↓</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupDown">
+                                    <p><b>Move Camera Down</b></p>
+                                    <p>Keybinds:<br><kbd>s</kbd>, <kbd>j</kbd>,<br><kbd>↓ Arrow down</kbd>, <kbd>② Numpad 2</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="arrowMockupDownRight" class="menuButton borderRadiusBottomRight" onclick="move('dr')">↘</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="arrowMockupDownRight">
+                                    <p><b>Move Camera Down-Right</b></p>
+                                    <p>Keybind: <kbd>③ Numpad 3</kbd></p>
+                                    <p>(Pressing <kbd>⇧ Shift</kbd> will make the camera move 16 times faster.)</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="scaleControlButtons" class="shadow outline grid3-2rem topMarginSmall">
+                        <div class="relative">
+                            <button id="scaleControlUp" class="menuButton borderRadiusTabLeft">+</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="scaleControlUp">
+                                    <p><b>Enlarge Objects</b></p>
+                                    <p>Scale Camera View by 0.5 Times</p>
+                                    <p>Keybinds: <kbd>z</kbd>,<br><kbd>⇡ Scroll Wheel Up</kbd></p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="scaleControlZero" class="menuButton">0</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="scaleControlZero">
+                                    <p><b>Reset Camera View</b></p>
+                                    <p>Resets the Camera View to it's original size.</p>
+                                    <p>Keybinds: <kbd>x</kbd>, <kbd>⓪ Numpad 0</kbd></p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="scaleControlDown" class="menuButton borderRadiusTabRight">-</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="scaleControlDown">
+                                    <p><b>Shrink Objects</b></p>
+                                    <p>Scale Camera View by 2 Times</p>
+                                    <p>Keybinds: <kbd>c</kbd>,<br><kbd>⇣ Scroll Wheel Down</kbd></p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <input type="checkbox" id="canAlignToGrid" class="menuButton">
-                <div class="buttonDescription buttonDescriptionRight">
-                    <label for="canAlignToGrid">
-                        <p><b>Align Points to Grid?</b></p>
-                        <p>When <span class="booleanValue">true</span>, vertices can be made only at predefined points.</p>
-                    </label>
+                <div id="messageContainer" class="floatLeft topMarginSmall">
+                    <div id="messageLogButtons" class="shadow outline grid2-2rem fitContent">
+                        <div class="relative">
+                            <button id="messageLogClear" class="menuButton borderRadiusTabLeft">&times;</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="messageLogClear">
+                                    <p><b>Clear Message Log</b></p>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="messageLogCopy" class="menuButton borderRadiusTabRight">c</button>
+                            <div class="buttonDescription buttonDescriptionLeft">
+                                <label for="messageLogCopy">
+                                    <p><b>Copy Message Log</b></p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="messageLog" class="shadow outline topMarginSmall background">
+                        <!-- filled by js -->
+                    </div>
+                </div>
+            </div>
+            <div id="rightMenu">
+                <div id="bridgeModifiersContainer" class="menuContainer">
+                    <button id="deletePointButton" class="menuButton borderRadiusTopRight">&olcross;</button>
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="deletePointButton">
+                            <p><b>Delete Selected Vertex</b></p>
+                            <p>Deletes currently selected vertex,together with all of its connected edges.</p>
+                            <p>Keybind: <kbd>Delete</kbd></p>
+                        </label>
+                    </div>
+    
+                    <button id="unselectPointButton" class="menuButton">&xcirc;</button>
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="unselectPointButton">
+                            <p><b>Unselect Selected Vertex</b></p>
+                            <p>Gets rid of the selection around the current vertex.</p>
+                            <p>Keybind: <kbd>⌫ Backspace</kbd></p>
+                        </label>
+                    </div>
+    
+                    <button id="selectLastVertex" class="menuButton borderRadiusBottomRight">&ofcir;</button>
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="selectLastVertex">
+                            <p><b>Select Previous Vertex</b></p>
+                            <p>Selects Previous Vertex from the Vertices List.<br>(Might not match with the vertex creation sequence).</p>
+                            <p>Keybind: <kbd>↵ Enter</kbd></p>
+                        </label>
+                    </div>
+    
+                    <input type="checkbox" id="canDeleteEdges" class="menuButton" checked>
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="canDeleteEdges">
+                            <p><b>Delete Edges?</b></p>
+                            <p>When <span class="booleanValue">true</span>, you are able to delete edges by clicking on their vertices.</p>
+                        </label>
+                    </div>
+    
+                    <input type="checkbox" id="canContinuousBuilding" class="menuButton">
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="canContinuousBuilding">
+                            <p><b>Build Continuously?</b></p>
+                            <p>When <span class="booleanValue">true</span>, you build edges as a string of edges connected by vertices.<br>When <span class="booleanValue">false</span>, you build edges as pairs of vertices.</p>
+                        </label>
+                    </div>
+    
+                    <input type="checkbox" id="canAlignToGrid" class="menuButton">
+                    <div class="buttonDescription buttonDescriptionRight">
+                        <label for="canAlignToGrid">
+                            <p><b>Align Points to Grid?</b></p>
+                            <p>When <span class="booleanValue">true</span>, vertices can be made only at predefined points.</p>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

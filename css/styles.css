@@ -6,9 +6,7 @@
 
 
 :root {
-    /* other values */
     --border-radius: 0.5rem;
-
 
     scroll-behavior: auto;
     font-size: 16px;
@@ -29,6 +27,8 @@
     --black: #000000;
     --grey-dark: #808080;
     --grey: #c1c1c1;
+
+    --backgroundImg: url(../img/blueprintBg.svg);
 }
 
 :root[colorScheme="Greyscale"] {
@@ -52,9 +52,35 @@
 
     --game-background: #df7373;
 
-    --black: #dfdfdf;
-    --grey-dark: #dfdfdf;
-    --grey: #dfdfdf;
+    --black: #ffffc2;
+    --grey-dark: #ffff60;
+    --grey: #fdfd00;
+}
+
+:root[colorScheme="Blood"] {
+    --background: #dd0c39;
+    --background-dark: #c10b32;
+    --background-darker: #b20a2e;
+    --text: #ffffff;
+
+    --game-background: #e80d3c;
+
+    --black: #ffffff;
+    --grey-dark: #ffffff;
+    --grey: #ffffff;
+}
+
+:root[colorScheme="Black & White"] {
+    --background: #202020;
+    --background-dark: #101010;
+    --background-darker: #000000;
+    --text: #ffffff;
+
+    --game-background: #111111;
+
+    --black: #ffffff;
+    --grey-dark: #ffffff;
+    --grey: #ffffff;
 }
 
 /*  */
@@ -64,6 +90,8 @@
 *, *::before, *::after, ::backdrop {
     margin: 0;
     box-sizing: border-box;
+
+    scrollbar-color: var(--background) var(--background-dark);
 }
 
 body {
@@ -73,12 +101,16 @@ body {
 
     margin: 0;
     overflow: overlay;
-
-    scrollbar-color: var(--background) var(--background-dark);
 }
 
 button, input {
     cursor: pointer;
+
+    user-select: none;
+}
+
+label {
+    cursor: text;
 }
 
 button {
@@ -123,6 +155,25 @@ input[type="checkbox"]:hover {
 
 input[type="checkbox"].option {
     margin: 0 0.5rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    height: 2rem;
+    border-radius: var(--border-radius);
+
+    text-align: center;
+
+    cursor: text;
+}
+
+progress {
+    height: 1rem;
+    width: 100%;
+    background-color: var(--text);
+
+    border: none;
+    border-radius: var(--border-radius);
 }
 
 dialog {
@@ -192,6 +243,10 @@ ul, ol {
     padding: 0.5rem;
 }
 
+#topMenuBudgetControlMenu {
+    height: 4rem;
+}
+
 
 
 /* ////////////////////////////////////////////////////////////////////// */
@@ -200,6 +255,11 @@ ul, ol {
 
 .background {
     background-color: var(--background);
+}
+
+.backgroundImage {
+    background-image: var(--backgroundImg);
+    background-repeat: repeat;
 }
 
 .generalDiv {
@@ -284,6 +344,10 @@ ul, ol {
     margin-top: 0.5rem;
 }
 
+.leftMarginSmall {
+    margin-left: 0.5rem;
+}
+
 .rightMargin {
     margin-right: 1rem;
 }
@@ -342,6 +406,11 @@ ul, ol {
     left: 2.5rem;
 }
 
+.buttonDescriptionLeftBig {
+    transform: translate(0, calc(-50% - 2rem));
+    left: 4.5rem;
+}
+
 .buttonDescriptionRight {
     transform: translate(0, calc(-50% - 1rem));
     right: 2.5rem;
@@ -353,8 +422,12 @@ ul, ol {
     top: 2.5rem;
 }
 
-:is(.menuButton, .tabButton, .levelButton):hover + .buttonDescription {
+:is(.menuButton, .tabButton, .levelButton, .otherButton):hover + .buttonDescription {
     display: block;
+}
+
+.borderRadius {
+    border-radius: var(--border-radius);
 }
 
 .borderRadiusTabLeft {
@@ -451,6 +524,31 @@ ul, ol {
     display: block;
 
     margin: auto;
+}
+
+.topMenu {
+    margin: 0 3rem 0.5rem;
+}
+
+.bigButton {
+    width: 4rem;
+    height: 4rem;
+
+    font-size: 2rem;
+
+    text-align: center;
+}
+
+.wide {
+    min-width: 16rem;
+}
+
+.bigButtonHeight {
+    height: 4rem;
+}
+
+.margin {
+    margin: 0 var(--border-radius) var(--border-radius);
 }
 
 

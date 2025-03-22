@@ -1,35 +1,104 @@
 const l = console.log
 const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
+let car = new Car("Basic Car", "It's a normal car, it drives.", 1500, "../img/cars/samochodzik_2.png", "None", 1, [-350, -100], [0, 0], [], 0, [60, 0])
 
-// l(bridgeConnections, bridgeEdges, bridgeVertices)
 
-
-// 
-
-let selectedVertex = null // the index of the current vertex
+// values come from the levels.
+let bridgeSelectedVertex = null // the index of the current vertex
 let bridgeVertices = [ // contains vertices v_k where 
-    // [x coord, y coord, type]
-    [0, 0, "p"],
-    [0, 150, "n"],
-    [50, 100, "n"],
-    [-50, 100, "n"],
+    // [x coord, y coord, type, velocity[vx, vy] ]
 ]
 
 let bridgeEdges = [ // contains edges (l, k) where l != k
-    // [index of v1, index of v2, type]
-    [0, 1, "w"],
-    [0, 2, "w"],
-    [1, 2, "w"],
-    [0, 3, "w"],
-    [1, 3, "w"],
+    // [index of v1, index of v2, type, lenght, mass]
 ]
 
-let bridgeConnections = [ //
-    [1, 2, 3],
-    [0, 2],
-    [0, 1],
-    [0, 1],
+let bridgeConnections = [ // connections between bridgeVertices[i] and every other vertex
 ]
+
+let bridgeObjects = [ // a list of objects that have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
+
+]
+
+
+let bridgeSaveBasis = {
+    levels: [],
+}
+let bridgeSave = {
+    levels: [],
+}
+
+let localSaveAlias = "bridgesSave" // don't change this value - it will make older saves unusable without a name change
+function saveBridge(localSave = true) {
+    let i = selectedLevel
+
+    if (bridgeSave.levels[i] === undefined) {
+        bridgeSave.levels[i] = {}
+    }
+
+    checkBudget()
+
+    // copies the variables by value, not reference
+    bridgeSave.levels[i].saveSelectedVertex         = structuredClone(bridgeSelectedVertex)
+    bridgeSave.levels[i].savePreviousPlayerSetPoint = structuredClone(previousPlayerSetPoint)
+    bridgeSave.levels[i].saveVertices               = structuredClone(bridgeVertices)
+    bridgeSave.levels[i].saveEdges                  = structuredClone(bridgeEdges)
+    bridgeSave.levels[i].saveConnections            = structuredClone(bridgeConnections)
+    bridgeSave.levels[i].saveObjects                = structuredClone(bridgeObjects)
+    bridgeSave.levels[i].saveCost                   = structuredClone(cost)
+
+    // if saving locally, push entire saved levels list to localStorage
+    if (localSave) {
+        localStorage.setItem(localSaveAlias + profileName, JSON.stringify(bridgeSave))
+
+        sendMessage(true, "savedData")
+    }
+}
+
+function loadBridge(localLoad = true) {
+    if (localLoad) {
+        bridgeSave = JSON.parse(localStorage.getItem(localSaveAlias + saveName))
+    }
+
+    let i = selectedLevel
+    if (bridgeSave !== null && bridgeSave.levels[i].saveEdges.length > 0) {
+        bridgeSelectedVertex   = null
+        previousPlayerSetPoint = null
+        previousPlayerSetPoint = null
+        bridgeVertices         = null
+        bridgeEdges            = null
+        bridgeConnections      = null
+        bridgeObjects          = null
+        cost                   = null
+
+        bridgeSelectedVertex   = bridgeSave.levels[i].saveSelectedVertex
+        previousPlayerSetPoint = bridgeSave.levels[i].savePreviousPlayerSetPoint
+        bridgeVertices         = bridgeSave.levels[i].saveVertices
+        bridgeEdges            = bridgeSave.levels[i].saveEdges
+        bridgeConnections      = bridgeSave.levels[i].saveConnections
+        bridgeObjects          = bridgeSave.levels[i].saveObjects
+        cost                   = bridgeSave.levels[i].saveCost
+
+        updateBudget()
+
+        bridgeHasChanged = true
+
+        if (localLoad) {
+            sendMessage(true, "loadedData")
+        }
+    }
+}
+
+function resetBridge(localSave = true) {
+    if (localSave) {
+        localStorage.removeItem(localSaveAlias + saveName)
+    }
+
+    bridgeSave = structuredClone(bridgeSaveBasis)
+}
+
+
+
 
 // based on the two upper arrays, makes a bridgeConnections array:
 // let bridgeConnections = [
@@ -57,38 +126,58 @@ let vertexProperties = {
     n: { // normal
         radius: 4,
         selectedRadius: 6,
-        isPermanent: false,
+        mass: 1,
+
+        isSolid: false,
     },
     p: { // permanent
         radius: 6,
         selectedRadius: 8,
-        isPermanent: true,
+        mass: Infinity,
+
+        isSolid: true,
     },
 }
 
 let allowedEdgeTypes = ["r", "w", "s"]
 let edgeProperties = {
     w: { // wood
-        name: "Wood",
+        name: "Wooden Beam",
+        description: "Strong, cheap, and - most importantly - cheap.<br>Wood is the ideal material for creating small, durable constructions.",
         icon: "-",
-        width: 4,
-    },
-    s: { // steel
-        name: "Steel",
-        icon: "—",
-        width: 5,
-    },
-    r: { // road
-        name: "Road",
-        icon: "_",
-        width: 6,
+
+        radius: 2, // in centimeters (pixels)
+        maxLength: 6, // in meters (100ths of pixels) // chapter 5 of https://alsyedconstruction.com/maximum-beam-span-for-residential-construction/
+        cylinderVolume: 12.566370614359172, // π * radius², computed with js
+        cost: 0.002940, // per cm³
+        density: 0.85, // g/cm³ // oak wood from https://educatoral.com/density_of_substances.html
+        stiffness: 0,
     },
 
-    // maybe??????
-    rr: { // reinforced road
-        name: "ReinforcedRoad",
-        icon: "‗",
-        width: 7,
+    s: { // steel
+        name: "Steel Beam",
+        description: "A material on the stronger side of things.<br>Steel can be used when a small structure has to support a lot of weight.",
+        icon: "—",
+
+        radius: 2.5,
+        maxLength: 18, // https://steelconstruction.info/Long-span_beams
+        cylinderVolume: 19.634954084936208,
+        cost: 0.010775,
+        density: 7.75, // bottom value from https://en.wikipedia.org/wiki/Steel
+        stiffness: 0,
+    },
+
+    r: { // road
+        name: "Concrete Road",
+        description: "Material tested and prepared for carrying heavy loads.",
+        icon: "_",
+
+        radius: 3,
+        maxLength: 7, // https://www.quora.com/What-is-the-maximum-span-for-a-simply-supported-concrete-beam
+        cylinderVolume: 28.274333882308138,
+        cost: 0.005685,
+        density: 2.4, // https://en.wikipedia.org/wiki/Properties_of_concrete
+        stiffness: 0,
     },
 }
 
@@ -97,34 +186,45 @@ let edgeProperties = {
 function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     clearCanvas()
 
-    // draws the grid only if 
-    l(alignToGrid, showGrid)
+    // draw objects
+    for (let i = 0; i < bridgeObjects.length; i++) {
+        let o = bridgeObjects[i]
+        drawObject(o)
+    }
+
+    // draws the grid only if you need to
     if (alignToGrid && showGrid) {
         drawGrid()
     }
 
-    if (verticesArray.length >= 2) {
-        for (let i = 0; i < edgesArray.length; i++) {
-            let e = edgesArray[i]
-    
-            // get vertices from the vertex array
-            let p0 = verticesArray[e[0]]
-            let p1 = verticesArray[e[1]]
-            drawEdge(p0, p1, e[2])
-        }
+    // draw edges
+    for (let i = 0; i < edgesArray.length; i++) {
+        let e = edgesArray[i]
+
+        // get vertices from the vertex array
+        let p0 = verticesArray[e[0]]
+        let p1 = verticesArray[e[1]]
+        drawEdge(p0, p1, e[2])
     }
 
-    ctx.beginPath()
+    // draw vertices
     for (let i = 0; i < verticesArray.length; i++) {
         let v = verticesArray[i]
+        ctx.beginPath()
         drawVertex(v[0], v[1], v[2])
+        ctx.fill()
     }
-    ctx.fill()
 
-    if (selectedVertex !== null) {
-        let v = verticesArray[selectedVertex]
+    // draw selected vertex
+    if (bridgeSelectedVertex !== null && !isSimulating) {
+        let v = verticesArray[bridgeSelectedVertex]
         drawSelectedPoint(v[0], v[1], v[2])
     }
+
+    // draws the car
+    // for now its called twice so the car will appear
+    car.drawCar()
+    car.carHitbox()
 }
 
 function drawVertex(x, y, type) {
@@ -148,19 +248,21 @@ function drawEdge(p0, p1, type) {
     switch (type) {
         case "r": { // road
             setCanvasStrokeColor("road")
-            setCanvasStrokeWidth(edgeProperties.r.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
+
         case "w": { // wooden beam edge
             setCanvasStrokeColor("wooden")
-            setCanvasStrokeWidth(edgeProperties.w.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
+
         case "s": { // steel beam edge
             setCanvasStrokeColor("steel")
-            setCanvasStrokeWidth(edgeProperties.s.width)
+            setCanvasStrokeWidth(2 * edgeProperties.r.radius)
             drawLine(p0[0], p0[1], p1[0], p1[1])
             break;
         }
@@ -171,13 +273,14 @@ function drawEdge(p0, p1, type) {
 
 // draw a shape around the currently selected vertex
 function drawSelectedPoint(x, y, type) {
-        setCanvasStrokeWidth(2)
-        switch (type) {
+    setCanvasStrokeWidth(2)
+    switch (type) {
         case "n": { // normal vertex
             setCanvasStrokeColor("white")
             drawEmptyPoint(x, y, vertexProperties.n.selectedRadius)
             break;
         }
+
         case "p": { // permanent vertex
             setCanvasStrokeColor("black")
             drawEmptySquare(x, y, vertexProperties.p.selectedRadius)
@@ -186,6 +289,10 @@ function drawSelectedPoint(x, y, type) {
 
         default: {break}
     }
+
+    setCanvasStrokeWidth(1)
+    setCanvasStrokeColor("grid")
+    drawEmptyPoint(x, y, edgeProperties[playerSetEdgesType].maxLength * 100)
 }
 
 // sets playerSetEdgesType
@@ -193,6 +300,8 @@ function setEdgeType(edgeType) {
     playerSetEdgesType = edgeType
 
     setSelectedEdgeButton(edgeType)
+
+    bridgeHasChanged = true
 }
 
 function listAllowedEdgeTypes() {
@@ -204,7 +313,10 @@ function listAllowedEdgeTypes() {
         edgesList = `<button id="edgeSelector${e.name}" class="menuButton borderRadiusTabLeft" onclick="setEdgeType('${allowedEdgeTypes[0]}')">${e.icon}</button>
             <div class="buttonDescription buttonDescriptionLeft">
                 <label for="edgeSelector${e.name}">
-                    <p><b>Set Edge Type to ${e.name}</b></p>
+                    <p><b>Set Edge Type to<br>${e.name}</b></p>
+                    <p>${e.description}</p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
     } else {
@@ -217,11 +329,14 @@ function listAllowedEdgeTypes() {
             } else if (i == allowedEdgeTypes.length - 1) {
                 borderClass = "borderRadiusBottomLeft"
             }
-    
+
             edgesList += `<button id="edgeSelector${e.name}" class="menuButton ${borderClass}" onclick="setEdgeType('${allowedEdgeTypes[i]}')">${e.icon}</button>
             <div class="buttonDescription buttonDescriptionLeft">
                 <label for="edgeSelector${e.name}">
-                    <p><b>Set Edge Type to ${e.name}</b></p>
+                    <p><b>Set Edge Type to<br>${e.name}</b></p>
+                    <p>${e.description}</p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
         }
@@ -240,6 +355,46 @@ function setSelectedEdgeButton(edgeType) {
     addClass("edgeSelector" + edgeName, "selected")
 }
 
+function drawObject(o) {
+    switch (o[0]) {
+        case "p": { // polygon
+            ctx.beginPath()
+            for (let i = 0; i < o[2].length; i++) {
+                ctx.lineTo(o[2][i][0], o[2][i][1])
+            }
+            ctx.closePath()
+            break
+        }
+
+        case "e": { // ellipse
+            ctx.beginPath()
+            drawEllipse(
+                o[2][0],
+                o[2][1],
+                o[2][2],
+                o[2][3] || o[2][2], // if there's no yradius, it's the same as xradius
+                -o[2][4] || 0 // defaultAngle = 0
+            )
+            ctx.closePath()
+            break
+        }
+
+        default: {break}
+    }
+
+    if (o[1][0] !== undefined) {
+        setCanvasStrokeColor(o[1][0])
+        setCanvasStrokeWidth(o[1][1])
+
+        ctx.stroke()
+    }
+
+    if (o[1][2] !== undefined) {
+        setCanvasFillColor(o[1][2])
+
+        ctx.fill()
+    }
+}
 
 
 
@@ -281,6 +436,20 @@ function setContinuousBuilding() {
     playerContinuousBuilding = getBooleanValue("canContinuousBuilding")
 }
 
+let profileName = ""
+function setProfileName() {
+    profileName = "Default"
+
+    saveName = document.getElementById("profileName").value 
+    if (saveName.length > 0) {
+        profileName = saveName
+    }
+
+    document.getElementById("profileNameValue").innerText = profileName
+    document.getElementById("profileSaveDataName").innerText = profileName
+    document.getElementById("profileLoadDataName").innerText = profileName
+}
+
 function toggleArrowset() {
     if (getBooleanValue("showArrowset")) {
         removeClass("arrowMockupContainer", "blank")
@@ -302,8 +471,7 @@ function setShowGrid() {
     bridgeHasChanged = true
 }
 
-// returns true if it could add/remove an edge
-function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
+function addEdge(v0, v1, type, vertexArray = bridgeVertices, edgesArray = bridgeEdges) {
     if (v0 != v1) {
         if (checkIfVerticesConnect(v0, v1)) {
             if (canDeleteEdges) {
@@ -311,13 +479,25 @@ function addEdge(v0, v1, type, edgesArray = bridgeEdges) {
                 return true
             }
         } else {
-            edgesArray.push([v0, v1, type])
+            let edgeTypeProperties = edgeProperties[type]
+
+            let p0 = vertexArray[v0]
+            let p1 = vertexArray[v1]
+            let edgeLength = pointDistance(p0, p1)
+            let edgeVolume = edgeTypeProperties.cylinderVolume * edgeLength
+            let edgeMass = edgeVolume * edgeTypeProperties.density
+
+            let edgeCost = edgeTypeProperties.cost * edgeVolume
+            updateBudget(edgeCost)
+
+            edgesArray.push([v0, v1, type, edgeLength, edgeMass, edgeCost])
             addBridgeConnection(v0, v1)
             addBridgeConnection(v1, v0)
             return true
         }
     }
-    return false
+
+    return false // returns true if it could add/remove an edge
 }
 
 function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
@@ -327,6 +507,8 @@ function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
 
             if ((e[0] == p0 || e[0] == p1) && (e[1] == p0 || e[1] == p1)) {
                 edgesArray.splice(i, 1)
+
+                updateBudget(-e[5])
             }
         }
 
@@ -337,8 +519,17 @@ function deleteEdgeBetweenPoints(p0, p1, edgesArray = bridgeEdges) {
     }
 }
 
+let startVelocity = [0, 0]
 function addVertex(x, y, type, vertexArray = bridgeVertices) {
-    vertexArray.push([x, y, type])
+    if (alignToGrid) {
+        // when aligning, find the nearest grid-point coordinates
+        x = gridSize * Math.round(x / gridSize)
+        y = gridSize * Math.round(y / gridSize)
+
+        vertexArray.push([x, y, type, startVelocity])
+    } else {
+        vertexArray.push([x, y, type, startVelocity])
+    }
 }
 
 function deleteVertex(index, verticesArray = bridgeVertices, edgesArray = bridgeEdges, connectionsArray = bridgeConnections) {
@@ -402,6 +593,8 @@ function deleteVertex(index, verticesArray = bridgeVertices, edgesArray = bridge
     connectionsArray[index] = connectionsArray[lastIndex]
     connectionsArray.pop()
 
+    // checkBudget()
+
     bridgeHasChanged = true
 }
 
@@ -423,36 +616,50 @@ function checkIfVerticesConnect(v0, v1) {
      && bridgeConnections[v1] && bridgeConnections[v1].includes(v0)) {
         return true
     }
+
     return false
 }
 
+let infiniteEdgeLengths = false
+let makeLongerEdgesShorter = true
+
 let playerSetPointsType = "n"
 let playerSetEdgesType = "w"
+let playerContinuousBuilding = true
 
 let previousPlayerSetPoint = null
-let playerContinuousBuilding = true
 let playerClickInaccuracy = 8 // px
 let bridgeHasChanged = false // updates to true if the bridge has been updated by the user
 function setPlayerPoint(x, y) {
     let nearPoints = detectNearPoints(x, y, playerClickInaccuracy)
     if (nearPoints.length != 0) {
         // makes the selected vertex equal to the first nearest point
-        selectedVertex = nearPoints[0]
+        bridgeSelectedVertex = nearPoints[0]
 
         if (previousPlayerSetPoint === null) {
             // no previous point
 
-            previousPlayerSetPoint = selectedVertex
+            previousPlayerSetPoint = bridgeSelectedVertex
         } else {
             // there was a previous point
 
-            addEdge(previousPlayerSetPoint, selectedVertex, playerSetEdgesType)
+            if (!infiniteEdgeLengths) {
+                let lastVertex = bridgeVertices[previousPlayerSetPoint]
+                let selectedVertex = bridgeVertices[bridgeSelectedVertex]
+                let pointToPointLength = pointDistance(lastVertex, selectedVertex)
+
+                if (pointToPointLength > (edgeProperties[playerSetEdgesType].maxLength * 100)) {
+                    return null
+                }
+            }
+
+            addEdge(previousPlayerSetPoint, bridgeSelectedVertex, playerSetEdgesType)
 
             if (playerContinuousBuilding) {
-                previousPlayerSetPoint = selectedVertex
+                previousPlayerSetPoint = bridgeSelectedVertex
             } else {
                 previousPlayerSetPoint = null
-                selectedVertex = null
+                bridgeSelectedVertex = null
             }
         }
     } else {
@@ -461,9 +668,36 @@ function setPlayerPoint(x, y) {
 
             previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
             addVertex(x, y, playerSetPointsType)
-            selectedVertex = previousPlayerSetPoint
+            bridgeSelectedVertex = previousPlayerSetPoint
         } else {
             // there was a previous point
+
+            if (!infiniteEdgeLengths) {
+                let lastVertex = bridgeVertices[previousPlayerSetPoint]
+                let pointToPointLength = pointDistance([x, y], lastVertex)
+                let lengthMax = edgeProperties[playerSetEdgesType].maxLength * 100
+
+                if (pointToPointLength > lengthMax) {
+                    let mult = lengthMax / pointToPointLength
+
+                    let distanceX = lastVertex[0] - x
+                    let distanceY = lastVertex[1] - y
+                    let currentPlayerSetPoint = bridgeVertices.length
+
+                    addVertex(lastVertex[0] - (distanceX * mult), lastVertex[1] - (distanceY * mult), playerSetPointsType)
+                    addEdge(previousPlayerSetPoint, currentPlayerSetPoint, playerSetEdgesType)
+
+                    if (playerContinuousBuilding) {
+                        previousPlayerSetPoint = currentPlayerSetPoint
+                    } else {
+                        previousPlayerSetPoint = null
+                    }
+
+                    bridgeSelectedVertex = currentPlayerSetPoint
+                    bridgeHasChanged = true
+                    return null
+                }
+            }
 
             let currentPlayerSetPoint = bridgeVertices.length
             addVertex(x, y, playerSetPointsType)
@@ -475,7 +709,7 @@ function setPlayerPoint(x, y) {
                 previousPlayerSetPoint = null
             }
 
-            selectedVertex = currentPlayerSetPoint
+            bridgeSelectedVertex = currentPlayerSetPoint
         }
     }
 
@@ -485,20 +719,21 @@ function setPlayerPoint(x, y) {
 let alignToGrid = true
 let gridSize = 16
 function detectMouseOnCanvas(event) {
+    if (isSimulating) { // does exactly nothing when the bridge is being simulated (is collapsing)
+        return 0
+    }
+
     let boundingRect = document.getElementById("canvasBridge").getBoundingClientRect()
 
     let clickedX = -(canvasSizeHalf[0] - (event.clientX - boundingRect.x) - canvasTranslate[0]) * canvasScaleReciprocal
     let clickedY = (canvasSizeHalf[1] - (event.clientY - boundingRect.y) - canvasTranslate[1]) * canvasScaleReciprocal
 
-    if (alignToGrid) {
-        // when aligning, find the nearest grid-point coordinates
-        let gridX = gridSize * Math.round(clickedX / gridSize)
-        let gridY = gridSize * Math.round(clickedY / gridSize)
+    setPlayerPoint(clickedX, clickedY)
+}
 
-        setPlayerPoint(gridX, gridY)
-    } else {
-        setPlayerPoint(clickedX, clickedY)
-    }
+function simulateMouseOnCanvas(x, y) {
+    let boundingRect = document.getElementById("canvasBridge").getBoundingClientRect()
+    detectMouseOnCanvas({clientX: x + boundingRect.x, clientY: y + boundingRect.y})
 }
 
 // returns indices of points that are closer than threshold to (x, y)
@@ -516,16 +751,16 @@ function detectNearPoints(x, y, threshold, verticesArray = bridgeVertices) {
 }
 
 function unSelectPoint() {
-    selectedVertex = null
+    bridgeSelectedVertex = null
     previousPlayerSetPoint = null
 
     bridgeHasChanged = true
 }
 
 function deleteSelectedPoint() {
-    if (selectedVertex !== null) {
-        if (!vertexProperties[bridgeVertices[selectedVertex][2]].isPermanent) {
-            deleteVertex(selectedVertex)
+    if (bridgeSelectedVertex !== null) {
+        if (!vertexProperties[bridgeVertices[bridgeSelectedVertex][2]].isSolid) {
+            deleteVertex(bridgeSelectedVertex)
         } else {
             sendMessage(true, "vertexDeletion")
         }
@@ -535,15 +770,23 @@ function deleteSelectedPoint() {
 }
 
 function selectLastVertex() {
-    selectedVertex = bridgeVertices.length - 1
-    previousPlayerSetPoint = selectedVertex
+    if (bridgeSelectedVertex === null) {
+        bridgeSelectedVertex = bridgeVertices.length - 1
+    } else {
+        if (bridgeSelectedVertex != 0) {
+            bridgeSelectedVertex -= 1
+        } else {
+            bridgeSelectedVertex = bridgeVertices.length - 1
+        }
+    }
 
+    previousPlayerSetPoint = bridgeSelectedVertex
     bridgeHasChanged = true
 }
 
 let canvasStep = 16
 function move(direction) {
-    let step = canvasStep * canvasScaleReciprocal
+    let step = canvasStep * canvasScale
     if (event.shiftKey) {
         step *= 16
     }
@@ -554,7 +797,7 @@ function move(direction) {
         case "dl": {translateCanvas(-step, step);  break;} case "d": {translateCanvas(0, step);  break;} case "dr": {translateCanvas(step, step);  break;}
 
         case "0": {
-            translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); 
+            translateCanvasReset(); 
             break;
         }
         default: {break;}
@@ -565,39 +808,26 @@ function move(direction) {
 
 
 
-
-// //////////////////////////////////////////////////////////////////////
-// PHYSICS SIMULATION
-// //////////////////////////////////////////////////////////////////////
-
-let isSimulating = false
-function prepareBridgeForSimulation() {
-
-
-    isSimulating = true
-}
-
-function simulateBridge() {
-
-}
-
-
-
-
 // //////////////////////////////////////////////////////////////////////
 // STYLING THE GAME
 // //////////////////////////////////////////////////////////////////////
 
-let currentStyle = 1
+let currentStyle = 2
+let currentStyleName = "Blueprint"
 let gameStyles = [
+    ["Black & White", "#000000"],
     ["Greyscale", "#606060"],
     ["Blueprint", "#2294f3"],
     ["Strawberry", "#e39695"],
+    ["Blood", "#dd0c39"],
 ]
 
 function applyStyle(styleId) {
     currentStyle = styleId
-    document.getElementById("html").setAttribute("colorScheme", gameStyles[currentStyle][0])
+    currentStyleName = gameStyles[currentStyle][0]
+    document.getElementById("html").setAttribute("colorScheme", currentStyleName)
+
+    bridgeHasChanged = true
 }
 
 function listStyles() {
@@ -623,15 +853,18 @@ function gameLoop() {
         bridgeHasChanged = false
     }
 
-    if (isSimulating) {
-        simulateBridge() // TODO
+    if (isSimulating && !isSimulationPaused) {
+        simulateBridge()
     }
 }
 
 window.onload = function() {
     resetCanvas()
 
+    applyStyle(currentStyle)
+
     document.getElementById("canvasBridge").addEventListener("click", detectMouseOnCanvas)
+    document.getElementById("canvasBridge").addEventListener("wheel", scaleCanvasWithWheel)
 
     // buttons
     document.getElementById("unselectPointButton").addEventListener("click", unSelectPoint)
@@ -651,6 +884,18 @@ window.onload = function() {
     document.getElementById("messageLogClear").addEventListener("click", clearMessages)
     document.getElementById("messageLogCopy").addEventListener("click", copyMessages)
 
+    document.getElementById("profileSaveData").addEventListener("click", saveBridge)
+    document.getElementById("profileLoadData").addEventListener("click", loadBridge)
+    document.getElementById("profileResetData").addEventListener("click", resetBridge)
+
+    document.getElementById("topMenuStartSimulation").addEventListener("click", startSimulating)
+    document.getElementById("topMenuStopSimulation").addEventListener("click", stopSimulating)
+
+    document.getElementById("topMenuSimulationStartedPause").addEventListener("click", toggleSimulationPause)
+    document.getElementById("topMenuSimulationStartedForward").addEventListener("click", forwardSimulation)
+    
+    document.getElementById("budgetControlProgress").addEventListener("click", checkBudget)
+
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
     document.getElementById("optionsMenuCloseButton").addEventListener("click", toggleMenuOptions)
@@ -658,32 +903,34 @@ window.onload = function() {
     document.getElementById("levelSelectorOpenButton").addEventListener("click", toggleMenuLevels)
     document.getElementById("levelSelectorCloseButton").addEventListener("click", toggleMenuLevels)
 
-    // checkboxes
+    document.getElementById("playSelectedLevelButton").addEventListener("click", playSelectedLevel)
+
+    // checkboxes, inputs
     document.getElementById("canDeleteEdges").addEventListener("change", setEdgeDeletion)
     document.getElementById("canContinuousBuilding").addEventListener("change", setContinuousBuilding)
     document.getElementById("showArrowset").addEventListener("change", toggleArrowset)
     document.getElementById("canAlignToGrid").addEventListener("change", setAlignToGrid)
     document.getElementById("showGrid").addEventListener("change", setShowGrid)
 
+    document.getElementById("profileName").addEventListener("change", setProfileName)
+
+
+
+    setInterval(gameLoop, tickTime * 1000)
+
     setEdgeDeletion()
     setContinuousBuilding()
     setAlignToGrid()
     setShowGrid()
-
-    drawBridge(bridgeVertices, bridgeEdges)
-    // each tick of the game is 1/10 of a second
-    setInterval(gameLoop, 100)
+    setProfileName()
 
     sendMessage(true, "welcome")
 
-    listAllowedEdgeTypes()
-    setEdgeType(allowedEdgeTypes[0]) // sets the selected edge type to the first one
+    setCurrentLevel(0)
+    drawBridge()
 
     listStyles()
     displayLevelInfo(selectedLevel)
-
-    // DEV
-    // toggleDialog("optionsMenu")
 }
 
 window.onkeyup = (event) => {
@@ -729,75 +976,98 @@ window.onkeyup = (event) => {
                 toggleMenuLevels()
                 break;
             }
+
+            // simulation
+            case " ": {
+                if (event.ctrlKey) {
+                    forwardSimulation()
+                    break
+                }
+
+                if (!event.shiftKey) {
+                    toggleSimulating()
+                } else {
+                    toggleSimulationPause()
+                }
+
+                break;
+            }
         
             default: {break}
         }
     } else {
         if (event.key == "\`") {
             toggleMenuOptions()
-            canUseKeyboardShortcuts = true
+            // canUseKeyboardShortcuts = true
         } else if (event.key == "Q") {
             toggleMenuLevels()
-            canUseKeyboardShortcuts = true
+            // canUseKeyboardShortcuts = true
         }
     }
 }
 
 // movement of camera
 window.onkeydown = (event) => {
-    let step = canvasStep * canvasScaleReciprocal
-    if (event.shiftKey) {
-        step *= 16
-    }
-
-    switch (event.code) {
-        case "Numpad8":
-        case "ArrowUp":
-        case "KeyK":
-        case "KeyW": {
-            translateCanvas(0, -step); break;
+    if (canUseKeyboardShortcuts) {
+        let step = canvasStep
+        if (event.shiftKey) {
+            step *= 16
         }
-        
-        case "Numpad4":
-        case "ArrowLeft":
-        case "KeyH":
-        case "KeyA": {
-            translateCanvas(-step, 0); break;
-        }
+    
+        switch (event.code) {
+            case "Numpad8":
+            case "ArrowUp":
+            case "KeyK":
+            case "KeyW": {
+                translateCanvas(0, -step); break;
+            }
 
-        case "Numpad2":
-        case "ArrowDown":
-        case "KeyJ":
-        case "KeyS": {
-            translateCanvas(0, step); break;
-        }
+            case "Numpad4":
+            case "ArrowLeft":
+            case "KeyH":
+            case "KeyA": {
+                translateCanvas(-step, 0); break;
+            }
 
-        case "Numpad6":
-        case "ArrowRight":
-        case "KeyL":
-        case "KeyD": {
-            translateCanvas(step, 0); break;
-        }
+            case "Numpad2":
+            case "ArrowDown":
+            case "KeyJ":
+            case "KeyS": {
+                translateCanvas(0, step); break;
+            }
 
-        case "Numpad7": {
-            translateCanvas(-step, -step); break;
-        }
+            case "Numpad6":
+            case "ArrowRight":
+            case "KeyL":
+            case "KeyD": {
+                translateCanvas(step, 0); break;
+            }
 
-        case "Numpad9": {
-            translateCanvas(step, -step); break;
-        }
+            case "Numpad7": {
+                translateCanvas(-step, -step); break;
+            }
 
-        case "Numpad1": {
-            translateCanvas(-step, step); break;
-        }
+            case "Numpad9": {
+                translateCanvas(step, -step); break;
+            }
 
-        case "Numpad3":{
-            translateCanvas(step, step); break;
-        }
+            case "Numpad1": {
+                translateCanvas(-step, step); break;
+            }
 
-        case "Numpad5":
-        case "Numpad0": {
-            translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); break;
+            case "Numpad3":{
+                translateCanvas(step, step); break;
+            }
+
+            case "Numpad5": {
+                translateCanvas(-canvasTranslate[0], -canvasTranslate[1]); break;
+            }
+
+            case "Numpad0": {
+                translateCanvasReset()
+                scaleCanvasZero()
+                break;
+            }
         }
     }
 }

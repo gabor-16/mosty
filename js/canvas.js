@@ -20,6 +20,7 @@ let canvasScaleReciprocal = 1 / canvasScale
 function resetCanvas() {
     ctx.fillStyle = "#050403"
     ctx.lineWidth = "2"
+    ctx.lineJoin = "round"
 
     resetCanvasTransform()
 }
@@ -37,21 +38,72 @@ function clearCanvas() {
 // resetting canvas's values //////////////////////////////////////////////////////////////////////
 
 const CANVASCOLORS = {
-    "white": "#f0f7f3",
-    "black": "#050403",
+    "Black & White": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
 
-    "grid": "#a0a0a0",
+        "grid": "#a0a0a0",
 
-    "wooden": "#a97742",
-    "road": "#a5a7a2",
-    "steel": "#5b1a16",
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Greyscale": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Blueprint": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Strawberry": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
+
+    "Blood": {
+        "white": "#f0f7f3",
+        "black": "#050403",
+        "gray": "#808080",
+
+        "grid": "#a0a0a0",
+
+        "wooden": "#a97742",
+        "road": "#a5a7a2",
+        "steel": "#5b1a16",
+    },
 }
 function setCanvasFillColor(color) {
-    ctx.fillStyle = CANVASCOLORS[color]
+    ctx.fillStyle = CANVASCOLORS[currentStyleName][color]
 }
 
 function setCanvasStrokeColor(color) {
-    ctx.strokeStyle = CANVASCOLORS[color]
+    ctx.strokeStyle = CANVASCOLORS[currentStyleName][color]
 }
 
 function setCanvasStrokeWidth(size) {
@@ -67,7 +119,11 @@ function translateCanvas(x, y) {
     bridgeHasChanged = true
 }
 
-function scaleCanvas(mult) {
+function translateCanvasReset() {
+    translateCanvas(-canvasTranslate[0], -canvasTranslate[1])
+}
+
+function scaleCanvas(mult = 2) {
     canvasScale *= mult
     canvasScaleReciprocal = 1 / canvasScale
 
@@ -78,9 +134,18 @@ function scaleCanvas(mult) {
 }
 
 let canvasScalingFactor = 2 // if ever changed, change the button info as well
-function scaleCanvasUp() {scaleCanvas(2)}
+function scaleCanvasUp() {scaleCanvas()}
 function scaleCanvasDown() {scaleCanvas(1 / canvasScalingFactor)}
 function scaleCanvasZero() {scaleCanvas(canvasScaleReciprocal)}
+
+function scaleCanvasWithWheel(wheel) {
+    let sign = Math.sign(wheel.deltaY)
+    if (sign > 0) {
+        scaleCanvasDown()
+    } else if (sign < 0) {
+        scaleCanvasUp()
+    }
+}
 
 
 
@@ -135,6 +200,11 @@ function drawEmptyPoint(x, y, r) {
     ctx.stroke()
 }
 
+function drawEllipse(x, y, rx, ry, angle) {
+    ctx.ellipse(x, y, rx, ry, angle, 0, 2 * π)
+}
+
+
 
 // Continious versions of some of the above functions:
 // (they can be used one after the other, without stroking/filling, which makes it less expensive)
@@ -165,7 +235,7 @@ function drawEmptyPointCont(x, y, r) {
 
 
 function drawGrid() {
-    if (canvasScale <= 0.125 || canvasScale >= 128) { // don't draw grid if it's not needed (scale too big/too small/not wanted)
+    if (canvasScale <= 0.125) { // don't draw grid if it's not needed (scale too big)
         return 0
     }
 
@@ -177,17 +247,17 @@ function drawGrid() {
     let biggestY = canvasScaleReciprocal * (-canvasTranslate[1] + canvasSizeHalf[1])
 
     let gridLinesYAmount = canvasSize[1] * canvasScaleReciprocal / gridSize
-    let firstYOffset = Math.abs(smallestY % gridSize)
+    let firstYOffset = -(smallestY % gridSize)
     let y = smallestY + firstYOffset
 
     let gridLinesXAmount = canvasSize[0] * canvasScaleReciprocal / gridSize
-    let firstXOffset = Math.abs(smallestX % gridSize)
+    let firstXOffset = -(smallestX % gridSize)
     let x = smallestX + firstXOffset
 
     // drawGrid
     ctx.beginPath()
     setCanvasStrokeColor("grid")
-    setCanvasStrokeWidth(1)
+    setCanvasStrokeWidth(canvasScaleReciprocal)
     for (let i = 0; i <= gridLinesYAmount; i++) {
         drawLineCont(smallestX, y + i * gridSize, biggestX, y + i * gridSize)
     }
