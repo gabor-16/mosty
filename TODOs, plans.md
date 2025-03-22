@@ -2,7 +2,7 @@
 - dampening forces
 - limit of the number of edges of certain type
 
-
+Project documentation
 
 - function that build the level gradually, to make it automatically compute things, and also to make it more immersive (with an animation maybe?)
 - on start, the camera looks around the level (like in Angry Birds, idk)
@@ -30,6 +30,9 @@ Difficulty levels: Different types of cars/people/machines that need to cross yo
 - 
 - A long train [200000kg]
 - A Tesla cybertruck [3025kg] (it blows up under the smallest complication with the road) [It's funny, that's why]
+
+Level ideas:
+- moon level with weaker gravity ?
 
 Types of budget management for each level:
 - Infinite budget (You don't have to worry about it at all)
