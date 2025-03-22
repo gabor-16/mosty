@@ -1,4 +1,6 @@
 
+- dampening forces
+- limit of the number of edges of certain type
 
 Project documentation
 
@@ -6,8 +8,6 @@ Project documentation
 - on start, the camera looks around the level (like in Angry Birds, idk)
 
 
-
-edge size restrictions - you can lift them off, but the level doesn't count when finished - make it show a circle around the first point with proper radius, clicking outside the circle will make the edge with max lenght and proper angle
 
 delete also replaces (when the edge type is different) maybe????, it will be harder to check the lenght requirement, maybe leave it in?
 
@@ -17,6 +17,8 @@ point-line intersections in math.js
 - check if point under/over/on the line
 
 
+
+- winning conditions, winning screens
 
 
 A couple of levels

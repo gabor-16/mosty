@@ -17,7 +17,12 @@ let bridgeConnections = [ // connections between bridgeVertices[i] and every oth
 ]
 
 let bridgeObjects = [ // a list of objects that have an inpact on the level look and feel (e.i. the floor on either side of the bridge, etc.)
+]
 
+let bridgePhysicals = [ // a list of all physical objects, such as autos
+    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points]
+    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points, [centerX, centerY, maxRadius]]
+    // shapes: [, fill color, object type, object name, , , points]
 ]
 
 
@@ -28,9 +33,24 @@ let bridgeSave = {
     levels: [],
 }
 
+function prepareBridgeSave() {
+    for (let i = 0; i < levelsList.length; i++) {
+        bridgeSave.levels[i] = {}
+
+        bridgeSave.levels[i].saveSelectedVertex = null
+        bridgeSave.levels[i].savePreviousPlayerSetPoint = null
+        bridgeSave.levels[i].saveVertices = null
+        bridgeSave.levels[i].saveEdges = null
+        bridgeSave.levels[i].saveConnections = null
+        bridgeSave.levels[i].saveObjects = null
+        bridgeSave.levels[i].savePhysicals = null
+        bridgeSave.levels[i].saveCost = null
+    }
+}
+
 let localSaveAlias = "bridgesSave" // don't change this value - it will make older saves unusable without a name change
 function saveBridge(localSave = true) {
-    let i = selectedLevel
+    let i = currentLevel
 
     if (bridgeSave.levels[i] === undefined) {
         bridgeSave.levels[i] = {}
@@ -45,6 +65,7 @@ function saveBridge(localSave = true) {
     bridgeSave.levels[i].saveEdges                  = structuredClone(bridgeEdges)
     bridgeSave.levels[i].saveConnections            = structuredClone(bridgeConnections)
     bridgeSave.levels[i].saveObjects                = structuredClone(bridgeObjects)
+    bridgeSave.levels[i].savePhysicals              = structuredClone(bridgePhysicals)
     bridgeSave.levels[i].saveCost                   = structuredClone(cost)
 
     // if saving locally, push entire saved levels list to localStorage
@@ -60,8 +81,8 @@ function loadBridge(localLoad = true) {
         bridgeSave = JSON.parse(localStorage.getItem(localSaveAlias + saveName))
     }
 
-    let i = selectedLevel
-    if (bridgeSave !== null && bridgeSave.levels[i].saveEdges.length > 0) {
+    let i = currentLevel
+    if (bridgeSave !== null && bridgeSave.levels[i] !== null) {
         bridgeSelectedVertex   = null
         previousPlayerSetPoint = null
         previousPlayerSetPoint = null
@@ -69,6 +90,7 @@ function loadBridge(localLoad = true) {
         bridgeEdges            = null
         bridgeConnections      = null
         bridgeObjects          = null
+        bridgePhysicals        = null
         cost                   = null
 
         bridgeSelectedVertex   = bridgeSave.levels[i].saveSelectedVertex
@@ -77,6 +99,7 @@ function loadBridge(localLoad = true) {
         bridgeEdges            = bridgeSave.levels[i].saveEdges
         bridgeConnections      = bridgeSave.levels[i].saveConnections
         bridgeObjects          = bridgeSave.levels[i].saveObjects
+        bridgePhysicals        = bridgeSave.levels[i].savePhysicals
         cost                   = bridgeSave.levels[i].saveCost
 
         updateBudget()
@@ -99,25 +122,6 @@ function resetBridge(localSave = true) {
 
 
 
-
-// based on the two upper arrays, makes a bridgeConnections array:
-// let bridgeConnections = [
-//     // index for a point is equal in bridgeConnections and bridgeVertices, the values are arrays representing the indices of points in bridgeVertices who share a connection via the bridgeEdges
-//     [1, 2],
-//     [0, 2],
-//     [0, 1],
-// ] // above is the example for a graph of a triangle (0 is connected to 1 and 2, 1 is connected to 0 and 2, 2, is connected to 0 and 1)
-function makeBridgeConnections(edgesArray = bridgeEdges) {
-    for (let i = 0; i < edgesArray.length; i++) {
-        let e = edgesArray[i]
-
-        // Both vertices are connected to each other via the edge
-        addBridgeConnection(e[0], e[1])
-        addBridgeConnection(e[1], e[0])
-    }
-}
-
-
 // //////////////////////////////////////////////////////////////////////
 // DRAWING THE GAME
 // //////////////////////////////////////////////////////////////////////
@@ -126,7 +130,7 @@ let vertexProperties = {
     n: { // normal
         radius: 4,
         selectedRadius: 6,
-        mass: 1,
+        mass: 1, // in kg
 
         isSolid: false,
     },
@@ -195,6 +199,13 @@ function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     // draws the grid only if you need to
     if (alignToGrid && showGrid) {
         drawGrid()
+    }
+
+    // draw physical objects
+    for (let i = 0; i < bridgePhysicals.length; i++) {
+        let p = bridgePhysicals[i]
+
+        drawPhysical(p)
     }
 
     // draw edges
@@ -358,11 +369,7 @@ function setSelectedEdgeButton(edgeType) {
 function drawObject(o) {
     switch (o[0]) {
         case "p": { // polygon
-            ctx.beginPath()
-            for (let i = 0; i < o[2].length; i++) {
-                ctx.lineTo(o[2][i][0], o[2][i][1])
-            }
-            ctx.closePath()
+            drawPolygon(o[2])
             break
         }
 
@@ -434,6 +441,10 @@ function setEdgeDeletion() {
 
 function setContinuousBuilding() {
     playerContinuousBuilding = getBooleanValue("canContinuousBuilding")
+}
+
+function setSettingRandomPoints() {
+    playerCanMakeRandomVertices = getBooleanValue("canSetRandomPoints")
 }
 
 let profileName = ""
@@ -626,12 +637,14 @@ let makeLongerEdgesShorter = true
 let playerSetPointsType = "n"
 let playerSetEdgesType = "w"
 let playerContinuousBuilding = true
+let playerCanMakeRandomVertices = true
 
 let previousPlayerSetPoint = null
 let playerClickInaccuracy = 8 // px
 let bridgeHasChanged = false // updates to true if the bridge has been updated by the user
 function setPlayerPoint(x, y) {
     let nearPoints = detectNearPoints(x, y, playerClickInaccuracy)
+
     if (nearPoints.length != 0) {
         // makes the selected vertex equal to the first nearest point
         bridgeSelectedVertex = nearPoints[0]
@@ -666,9 +679,15 @@ function setPlayerPoint(x, y) {
         if (previousPlayerSetPoint === null) {
             // no previous point
 
-            previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
-            addVertex(x, y, playerSetPointsType)
-            bridgeSelectedVertex = previousPlayerSetPoint
+            if (!playerCanMakeRandomVertices) {
+                sendMessage(true, "cantMakeVertex")
+
+                return null
+            } else {
+                previousPlayerSetPoint = bridgeVertices.length // set the previous point to the top index of the vertex array
+                addVertex(x, y, playerSetPointsType)
+                bridgeSelectedVertex = previousPlayerSetPoint
+            }
         } else {
             // there was a previous point
 
@@ -841,12 +860,26 @@ function listStyles() {
     document.getElementById("colorSchemes").innerHTML = styleText
 }
 
+function applyStyles() {
+    let invertImage             = getBooleanValue("invertColors")           ? "invert(1)"           : ""
+    let turnContrastUp          = getBooleanValue("turnContrastUp")         ? "contrast(200%)"      : ""
+    let turnBrightnessUp        = getBooleanValue("turnBrightnessUp")       ? "brightness(200%)"    : ""
+    let turnSaturationUp        = getBooleanValue("turnSaturationUp")       ? "saturate(200%)"      : ""
+
+    if (invertImage || turnContrastUp || turnBrightnessUp || turnSaturationUp) {
+        document.getElementById("html").style.filter = `${invertImage} ${turnContrastUp} ${turnBrightnessUp} ${turnSaturationUp}`
+    } else {
+        document.getElementById("html").style.filter = "none"
+    }
+}
+
 
 
 // //////////////////////////////////////////////////////////////////////
 
 
 
+let currentSpeed = 1
 function gameLoop() {
     if (bridgeHasChanged) {
         drawBridge()
@@ -854,14 +887,17 @@ function gameLoop() {
     }
 
     if (isSimulating && !isSimulationPaused) {
-        simulateBridge()
+        simulateTick()
     }
 }
 
 window.onload = function() {
     resetCanvas()
+    applyStyles()
 
     applyStyle(currentStyle)
+
+    prepareBridgeSave()
 
     document.getElementById("canvasBridge").addEventListener("click", detectMouseOnCanvas)
     document.getElementById("canvasBridge").addEventListener("wheel", scaleCanvasWithWheel)
@@ -873,9 +909,13 @@ window.onload = function() {
 
     document.getElementById("levelSelectorNextButton").addEventListener("click", selectNextLevel)
     document.getElementById("levelSelectorPreviousButton").addEventListener("click", selectPreviousLevel)
-    
     document.getElementById("levelSelectorLastButton").addEventListener("click", selectLastLevel)
     document.getElementById("levelSelectorFirstButton").addEventListener("click", selectFirstLevel)
+
+    document.getElementById("autoSelectorNextButton").addEventListener("click", selectNextAuto)
+    document.getElementById("autoSelectorPreviousButton").addEventListener("click", selectPreviousAuto)
+    document.getElementById("autoSelectorLastButton").addEventListener("click", selectLastAuto)
+    document.getElementById("autoSelectorFirstButton").addEventListener("click", selectFirstAuto)
     
     document.getElementById("scaleControlUp").addEventListener("click", scaleCanvasUp)
     document.getElementById("scaleControlZero").addEventListener("click", scaleCanvasZero)
@@ -892,9 +932,19 @@ window.onload = function() {
     document.getElementById("topMenuStopSimulation").addEventListener("click", stopSimulating)
 
     document.getElementById("topMenuSimulationStartedPause").addEventListener("click", toggleSimulationPause)
-    document.getElementById("topMenuSimulationStartedForward").addEventListener("click", forwardSimulation)
+    document.getElementById("topMenuSimulationStartedForward").addEventListener("click", simulateTick)
+    document.getElementById("topMenuSimulationStartedSpeedChange").addEventListener("change", changeSimulationSpeed)
+    document.getElementById("topMenuSimulationStartedSpeedReset").addEventListener("click", resetSimulationSpeed)
     
     document.getElementById("budgetControlProgress").addEventListener("click", checkBudget)
+    
+    document.getElementById("invertColors").addEventListener("click", applyStyles)
+    document.getElementById("turnContrastUp").addEventListener("click", applyStyles)
+    document.getElementById("turnBrightnessUp").addEventListener("click", applyStyles)
+    document.getElementById("turnSaturationUp").addEventListener("click", applyStyles)
+
+    document.getElementById("audioLogNext").addEventListener("click", nextMusicFromList)
+    document.getElementById("audioLogPrevious").addEventListener("click", previousMusicFromList)
 
     // menu buttons
     document.getElementById("optionsMenuOpenButton").addEventListener("click", toggleMenuOptions)
@@ -904,15 +954,21 @@ window.onload = function() {
     document.getElementById("levelSelectorCloseButton").addEventListener("click", toggleMenuLevels)
 
     document.getElementById("playSelectedLevelButton").addEventListener("click", playSelectedLevel)
+    
+    document.getElementById("winMenuCloseButton").addEventListener("click", toggleMenuWin)
 
     // checkboxes, inputs
     document.getElementById("canDeleteEdges").addEventListener("change", setEdgeDeletion)
     document.getElementById("canContinuousBuilding").addEventListener("change", setContinuousBuilding)
+    document.getElementById("canSetRandomPoints").addEventListener("change", setSettingRandomPoints)
     document.getElementById("showArrowset").addEventListener("change", toggleArrowset)
     document.getElementById("canAlignToGrid").addEventListener("change", setAlignToGrid)
     document.getElementById("showGrid").addEventListener("change", setShowGrid)
 
     document.getElementById("profileName").addEventListener("change", setProfileName)
+
+    document.getElementById("shouldMusicLoop").addEventListener("click", setLoopMusic)
+    document.getElementById("autoplayMusic").addEventListener("click", setAutoplayMusic)
 
 
 
@@ -920,17 +976,24 @@ window.onload = function() {
 
     setEdgeDeletion()
     setContinuousBuilding()
+    setSettingRandomPoints()
+    toggleArrowset()
     setAlignToGrid()
     setShowGrid()
+
     setProfileName()
+    changeSimulationSpeed()
 
     sendMessage(true, "welcome")
 
     setCurrentLevel(0)
-    drawBridge()
 
     listStyles()
     displayLevelInfo(selectedLevel)
+    displayAutoInfo(selectedAuto)
+
+    toggleMenuLevels()
+    playSelectedLevel()
 }
 
 window.onkeyup = (event) => {
@@ -963,6 +1026,17 @@ window.onkeyup = (event) => {
 
             case "c": {
                 scaleCanvasDown()
+                break;
+            }
+
+            // music
+            case ",": {
+                previousMusicFromList()
+                break;
+            }
+
+            case ".": {
+                nextMusicFromList()
                 break;
             }
 

@@ -65,20 +65,33 @@ function toggleSimulationPause() {
     }
 }
 
-function forwardSimulation(event, count = 1) {
-    for (let i = 0; i < count; i++) {
+function simulateTick() {
+    for (let i = 0; i < currentSpeed; i++) {
         simulateBridge()
+
+        simulatePhysicals()
     }
 }
 
 
 
-function setGravity(v) {
-    gravityValue = v
+function gravityEarth(x, y) {
+    return [0, -9.807]
 }
 
-// let gravityValue = [0, 0] // m/s²
-let gravityValue = [0, -9.807] // m/s²
+function gravityCentered(x, y) {
+    let d = Math.sqrt(x**2 + y**2)
+    let m2 = 1
+    let G = 1000
+    let Gm2d = G * m2 / d**2
+    return [-x * Gm2d, -y * Gm2d]
+}
+
+function setGravity(fv) {
+    gravityValue = fv
+}
+
+let gravityValue = () => {} // m/s²
 let constraintResolveSubStepAmount = 4
 let collisions = []
 
@@ -93,9 +106,11 @@ function simulateBridge() {
     for (let i = 0; i < constraintResolveSubStepAmount; i++) {
         for (let i = 0; i < bridgeVertices.length; i++) {
             let v = bridgeVertices[i];
+            let vertex = vertexProperties[v[2]]
 
-            if (!vertexProperties[v[2]].isSolid) {
-                v[3] = vectorAdd(v[3], vectorMul(deltaTime, gravityValue))
+            if (!vertex.isSolid) {
+                let vertexMass = vertex.mass // maybe mass equal to 0.5 * (mass of all connected edges) ?
+                v[3] = vectorAdd(v[3], vectorMul(deltaTime, vectorMul(vertexMass, gravityValue(v[0], v[1]))))
             }
 
             previousPositions[i] = [v[0], v[1]]
@@ -121,7 +136,7 @@ function simulateBridge() {
         for (let i = 0; i < bridgeVertices.length; i++) {
             let v = bridgeVertices[i];
 
-            // set the position th average of deltas from deltaPositions
+            // set the position to the average of deltas from deltaPositions
             let averageDelta = [0, 0]
             if (deltaPositions[i]) {
                 averageDelta = averageVector(deltaPositions[i])
@@ -150,7 +165,8 @@ function simulateBridge() {
 
 
 
-    simulationTick += constraintResolveSubStepAmount
+    // simulationTick += constraintResolveSubStepAmount
+    simulationTick += 1
     document.getElementById("simulationTick").innerText = simulationTick
 
     bridgeHasChanged = true
@@ -205,3 +221,144 @@ function solveDistanceConstraint(i0, i1, l0, type) {
     return extent
 }
 
+function changeSimulationSpeed() {
+    let newSpeed = Number(document.getElementById("topMenuSimulationStartedSpeedChange").value)
+
+    currentSpeed = newSpeed
+    document.getElementById("simulationSpeed").innerText = currentSpeed
+}
+
+function resetSimulationSpeed() {
+    document.getElementById("topMenuSimulationStartedSpeedChange").value = "4"
+
+    changeSimulationSpeed()
+}
+
+
+
+
+
+// //////////////////////////////////////////////////////////////////////
+// PHYSICAL OBJECTS OTHER THAN THE BRIDGE
+// //////////////////////////////////////////////////////////////////////
+
+function addPhysical(x, y, type, objectName) {
+    switch (type) {
+        case "auto": {
+            let objectSize = autosList[objectName].size
+            let objectPoints = autosList[objectName].points
+
+            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0], 0, objectPoints])
+            break
+        }
+
+        default: {break}
+    }
+}
+
+function drawPhysical(physicalObject) {
+    switch (physicalObject[2]) {
+        case "auto": {
+            let car = autosList[physicalObject[3]]
+
+            switch (car.name) {
+                case "Bicycle": {
+                    setCanvasStrokeWidth(0)
+                    setCanvasFillColor("black")
+                    drawPolygon(arrayOfVectorsAddVector(car.points, [physicalObject[0], physicalObject[1]]))
+                    ctx.fill()
+
+                    setCanvasFillColor("white")
+                    drawText(physicalObject[0], physicalObject[1], "Bicykl", "center")
+                    break;
+                }
+
+                default: {break}
+            }
+
+            break
+        }
+
+        case "shape": {
+            switch (physicalObject[3]) {
+                case "polygon": {
+                    setCanvasFillColor(physicalObject[1])
+                    drawPolygon(physicalObject[6])
+                    ctx.fill()
+
+                    break
+                }
+
+                default: {break}
+            }
+
+            break
+        }
+
+        default: {break}
+    }
+}
+
+let maxCarDistanceFromCenter = 10000
+function simulatePhysicals() {
+    for (let i = 0; i < bridgePhysicals.length; i++) {
+        let p = bridgePhysicals[i]
+        let physicalType = p[2]
+
+        switch (physicalType) {
+            case "auto": {
+                let auto = autosList[p[3]]
+
+                p[4] = vectorAdd(p[4], vectorMul(deltaTime, vectorMul(auto.mass, gravityValue(p[0], p[1]))))
+
+                let updatedPosition = vectorAdd([p[0], p[1]], vectorMul(deltaTime, p[4]))
+                p[0] = updatedPosition[0]
+                p[1] = updatedPosition[1]
+
+                // if the car is gone, stop the simulation
+                if (vectorLength([p[0], p[1]] > maxCarDistanceFromCenter)) {
+                    stopSimulating()
+
+                    sendMessage(true, "carLost")
+                }
+            }
+
+            default: {break}
+        }
+
+
+
+        // SIMULATE PHYSICAL'S PHYSICS
+        // check for collisions, and then make them not colliding
+
+        let poly0
+        switch (physicalType) {
+            case "auto": {
+                poly0 = arrayOfVectorsAddVector(p[6], [p[0], p[1]])
+                break
+            }
+
+            default: {break}
+        }
+
+        if (poly0) { // if the polygon is set
+            // collisions with other physicals
+            for (let j = 0; j < bridgePhysicals.length; j++) {
+                if (j !== i) {
+                    doPolygonsCollide(poly0, bridgePhysicals[j][6])
+                }
+            }
+
+            // collisions with the bridge
+            for (let j = 0; j < bridgeEdges.length; j++) {
+                let e = bridgeEdges[i]
+    
+                let v0 = bridgeVertices[e[0]]
+                let v1 = bridgeVertices[e[1]]
+    
+                let edgePoints = [[v0[0], v0[1]], [v1[0], v1[1]]]
+                doPolygonsCollide(poly0, edgePoints)
+            }
+        }
+    }
+}

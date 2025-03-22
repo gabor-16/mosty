@@ -51,19 +51,12 @@ function switchOptionsDialogMenu(tabId) {
     removeClass("optionsDialogMenu" + tabId, "blank")
 }
 
-function switchOptionsDialogLevel(tabId) {
-    addClass("optionsLevelSelectorLevel", "blank")
-    addClass("optionsLevelSelectorOptions", "blank")
-
-    removeClass("optionsLevelSelector" + tabId, "blank")
-
-    if (tabId == "Options") {
-        addAttribute("levelSelectorNextButton", "disabled")
-        addAttribute("levelSelectorLastButton", "disabled")
-        addAttribute("levelSelectorPreviousButton", "disabled")
-        addAttribute("levelSelectorFirstButton", "disabled")
+let win = toggleMenuWin
+function toggleMenuWin() {
+    if (toggleDialog("winMenu")) {
+        canUseKeyboardShortcuts = false
     } else {
-        displayLevelInfo()
+        canUseKeyboardShortcuts = true
     }
 }
 
@@ -104,7 +97,10 @@ let userMessages = {
     "welcome": "Welcome to the game!<br>For starters, try clicking somewhere on the screen above!",
 
     // errors, info
-    "vertexDeletion": "Can't delete permenent vertices!",
+    "vertexDeletion": "Can't delete permenent Vertices!",
+    "cantMakeVertex": "Can't create a Veretex here!",
+
+    "carLost": "The car flew through and to Infinity.", // when the car flies too far
 
     "savedData": "Data saved in the memory.",
     "loadedData": "Data loaded from memory.",
