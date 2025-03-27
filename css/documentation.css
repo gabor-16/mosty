@@ -3,11 +3,16 @@ code {
     padding: 5px;
 }
 
-div {
-    width: 600px;
+section {
+    width: 700px;
 }
 
 img {
-    height: 70%;
-    width: 70%;
+    height: 60%;
+    width: 60%;
+}
+
+li a {
+    text-decoration: none;
+    color: blue;
 }

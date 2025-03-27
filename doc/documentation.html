@@ -12,64 +12,96 @@
     <div id="contents">
         <h1>Spis treści</h1>
         <ul>
-            <li><a href="#introduction">Wstęp</a></li>
-            <li><a href="#instalation">Instalacja</a></li>
-            <li><a href="#algorithms">Zastosowane algorytmy</a></li>
-            <li><a href="#tests">Testy</a></li>
-            <li><a href="#errors">Napotkane błędy</a></li>
+            <li><a href="#contents">Spis treści</a></li>
+            <li><a href="#introduction">Wstęp</a>
+                <ul>
+                    <li><a href="#summary">Krótki opis gry</a></li>
+                    <li><a href="#thisGood">Czym chcemy się pochwalić</a></li>
+                </ul>
+            </li>
+            <li><a href="#instalation">Instalacja</a>
+                <ul>
+                    <li><a href="#download">Pobieranie</a>
+                        <ul>
+                            <li><a href="#repoDownload">Pobieranie ze strony repozytorium</a></li>
+                            <li><a href="#gitDownload">Pobieranie przez git</a></li>
+                        </ul>
+                    <li><a href="#runGame">Uruchomienie gry</a></li>
+            </li>
+        </ul>
+        </li>
+        <li><a href="#algorithms">Zastosowane algorytmy</a></li>
+        <li><a href="#tests">Testy</a></li>
+        <li><a href="#errors">Napotkane błędy</a></li>
         </ul>
     </div>
 
-    <div id="introduction">
-        <h1>Wstęp</h1>
+    <h1 id="introduction">Wstęp</h1>
+    <section>
         <p>To jest dokumentacja do gry Most(l)y Done. Zawarte tu są informacje dotyczące pobierania programu z
             repozytorium, użytych algorytmów oraz błedy które napotkaliśmy w czasie trwania projektu. <br>
-            Na dokumentacje do gry składa się ten plik, obrazy w folderze doc a także komentarze zawarte w plikach kodu.</p>
-        <h2>Czym chcemy się pochwalić</h2>
+            Na dokumentacje do gry składa się ten plik, obrazy w folderze doc a także komentarze zawarte w plikach kodu.
+        </p>
+        <h2 id="summary">Krótki opis gry</h2>
+        <p>Gra typu budowanie mostów, główną inspiracją w tworzeniu projektu była gra
+            <a target="_blank" href="https://store.steampowered.com/app/367450/Poly_Bridge/">Poly Bridge. </a>
+            Głównym celem w grze jest stworzenie mostów będących w stanie utrzymać pojazdy starające się przejechać na
+            drugą stronę.
+        </p>
+        <h2 id="thisGood">Czym chcemy się pochwalić</h2>
+        <!-- orginalna nazwa, zapał do pracy, realistyczne wartości do funkcji fizycznych, -->
         <p>Niczym. Realistyczne zmienne ig</p>
-    </div>
+    </section>
 
-    <div id="instalation">
-        <h1>Instalacja</h1>
-        <h2>Pobieranie</h2>
-        <p>Do korzystania nie są potrzebne żadne dodatkowe zależności. Potrzebna jest tylko działająca przeglądarka i dostęp do internetu przy pobieraniu.</p>
+    <h1 id="instalation">Instalacja</h1>
+    <section>
+        <h2 id="download">Pobieranie</h2>
+        <p>Do korzystania nie są potrzebne żadne dodatkowe zależności. Potrzebna jest tylko działająca przeglądarka i
+            dostęp do internetu przy pobieraniu.</p>
         <p>Grę najpierw należy pobrać. Wszystkie pliki gry znajdują się na repozytorium na githubie. Są dwa sposoby aby
             pobrać repozytorium: za pomocą programu git lub pobrać folder ze strony repozytorium.</p>
         <br>
 
-        <h3>Pobieranie ze strony repozytorium</h3>
-        <p>Aby pobrać grę należy wejść na <a href="https://github.com/gabor-16/mosty">repozytorium</a> klikąć przycisk
+        <h3 id="repoDownload">Pobieranie ze strony repozytorium</h3>
+        <p>Aby pobrać grę należy wejść na
+            <a target="_blank" href="https://github.com/gabor-16/mosty">repozytorium</a>
+            klikąć przycisk
             "Code" i w rozwijanym menu "Download ZIP". Pobrany zostanie folder zip zawierający wszyskie pliki, który
-            trzeba rozpakować.</p>
+            trzeba rozpakować.
+        </p>
         <img src="images/githubDownload.png" alt="github download zip">
         <br>
 
-        <h3>Pobieranie przez git</h3>
+        <h3 id="gitDownload">Pobieranie przez git</h3>
         <p>Urzywając wiersza poleceń w wybranym przez nas folderze używamy polecenia git pull z adresem repozytorium.
             Pobrany zostanie folder zawierający wszystkie pliki.
         </p>
         <code>git clone https://github.com/gabor-16/mosty</code>
 
-        <h2>Uruchomienie gry</h2>
-        <p>Aby uruchomić program należy otworzyć plik main.html w przeglądarce. Po załadowaniu pokaże się samouczek.</p>
-    </div>
+        <h2 id="runGame">Uruchomienie gry</h2>
+        <p>Aby uruchomić program należy otworzyć plik main.html w przeglądarce. Po załadowaniu pokaże się samouczek.
+            Poziomy można wybierać dowolnie w menu wyboru poziomów.</p>
+    </section>
 
-    <div id="algorithms">
-        <h2>Algorytmy</h2>
+    <h1 id="algorithms">Algorytmy</h1>
+    <section>
         <p>Tutaj znajdują się opisy algorytmów użytych do stworzenia gry.</p>
-    </div>
+    </section>
 
-    <div id="tests">
-        <h1>Testy</h1>
+    <h1 id="tests">Testy</h1>
+    <section>
         <p>Tutaj znajdują się opisy oraz przykłady używania testów znajdujących się w tests.js.</p>
-    </div>
+    </section>
 
-    <div id="errors">
-        <h2>Napotkane błędy</h2>
+    <h1 id="errors">Napotkane błędy</h1>
+    <section>
         <p>Ta sekcja dokumentacji jest poświęcona błędom, które napotkaliśmy na swojej drodze podczas tworzenia gry. Nie
             zawiera ona istotnych informacji na temat gry ale uznaliśmy, że ją dodamy aby udokumentować niektóre ciekawe
             błędy, które stworzyliśmy.</p>
-    </div>
+        <p>Pomijając oczywiste problemy typu konflikty lub jedej osoby która miała tyle błedów na gałęzi, że trzeba było
+            ją robić od nowa i trzeba było siedzieć na tym dobre 30 minut to z bardziej interesujących błedów będą
+            opisane w tej sekcji dokumentacji.</p>
+    </section>
 </body>
 
 </html>
