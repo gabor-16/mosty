@@ -1,0 +1,13 @@
+code {
+    background-color: lightgray;
+    padding: 5px;
+}
+
+div {
+    width: 600px;
+}
+
+img {
+    height: 70%;
+    width: 70%;
+}
