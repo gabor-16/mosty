@@ -140,10 +140,10 @@ function setAvailableAutos() {
 // //////////////////////////////////////////////////////////////////////
 // LEVELS
 // //////////////////////////////////////////////////////////////////////
+// BASE VALUE 0
+let currentLevel = 1
 
-let currentLevel = 0
-
-let selectedLevel = 0
+let selectedLevel = 1
 let levelsList = [
     {
         name: "Tutorial",
@@ -202,12 +202,12 @@ let levelsList = [
         ],
     },
 
-    {
-        name: "tut2",
-        desc: "Hajj :333",
-        budget: 100e100, // in euro
-        currentCost: 10,
-        difficulty: "Hard",
+    {    
+        name: "Huge hole",
+        desc: "Its a really huge hole",
+        budget: 30000, // in euro
+        currentCost: 0,
+        difficulty: "easy",
 
         cameraScale: 1,
         cameraPosition: [0, 0],
@@ -215,13 +215,14 @@ let levelsList = [
         autoEndPosition: [384, 16],
         gravity: [0, -9.807],
 
-        allowedEdges: ["w", "s", "r"], // sets level's allowed edges
+        allowedEdges: ["w", "r"], 
         availableAutos: ["Bicycle"],
 
-        // the starting values for all of the bridge values
         vertices: [
             [-256, 0, "p", [0, 0]],
-            [256, 0, "p", [0, 0]],
+            [-215, -150, "p", [0, 0]],
+            [600, 0, "p", [0, 0]],
+            [500, -150, "p", [0, 0]],
         ],
         edges: [
 
@@ -232,10 +233,12 @@ let levelsList = [
         objects: [
             ["p", ["gray", 2, "gray"], [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
             // ["p", ["gray", 2, "gray"], [[256, 0], [512, 0], [512, -256], [192, -256]]],
+            ["p", ["gray", 2, "gray"], [[600, 0], [1000, 0], [1000, -256], [450, -256]]],
         ],
         physicals: [
 
         ],
+       
     },
 
     {
