@@ -2,7 +2,11 @@
 
 Gra ta pozwala na tworzenie mostów z belek, a następnie na fizyczną symulację tych obiektów w interakcji z pojazdami przejeżdżającymi po stworzonym moście.
 Gra oferuje dokładną symulację fizyki, modele samochodów w wysokiej jakości oraz wiele wymagających i
-samodzielnie stworzonych poziomów. Wszystko jest komplementowane oprawą muzyczną.
+samodzielnie stworzonych poziomów. Wszystko jest komplementowane prostą oprawą muzyczną.
+
+Dostępne jest wiele motywów kolorystycznych wraz z dodatkowymi ustawieniami.
+Każdy gracz może dostosować grę do własnych potrzeb. Każdy aspekt gry da się w jakiś sposób zmodyfikować, każdy znajdzie coś dla siebie.
+Możliwe jest zapisywanie oraz wczytywanie zapisanych przez użytkownika konstrukcji.
 
 ## Pobieranie
 

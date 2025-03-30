@@ -16,7 +16,6 @@
             <li><a href="#introduction">Wstęp</a>
                 <ul>
                     <li><a href="#summary">Krótki opis gry</a></li>
-                    <li><a href="#thisGood">Czym chcemy się pochwalić</a></li>
                 </ul>
             </li>
             <li><a href="#instalation">Instalacja</a>
@@ -29,8 +28,15 @@
                     <li><a href="#runGame">Uruchomienie gry</a></li>
             </li>
         </ul>
+        <li><a href="#locations">Funkcje plików</a></li>
         </li>
-        <li><a href="#algorithms">Zastosowane algorytmy</a></li>
+        <li><a href="#algorithms">Zastosowane algorytmy</a>
+            <ul>
+                <li>
+                    <a href="#beamLenght">Ograniczenie długości belek między punktami mostu</a>
+                </li>
+            </ul>
+        </li>
         <li><a href="#tests">Testy</a></li>
         <li><a href="#errors">Napotkane błędy</a></li>
         </ul>
@@ -48,9 +54,6 @@
             Głównym celem w grze jest stworzenie mostów będących w stanie utrzymać pojazdy starające się przejechać na
             drugą stronę.
         </p>
-        <h2 id="thisGood">Czym chcemy się pochwalić</h2>
-        <!-- orginalna nazwa, zapał do pracy, realistyczne wartości do funkcji fizycznych, -->
-        <p>Niczym. Realistyczne zmienne ig</p>
     </section>
 
     <h1 id="instalation">Instalacja</h1>
@@ -76,21 +79,100 @@
         <p>Urzywając wiersza poleceń w wybranym przez nas folderze używamy polecenia git pull z adresem repozytorium.
             Pobrany zostanie folder zawierający wszystkie pliki.
         </p>
-        <code>git clone https://github.com/gabor-16/mosty</code>
+        <pre><code>git clone https://github.com/gabor-16/mosty</code></pre>
 
         <h2 id="runGame">Uruchomienie gry</h2>
         <p>Aby uruchomić program należy otworzyć plik main.html w przeglądarce. Po załadowaniu pokaże się samouczek.
             Poziomy można wybierać dowolnie w menu wyboru poziomów.</p>
     </section>
 
+    <h1 id="locations">Funkcje plików</h1>
+    <section>
+        <h2><a href="../js/bridges.js">Bridges</a></h2>
+        <p>Plik główny. Zawiera on: </p>
+        <ul>
+            <li>dane o punktach i połączeniach mostu oraz funkcje do ich edycji</li>
+            <li>zpis i wczytywanie mostu</li>
+            <li>funkcje rysujące most, punkty i połączenia</li>
+            <li>funkcje interakcji z grą (zmiana ustawień, zaznaczanie)</li>
+            <li>informacje o dostępnych stylach</li>
+            <li>funkcje pętli gry</li>
+            <li>funkcje dla elementów menu (guzików, pola wyboru)</li>
+        </ul>
+
+        <h2><a href="../js/canvas.js">Canvas</a></h2>
+        <ul>
+            <li>rysowanie okna gry i jego elementów</li>
+            <li>informacje o stylach kanwy</li>
+            <li>transformacjach kanwy</li>
+        </ul>
+
+        <h2><a href="../js/levels.js">Levels</a></h2>
+        <ul>
+            <li>informacje o poziomach: nazwa, punkty budowy, budżet, trudność, dozwolone samochody i belki, podłoże
+            </li>
+            <li>inforamcje o samochodach: nazwa, masa, prędkość, rozmiar</li>
+            <li>funkcje do wyboru samochodów oraz poziomów</li>
+        </ul>
+
+        <h2><a href="../js/math.js">Math</a></h2>
+        <ul>
+            <li>funkcje do wykonywania obliczeń matematycznych: zaokrąglanie, obliczenia na wektorach</li>
+            <li>funkcje do wykrywania kolizji</li>
+        </ul>
+
+        <h2><a href="../js/menus.js">Menus</a></h2>
+        <ul>
+            <li>funkcje do wypisywania informacji w oknie dialogowym</li>
+        </ul>
+
+        <h2><a href="../js/music.js">Music</a></h2>
+        <ul>
+            <li>listę dostępnych ścieżek dźwiękowych</li>
+            <li>funkcje do odtwarzania ścieżek dźwiękowych</li>
+        </ul>
+
+        <h2><a href="../js/physics.js">Physics</a></h2>
+        <ul>
+            <li>funkcje symulacji fizyki i jej przełączania</li>
+            <li>wartość gravitacji i obliczenia na niej</li>
+            <li>symulację fizyki mostu</li>
+            <li>funkcje do ograniczania długości belek</li>
+            <li>symulacje fizyki obiektów fizycznych (samochodów)</li>
+        </ul>
+
+        <h2><a href="../js/tests.js">Tests</a></h2>
+        <ul>
+            <li>testy do sprawdzania poprawności wykonywania się funkcji, byłyby ale zabrakło czasu</li>
+        </ul>
+    </section>
     <h1 id="algorithms">Algorytmy</h1>
     <section>
         <p>Tutaj znajdują się opisy algorytmów użytych do stworzenia gry.</p>
+        <h2 id="beamLenght">Ograniczenie długości belek między punktami mostu</h2>
+        <p>
+            Funkcja solveDistanceConstraint w physics.js sprawia, że dwa dane punkty oddalone są od siebie o preferowaną
+            długość. Funkcja oblicza odległość pomiedzy połączonymi punktami, a następnie przemieszcza je o wektor
+            obliczany na podstawie stosunku ich mas.
+        </p>
+        <p>Obraz przedstawiający obliczenia które wykonuje funkcja, a także model przemieszczenia punktów.</p>
+        <img src=".//images/PBD.png" alt="Position Based Dynamics">
+        <p><a href="https://www.youtube.com/watch?v=jrociOAYqxA">Link do filmu tłumaczącego</a></p>
+        <p>Przykład zastosowania</p>
+        <pre><code>
+for (let i = 0; i < bridgeEdges.length; i++) {
+let e = bridgeEdges[i]
+let extent = solveDistanceConstraint(e[0], e[1], e[3], e[2])
+}
+</code></pre>
+        <p>Pętla wykonuje funkcje dla każdej krawędzi mostu.</p>
+
     </section>
 
     <h1 id="tests">Testy</h1>
     <section>
-        <p>Tutaj znajdują się opisy oraz przykłady używania testów znajdujących się w tests.js.</p>
+        <p>Tutaj znajdują się opisy oraz przykłady używania testów znajdujących się w tests.js. Testy nie zostały
+            stworzone z przyczyny braku czasu.</p>
     </section>
 
     <h1 id="errors">Napotkane błędy</h1>
@@ -101,6 +183,24 @@
         <p>Pomijając oczywiste problemy typu konflikty lub jedej osoby która miała tyle błedów na gałęzi, że trzeba było
             ją robić od nowa i trzeba było siedzieć na tym dobre 30 minut to z bardziej interesujących błedów będą
             opisane w tej sekcji dokumentacji.</p>
+
+        <h3>Sklonowanie samochodu</h3>
+        <p>Podczas tworzenia funkcji do rysowania samochodu oraz symulacji jego grawitacji było potrzebne obrócenie
+            samochodu aby rysunek poprawnie się wyświetlał, podczas próbowania różnych rozwiązań udało się osiągnąć
+            sytuację przedstawioną na obrazku</p>
+        <img src="images/carMitosis.png" alt="car cloning">
+        <p>Jeszcze ciekawsze było ich zachowanie albowiem odpychały się, dolny leciał na dół, a górny w górę. Po
+            zmianach w funkcji gravitacji błąd nie udało się powtórzyć tego błędu</p>
+
+        <p>Podczas tego samego testowania z funkcją rysowania samochodu udało się osiągnąć ciekawy efekt.</p>
+        <img src="images/carCloning.png" alt="a lot of car">
+        <p>Błąd wystąpił raz i więcej się nie powtórzył, dalej nie wiadomo dlaczego stało się coś takiego.</p>
+
+        <h3>Obraca się ? Obraca</h3>
+        <p>Podczas tworzenia obracania dla samochodów obiekt który symulował samochód zaczął się niekontrolowanie
+            obracać i odbijać od podłoża.</p>
+        <video src="images/gyroZeppeliCar.mp4" controls></video>
+        <p>Błąd powstał w wyniku testowania czy funkcja obracania działa.</p>
     </section>
 </body>
 
