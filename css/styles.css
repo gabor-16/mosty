@@ -589,6 +589,11 @@ ul, ol {
     font-weight: bold;
 }
 
+.bigger {
+    font-size: 1.75rem;
+    font-weight: bolder;
+}
+
 .noTop {
     margin-top: 0;
 }

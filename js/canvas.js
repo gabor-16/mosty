@@ -42,6 +42,7 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
+        "red": "#af0000",
 
         "grid": "#ffffff",
 
@@ -54,6 +55,7 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
+        "red": "#af0000",
 
         "grid": "#a0a0a0",
 
@@ -66,6 +68,7 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
+        "red": "#af0000",
 
         "grid": "#a0a0a0",
 
@@ -78,6 +81,7 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
+        "red": "#af0000",
 
         "grid": "#a0a0a0",
 
@@ -90,6 +94,7 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
+        "red": "#af0000",
 
         "grid": "#a0a0a0",
 
@@ -99,11 +104,19 @@ const CANVASCOLORS = {
     },
 }
 function setCanvasFillColor(color) {
-    ctx.fillStyle = CANVASCOLORS[currentStyleName][color]
+    if (CANVASCOLORS[currentStyleName][color] !== undefined) {
+        ctx.fillStyle = CANVASCOLORS[currentStyleName][color]
+    } else {
+        ctx.fillStyle = color
+    }
 }
 
 function setCanvasStrokeColor(color) {
-    ctx.strokeStyle = CANVASCOLORS[currentStyleName][color]
+    if (CANVASCOLORS[currentStyleName][color] !== undefined) {
+        ctx.strokeStyle = CANVASCOLORS[currentStyleName][color]
+    } else {
+        ctx.strokeStyle = color
+    }
 }
 
 function setCanvasStrokeWidth(size) {
@@ -220,7 +233,6 @@ function drawPolygon(points) {
     }
     ctx.closePath()
 }
-
 
 // Continious versions of some of the above functions:
 // (they can be used one after the other, without stroking/filling, which makes it less expensive)

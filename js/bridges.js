@@ -1,5 +1,5 @@
 const l = console.log
-const p = "Lorem ipsum odor amet, consectetuer adipiscing elit."
+const physical = "Lorem ipsum odor amet, consectetuer adipiscing elit."
 
 
 
@@ -20,9 +20,8 @@ let bridgeObjects = [ // a list of objects that have an inpact on the level look
 ]
 
 let bridgePhysicals = [ // a list of all physical objects, such as autos
-    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points]
-    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points, [centerX, centerY, maxRadius]]
-    // shapes: [, fill color, object type, object name, , , points]
+    // [x, y, object type, object name, velocity [vx, vy], rotation from x-axis in radians, points, angularVelocity]
+    // shapes: [[centerX, centerY], fill color, object type, object name, , , points]
 ]
 
 
@@ -52,6 +51,10 @@ let localSaveAlias = "bridgesSave" // don't change this value - it will make old
 function saveBridge(localSave = true) {
     let i = currentLevel
 
+    // if (!bridgeSave) {
+        // return false
+    // }
+
     if (bridgeSave.levels[i] === undefined) {
         bridgeSave.levels[i] = {}
     }
@@ -78,7 +81,7 @@ function saveBridge(localSave = true) {
 
 function loadBridge(localLoad = true) {
     if (localLoad) {
-        bridgeSave = JSON.parse(localStorage.getItem(localSaveAlias + saveName))
+        bridgeSave = JSON.parse(localStorage.getItem(localSaveAlias + profileName))
     }
 
     let i = currentLevel
@@ -146,46 +149,59 @@ let allowedEdgeTypes = ["r", "w", "s"]
 let edgeProperties = {
     w: { // wood
         name: "Wooden Beam",
-        description: "Strong, cheap, and - most importantly - cheap.<br>Wood is the ideal material for creating small, durable constructions.",
+        description: "Cheap, reliable, and - most importantly - cheap.<br>Wood is the ideal material for creating small, durable constructions.",
         icon: "-",
+        isRoad: false,
 
         radius: 2, // in centimeters (pixels)
-        maxLength: 6, // in meters (100ths of pixels) // chapter 5 of https://alsyedconstruction.com/maximum-beam-span-for-residential-construction/
+        // maxLength: 6, // in meters (100ths of pixels) // chapter 5 of https://alsyedconstruction.com/maximum-beam-span-for-residential-construction/
+        maxLength: 2,
         cylinderVolume: 12.566370614359172, // π * radius², computed with js
         cost: 0.002940, // per cm³
         density: 0.85, // g/cm³ // oak wood from https://educatoral.com/density_of_substances.html
         stiffness: 0,
+
+        maxLengthDelta: 1.075, // how much can the material expand in lenght before it breaks.
     },
 
     s: { // steel
         name: "Steel Beam",
         description: "A material on the stronger side of things.<br>Steel can be used when a small structure has to support a lot of weight.",
         icon: "—",
+        isRoad: false,
 
         radius: 2.5,
-        maxLength: 18, // https://steelconstruction.info/Long-span_beams
+        // maxLength: 18, // https://steelconstruction.info/Long-span_beams
+        maxLength: 6,
         cylinderVolume: 19.634954084936208,
         cost: 0.010775,
         density: 7.75, // bottom value from https://en.wikipedia.org/wiki/Steel
         stiffness: 0,
+
+        maxLengthDelta: 1.15,
     },
 
     r: { // road
         name: "Concrete Road",
         description: "Material tested and prepared for carrying heavy loads.",
         icon: "_",
+        isRoad: true,
 
         radius: 3,
-        maxLength: 7, // https://www.quora.com/What-is-the-maximum-span-for-a-simply-supported-concrete-beam
+        // maxLength: 7, // https://www.quora.com/What-is-the-maximum-span-for-a-simply-supported-concrete-beam
+        maxLength: 2.3,
         cylinderVolume: 28.274333882308138,
         cost: 0.005685,
         density: 2.4, // https://en.wikipedia.org/wiki/Properties_of_concrete
         stiffness: 0,
+
+        maxLengthDelta: 1.05,
     },
 }
 
 
 
+let drawDebug = true
 function drawBridge(verticesArray = bridgeVertices, edgesArray = bridgeEdges) {
     clearCanvas()
 
@@ -300,7 +316,6 @@ function drawSelectedPoint(x, y, type) {
     drawEmptyPoint(x, y, edgeProperties[playerSetEdgesType].maxLength * 100)
 }
 
-// sets playerSetEdgesType
 function setEdgeType(edgeType) {
     playerSetEdgesType = edgeType
 
@@ -320,7 +335,7 @@ function listAllowedEdgeTypes() {
                 <label for="edgeSelector${e.name}">
                     <p><b>Set Edge Type to<br>${e.name}</b></p>
                     <p>${e.description}</p>
-                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span><br>(Expands up to <span class="emphasis">${e.maxLengthDelta}&times;</span>)</p>
                     <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
@@ -340,7 +355,7 @@ function listAllowedEdgeTypes() {
                 <label for="edgeSelector${e.name}">
                     <p><b>Set Edge Type to<br>${e.name}</b></p>
                     <p>${e.description}</p>
-                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span></p>
+                    <p>Maximal lenght: <span class="emphasis">${e.maxLength}m</span><br>(Expands up to <span class="emphasis">${e.maxLengthDelta}&times;</span>)</p>
                     <p>Cost per m³: <span class="emphasis">${round(e.cost * 1000000)}€</span></p>
                 </label>
             </div>`
@@ -361,6 +376,15 @@ function setSelectedEdgeButton(edgeType) {
 }
 
 function drawObject(o) {
+    if (o[1][0] !== undefined) {
+        setCanvasStrokeColor(o[1][0])
+        setCanvasStrokeWidth(o[1][1])
+    }
+
+    if (o[1][2] !== undefined) {
+        setCanvasFillColor(o[1][2])
+    }
+
     switch (o[0]) {
         case "p": { // polygon
             drawPolygon(o[2])
@@ -380,21 +404,21 @@ function drawObject(o) {
             break
         }
 
+        case "t": {
+            drawText(o[2][1],
+                o[2][2],
+                o[2][0],
+                o[2][3],
+                o[2][4]
+            )
+            break
+        }
+
         default: {break}
     }
 
-    if (o[1][0] !== undefined) {
-        setCanvasStrokeColor(o[1][0])
-        setCanvasStrokeWidth(o[1][1])
-
-        ctx.stroke()
-    }
-
-    if (o[1][2] !== undefined) {
-        setCanvasFillColor(o[1][2])
-
-        ctx.fill()
-    }
+    ctx.stroke()
+    ctx.fill()
 }
 
 
@@ -439,6 +463,21 @@ function setContinuousBuilding() {
 
 function setSettingRandomPoints() {
     playerCanMakeRandomVertices = getBooleanValue("canSetRandomPoints")
+}
+
+function setDrawDebug() {
+    drawDebug = getBooleanValue("drawDebug")
+    drawBridge()
+}
+
+let deleteEdgesOnTension = true
+function setDeleteEdgesOnTension() {
+    deleteEdgesOnTension = getBooleanValue("deleteEdgesOnTension")
+}
+
+let drawExtent = false
+function setDrawExtent() {
+    drawExtent = getBooleanValue("drawExtent")
 }
 
 let profileName = ""
@@ -958,6 +997,9 @@ window.onload = function() {
     document.getElementById("showArrowset").addEventListener("change", toggleArrowset)
     document.getElementById("canAlignToGrid").addEventListener("change", setAlignToGrid)
     document.getElementById("showGrid").addEventListener("change", setShowGrid)
+    document.getElementById("drawDebug").addEventListener("change", setDrawDebug)
+    document.getElementById("deleteEdgesOnTension").addEventListener("change", setDeleteEdgesOnTension)
+    document.getElementById("drawExtent").addEventListener("change", setDrawExtent)
 
     document.getElementById("profileName").addEventListener("change", setProfileName)
 
@@ -974,6 +1016,9 @@ window.onload = function() {
     toggleArrowset()
     setAlignToGrid()
     setShowGrid()
+    setDrawDebug()
+    setDeleteEdgesOnTension()
+    setDrawExtent()
 
     setProfileName()
     changeSimulationSpeed()
@@ -988,6 +1033,8 @@ window.onload = function() {
 
     toggleMenuLevels()
     playSelectedLevel()
+
+    loadBridge(true)
 }
 
 window.onkeyup = (event) => {

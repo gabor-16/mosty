@@ -7,6 +7,7 @@
     <title>Most(l)y Done</title>
 
     <link type="image/x-icon"   rel="icon"          href="img/fav.svg">
+    <!-- <link type="image/x-icon"   rel="icon"          href="img/fav.png"> -->
     <link type="text/css"       rel="stylesheet"    href="css/styles.css">
 
     <script defer src="js/physics.js"></script>
@@ -48,8 +49,10 @@
         </div>
         <div class="windowCentralLight dialogMenu generalDiv">
             <div id="optionsDialogMenuGeneral">
-                <h2>General Options</h2>
+                <h2>Options</h2>
                 <hr>
+                <p class="big noBottom">General Options</p>
+                <p class="small noTop">General, visual changes.</p>
                 <div class="relative bottomMargin">
                     <input type="checkbox" id="showArrowset" class="option menuButton" checked>
                     <div class="buttonDescription buttonDescriptionLeft">
@@ -60,6 +63,7 @@
                     </div>
                     <label for="showArrowset">Show Arrowset?</label>
                     <br>
+
                     <input type="checkbox" id="showGrid" class="option menuButton" checked>
                     <div class="buttonDescription buttonDescriptionLeft">
                         <label for="showGrid">
@@ -67,8 +71,23 @@
                             <p>When <span class="booleanValue">true</span>, displays a Grid when Align to Grid is <span class="booleanValue">true</span>.</p>
                         </label>
                     </div>
-                    <label for="showGrid">Show Grid?</label>
+                    <label for="drawDebug">Show Grid?</label>
                     <br>
+
+                    <input type="checkbox" id="drawDebug" class="option menuButton">
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="drawDebug">
+                            <p><b>Draw Debug Shapes?</b></p>
+                            <p>When <span class="booleanValue">true</span>, displays collision shapes.</p>
+                        </label>
+                    </div>
+                    <label for="showGrid">Draw Debug Shapes?</label>
+                </div>
+                <hr>
+
+                <p class="big noBottom">Dev Options</p>
+                <p class="small noTop">Changes that affect the Game in a substantial way.</p>
+                <div class="relative bottomMargin">
                     <input type="checkbox" id="canSetRandomPoints" class="option menuButton">
                     <div class="buttonDescription buttonDescriptionLeft">
                         <label for="canSetRandomPoints">
@@ -77,10 +96,23 @@
                             <p>When <span class="booleanValue">false</span>, you have to start Edge creation from an already created (or permanent) Vertex.</p>
                         </label>
                     </div>
-                    <label for="showGrid">Set Vertices Anywhere?</label>
+                    <label for="canSetRandomPoints">Set Vertices Anywhere?</label>
+                    <br>
+
+                    <input type="checkbox" id="deleteEdgesOnTension" class="option menuButton" checked>
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="deleteEdgesOnTension">
+                            <p><b>Let Tension Break Bridge Edges?</b></p>
+                            <p>When <span class="booleanValue">true</span>, the forces acting on each edge of the bridge can make them break.</p>
+                            <p class="small">Edges break when their lenght expands by more than the material allows.</p>
+                        </label>
+                    </div>
+                    <label for="deleteEdgesOnTension">Let Tension Break Bridge Edges?</label>
                 </div>
                 <hr>
-                <p class="big">Profile Options</p>
+
+                <p class="big noBottom">Profile Options</p>
+                <p class="small noTop noBottom">The You You Are</p>
                 <div class="relative bottomMargin generalDiv flex flexGap">
                     <div id="profileDataControl" class="grid2-2rem">
                         <div class="relative">
@@ -138,11 +170,13 @@
                 <hr>
                 <div class="relative bottomMargin">
                     <p class="big noBottom">Color Schemes</p>
+                    <p class="small noTop noBottom">What colors should the Game use.</p>
                     <div id="colorSchemes" class="flex flexCentered flexGap flexWrap generalDiv">
                         <!-- filled with js -->
                     </div>
                     <hr>
-                    <p class="big noTop">Additional Color Filters</p>
+                    <p class="big noTop noBottom">Additional Color Filters</p>
+                    <p class="small noTop">How should these colors be altered.</p>
                     <div>
                         <input type="checkbox" id="invertColors" class="option menuButton">
                         <div class="buttonDescription buttonDescriptionLeft">
@@ -281,7 +315,7 @@
             </div>
         </div>
         <div id="autoSelectorInfo" class="generalDiv dialogMenu windowCentralLight topMarginSmall">
-            <h2>Level Auto</h2>
+            <h2>Level Auto Selection</h2>
             <hr class="noBottom">
             <div class="flex">
                 <div>
@@ -292,6 +326,8 @@
                     <p>Driven by: <span id="optionsAutoSelectorStig" class="big difficult emphasis"></span></p>
                 </div>
             </div>
+            <hr class="noTop">
+            <p id="optionsAutoDescription"></p>
         </div>
         <div>
             <div class="menuContainer" id="autoSelectorRight">
@@ -326,7 +362,7 @@
     </div>
 </dialog>
 
-<dialog id="winMenu" class="flex flexCentered flexColumn flexAlign inverted">
+<dialog id="winMenu" class="flex flexCentered flexColumn flexAlign">
     <div class="windowBase">
         <div>
             <div class="menuContainer">
@@ -339,7 +375,30 @@
             </div>
         </div>
         <div class="windowCentralLight dialogMenu generalDiv">
-            <h1>You Won</h1>
+            <h1>You Won; Congratulations.</h1>
+            <hr>
+            <div>
+                <p class="center">
+                    You spent <span class="emphasis big"><span id="winMenuBudget"></span>€</span>, which is <span class="emphasis big"><span id="winMenuBudgetPercentage"></span>%</span> of the full Budget.<br><span class="small" id="winMenuBudgetComment"></span>
+                </p>
+                <p class="center">
+                    You used <span class="emphasis big"><span id="winMenuBeams"></span> Beams</span>, which is <span class="emphasis big">0%</span> of the Beam Limit.<br><span class="small">(There is no Beam Limit)</span>
+                </p>
+                <p class="center">
+                    Winning this Level took you <span class="emphasis big"><span id="winMenuTime"></span> Ticks</span><br><span class="small" id="winMenuTimeComment"></span>
+                </p>
+            </div>
+            <hr>
+            <div>
+                <p class="center">Min Beam Extent: <span class="emphasis big"><span id="minExtent"></span>%</span> / Max Beam Extent: <span class="emphasis big"><span id="maxExtent"></span>%</span></p>
+            </div>
+            <hr>
+            <div class="center">
+                <p class="small noBottom">Overall, you got:</p>
+                <p class="noTop"><span class="bigger emphasis"><span id="winMenuPoints">0</span> points</span></p>
+            </div>
+            <!-- <hr>
+            <p class="small center"><span class="emphasis" title="Hi.">[|B^|{</span></p> -->
         </div>
     </div>
 </dialog>
@@ -360,6 +419,7 @@
                 <div class="buttonDescription buttonDescriptionLeftBig">
                     <label for="topMenuStartSimulation">
                         <p><b>Start the Simulation</b></p>
+                        <p>The Simulation might be non-physical.<!--<span class="small">We are sorry for any transcendental experiences.</span>--></p>
                         <p>Keybind: <kbd>␣ Space</kbd></p>
                     </label>
                 </div>
@@ -480,6 +540,21 @@
                 <div class="menuContainer">
                     <div id="edgeSelectorButtonContainer">
                         <!-- filled with js -->
+                    </div>
+
+                    <input type="checkbox" id="drawExtent" class="menuButton">
+                    <div class="buttonDescription buttonDescriptionLeft">
+                        <label for="drawExtent">
+                            <p><b>Draw Edge's Extent</b></p>
+                            <p>
+                                When <span class="booleanValue">true</span>, the physics engine draws colored lines on edges, which explain the force of their extent:<br>
+                                <span class="emphasis">Green</span> means increase in length,<br>
+                                <span class="emphasis">Red</span> means decrease in length.<br>
+                                The color's intensity indicates the magnitude of the length's change.
+                            </p>
+                            <p class="small">The lines dissapear when Simulation is Stopped.</p>
+                            <p class="small">The lines can be slightly misaligned to where the edges are drawn because the lines are drawn during the physics phase, during which the edges shift and change position.</p>
+                        </label>
                     </div>
                 </div>
 
@@ -698,7 +773,7 @@
                             <div class="buttonDescription buttonDescriptionRight">
                                 <label for="shouldMusicLoop">
                                     <p><b>Loop Current Song</b></p>
-                                    <p>Plays the same Song until stopped.<br>(It is possible for a Song to play a few times in a row simply because of the way the Songs are chosen).</p>
+                                    <p>When <span class="booleanValue">true</span>, plays the same Song until stopped.<br>(It is possible for a Song to play a few times in a row simply because of the way the Songs are chosen).</p>
                                 </label>
                             </div>
                         </div>

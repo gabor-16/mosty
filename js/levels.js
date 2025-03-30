@@ -13,13 +13,13 @@ let availableAutosList = []
 let autosList = {
     "Bicycle": {
         name: "Bicycle",
-        desc: "A small, lightweight transportation device which uses the power of human legs to move.",
-        driver: "50 y.o. Sisyphus",
+        driver: "Sisyphus",
+        desc: "A bicycle is a small, lightweight transportation device which uses the power of human legs to move. About the driver... Well, let's just ay that he got bored of walking.",
 
         difficulty: "Easy",
 
         // other properties like speed, weight, size, etc.
-        speed: 5, // m/s
+        speed: 10, // / 2 m/s
         size: [200, 200], // [width, height]
         points: [
             [80, -100],
@@ -120,6 +120,7 @@ function displayAutoInfo(autoId = selectedAuto) {
 
     document.getElementById("optionsAutoSelectorName").innerText = aut.name
     document.getElementById("optionsAutoSelectorStig").innerText = aut.driver
+    document.getElementById("optionsAutoDescription").innerHTML = aut.desc
 
     removeClass("autoSelectorInfo", "difficultyEasy")
     removeClass("autoSelectorInfo", "difficultyNormal")
@@ -150,14 +151,11 @@ let levelsList = [
         desc: "If you can get throught this level, you can probably play the rest of the game just fine.\nThat's what Tutorials are for, after all.",
         budget: 1000, // in euro
         currentCost: 0,
-        difficulty: "Easy",
+        difficulty: "Easy", // Easy, Normal, Hard, Extreme, Impossible
 
         cameraScale: 1,
         cameraPosition: [0, 0],
         autoStartPosition: [-384, 0],
-        autoEndPosition: [384, 0],
-        // gravity: [0, -9.807],
-        // gravity: gravityEarth,
         gravity: gravityEarth,
 
         allowedEdges: ["w", "s", "r"], // sets level's allowed edges
@@ -168,6 +166,8 @@ let levelsList = [
         vertices: [
             [-256, 0, "p", [0, 0]],
             [256, 0, "p", [0, 0]],
+            [-192, -256, "p", [0, 0]],
+            [192, -256, "p", [0, 0]],
         ],
         edges: [
 
@@ -189,109 +189,26 @@ let levelsList = [
             //      "e" = ellipse, (circle): parameters is a list [x coordinate, y coordinate, x radius, y radius (if not set, the same as x radius), angle from x-axis in radians (0 if not set)]
             // ["e", ["gray", 2, "gray"], [0, 0, 1000, 1700, Math.PI / 4]], // creates an ellipse centered at origin with x radius of 1000 and y radius of 1700, the ellipse is rotated by 45 degrees
 
+            //      "t" = text: parameters is a list [text, x, y, align?, font?]
+
             ["p", ["gray", 2, "gray"], [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
             ["p", ["gray", 2, "gray"], [[256, 0], [512, 0], [512, -256], [192, -256]]],
+            ["t", ["gray", 2, "black"], ["Get this Bicycle...", -384, 256]],
+            ["t", ["gray", 2, "black"], ["...to here:", 384, 256]],
+
+            ["t", [undefined, undefined, "gray"], ["", 0, 0]], //this one fixes the colors, I'm not going to wawste my time.
 
             // ["e", ["gray", 2, "gray"], [0, -10000000000, 10000000000, 10000000000]], // the rendering breaks for very large values and coordinates
         ],
         physicals: [
             // used for just AND ONLY colliding things, the properties' order is confusing, I know, I'm sorry, I was sad when making these
-            [null, "gray", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
-            [null, "gray", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
+            [[-384, -128], "red", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
+            [[ 384, -128], "red", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
+            [[384, 100], "white", "shape", "flag", null, null, [[352, 200], [416, 200], [416, 0], [352, 0]]],
         ],
     },
 
-    {
-        name: "tut2",
-        desc: "Hajj :333",
-        budget: 100e100, // in euro
-        currentCost: 10,
-        difficulty: "Hard",
-
-        cameraScale: 1,
-        cameraPosition: [0, 0],
-        autoStartPosition: [-384, 16],
-        autoEndPosition: [384, 16],
-        gravity: [0, -9.807],
-
-        allowedEdges: ["w", "s", "r"], // sets level's allowed edges
-        availableAutos: ["Bicycle"],
-
-        // the starting values for all of the bridge values
-        vertices: [
-            [-256, 0, "p", [0, 0]],
-            [256, 0, "p", [0, 0]],
-        ],
-        edges: [
-
-        ],
-        connections: [
-
-        ],
-        objects: [
-            ["p", ["gray", 2, "gray"], [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
-            // ["p", ["gray", 2, "gray"], [[256, 0], [512, 0], [512, -256], [192, -256]]],
-        ],
-        physicals: [
-
-        ],
-    },
-
-    {
-        name: "0",
-        desc: "l",
-        budget: 1e10,
-        currentCost: 0,
-        difficulty: "Hard",
-
-        cameraScale: 1,
-        cameraPosition: [0, 0],
-        gravity: [0, -9.807],
-
-        allowedEdges: ["s"],
-        availableAutos: ["City Car"],
-
-        vertices: [
-
-        ],
-        edges: [
-
-        ],
-        connections: [
-            
-        ],
-        objects: [
-
-        ],
-    },
-
-    {
-        name: "0",
-        desc: "l",
-        budget: 1e10,
-        currentCost: 0,
-        difficulty: "Extreme",
-
-        cameraScale: 1,
-        cameraPosition: [0, 0],
-        gravity: [0, -9.807],
-
-        allowedEdges: ["w", "r", "s"],
-        availableAutos: ["City Car"],
-
-        vertices: [
-
-        ],
-        edges: [
-
-        ],
-        connections: [
-            
-        ],
-        objects: [
-
-        ],
-    },
+    // more to come :3 ~~~
 ]
 
 function selectNextLevel() {
@@ -402,6 +319,7 @@ function setCurrentLevel(levelId = selectedLevel) {
     }
 
     let autoStartCoordinates = level.autoStartPosition
+    let autoEndCoordinates = level.autoEndPosition
     addPhysical(autoStartCoordinates[0], autoStartCoordinates[1], "auto", currentAutoName)
 
     listAllowedEdgeTypes()

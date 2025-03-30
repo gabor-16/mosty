@@ -17,6 +17,9 @@ let soundsList = [ // list of playable files in mus/ as arrays of [filename, id]
     ["loop7.wav", "Flute on a Cementary", ""],
     ["loop8.wav", "This City is breathing (in the Rain)", ""],
     ["loop9.wav", "when the car flies too far", ""],
+    ["loop10.wav", "Electrocuted on purpose", ""],
+    ["loop11.wav", "Ascending?", ""],
+    ["loop12.wav", "Parrots and Caves", ""],
 ]
 
 let currentSong = 0
