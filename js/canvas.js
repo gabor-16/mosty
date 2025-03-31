@@ -43,6 +43,7 @@ const CANVASCOLORS = {
         "black": "#050403",
         "gray": "#808080",
         "red": "#af0000",
+        "green": "#00af00",
 
         "grid": "#ffffff",
 
@@ -56,6 +57,7 @@ const CANVASCOLORS = {
         "black": "#050403",
         "gray": "#808080",
         "red": "#af0000",
+        "green": "#00af00",
 
         "grid": "#a0a0a0",
 
@@ -68,7 +70,8 @@ const CANVASCOLORS = {
         "white": "#f0f7f3",
         "black": "#050403",
         "gray": "#808080",
-        "red": "#af0000",
+        "red": "#ff0000",
+        "green": "#00ff00",
 
         "grid": "#a0a0a0",
 
@@ -82,6 +85,7 @@ const CANVASCOLORS = {
         "black": "#050403",
         "gray": "#808080",
         "red": "#af0000",
+        "green": "#00af00",
 
         "grid": "#a0a0a0",
 
@@ -95,6 +99,7 @@ const CANVASCOLORS = {
         "black": "#050403",
         "gray": "#808080",
         "red": "#af0000",
+        "green": "#00af00",
 
         "grid": "#a0a0a0",
 
@@ -158,6 +163,8 @@ function scaleCanvasWithWheel(wheel) {
     } else if (sign < 0) {
         scaleCanvasUp()
     }
+
+    wheel.preventDefault()
 }
 
 
@@ -330,7 +337,6 @@ function toggleDrawingCanvas(levelId) {
 
 function drawBridgeLevelWindow(levelId) {
     // draw level on the small canvas
-
     let levelData = levelsList[levelId]
 
     for (let i = 0; i < levelData.objects.length; i++) {

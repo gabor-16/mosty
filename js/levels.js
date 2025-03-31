@@ -14,12 +14,14 @@ let autosList = {
     "Bicycle": {
         name: "Bicycle",
         driver: "Sisyphus",
-        desc: "A bicycle is a small, lightweight transportation device which uses the power of human legs to move. About the driver... Well, let's just ay that he got bored of walking.",
+        desc: "A bicycle is a small, lightweight transportation device which uses the power of human legs to move. About the driver... Well, let's just say that he got bored of walking.",
 
         difficulty: "Easy",
 
         // other properties like speed, weight, size, etc.
         speed: 10, // / 2 m/s
+        maxRoadAngle: 0.25 * π, // the maximum angle of road that the auto is still able to climb
+        img: document.getElementById("autoImageBicycle"),
         size: [200, 200], // [width, height]
         points: [
             [80, -100],
@@ -120,6 +122,7 @@ function displayAutoInfo(autoId = selectedAuto) {
 
     document.getElementById("optionsAutoSelectorName").innerText = aut.name
     document.getElementById("optionsAutoSelectorStig").innerText = aut.driver
+    document.getElementById("optionsAutoMaxAngle").innerHTML = round(aut.maxRoadAngle)
     document.getElementById("optionsAutoDescription").innerHTML = aut.desc
 
     removeClass("autoSelectorInfo", "difficultyEasy")
@@ -157,6 +160,7 @@ let levelsList = [
         cameraPosition: [0, 0],
         autoStartPosition: [-384, 0],
         gravity: gravityEarth,
+        maxCarDistanceFromCenter: 100,
 
         allowedEdges: ["w", "s", "r"], // sets level's allowed edges
         maxEdgesAmount: [Infinity, Infinity, Infinity],
@@ -204,7 +208,50 @@ let levelsList = [
             // used for just AND ONLY colliding things, the properties' order is confusing, I know, I'm sorry, I was sad when making these
             [[-384, -128], "red", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
             [[ 384, -128], "red", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
+
             [[384, 100], "white", "shape", "flag", null, null, [[352, 200], [416, 200], [416, 0], [352, 0]]],
+        ],
+    },
+
+    {
+        name: "Sandbox",
+        desc: "Everything is possible (I guess?)",
+        budget: -0,
+        currentCost: 0,
+        difficulty: "Easy",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        autoStartPosition: [-2048, 0],
+        gravity: gravityEarth,
+        maxCarDistanceFromCenter: 1000,
+
+        allowedEdges: ["w", "s", "r"],
+        maxEdgesAmount: [Infinity, Infinity, Infinity],
+        availableAutos: ["Bicycle"],
+
+        vertices: [
+            [0, 0, "p", [0, 0]],
+            [1024, 0, "p", [0, 0]],
+            [-1024, 0, "p", [0, 0]],
+            [2048, 0, "p", [0, 0]],
+            [-2048, 0, "p", [0, 0]],
+            [3072, 0, "p", [0, 0]],
+            [-3072, 0, "p", [0, 0]],
+            [4096, 0, "p", [0, 0]],
+            [-4096, 0, "p", [0, 0]],
+        ],
+        edges: [
+
+        ],
+        connections: [
+
+        ],
+        objects: [
+            ["p", ["gray", 2, "gray"], [[-4096, 0], [4096, 0], [4096, -64], [-4096, -64]]],
+        ],
+        physicals: [
+            [[0, -32], "red", "shape", "polygon", null, null, [[-4096, 0], [4096, 0], [4096, -64], [-4096, -64]]],
         ],
     },
 
@@ -289,6 +336,8 @@ function setCurrentLevel(levelId = selectedLevel) {
     currentAuto = selectedAuto
     availableAutosList = levelsList[currentLevel].availableAutos
     currentAutoName = autosList[availableAutosList[currentAuto]].name
+
+    maxCarDistanceFromCenter = levelsList[currentLevel].maxCarDistanceFromCenter ** 2
 
     saveBridge(false)
 

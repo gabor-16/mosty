@@ -1,7 +1,7 @@
 
 
 
-let soundsList = [ // list of playable files in mus/ as arrays of [filename, id]
+let soundsList = [ // list of playable files in mus/ as arrays of [filename, id, author]
     ["loop0.wav", "Chiptune for the Poor", "DJ I'm done with this."],
     ["loop1.wav", "Chiptune for the Poor, but shorter (like their lives)", "The Corporate"],
     ["loop2.wav", "Elevator Music Extreme", "The Elevator Music Orchestra"],
@@ -20,6 +20,8 @@ let soundsList = [ // list of playable files in mus/ as arrays of [filename, id]
     ["loop10.wav", "Electrocuted on purpose", ""],
     ["loop11.wav", "Ascending?", ""],
     ["loop12.wav", "Parrots and Caves", ""],
+    ["loop13.wav", "Sunbathing on a warship", ""],
+    ["loop14.wav", "Forget I'm here.", ""],
 ]
 
 let currentSong = 0
