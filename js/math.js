@@ -117,6 +117,11 @@ function vectorAdd(v0, v1) {
     return [v0[0] + v1[0], v0[1] + v1[1]]
 }
 
+// made for car gravity since you have to flip it and y is reversed
+function vectorAddReverse(v0, v1){
+    return [v0[0] + v1[0], v0[1] - v1[1]]
+}
+
 function vectorSub(v0, v1) {
     return [v0[0] - v1[0], v0[1] - v1[1]]
 }
@@ -141,6 +146,7 @@ function vectorNormalize(v) {
 
     return [v[0] / vL, v[1] / vL]
 }
+
 
 function vectorRotate(v, rad) {
     let s = Math.sin(rad)
@@ -310,3 +316,8 @@ function intArrayToHex(intArray) {
                + intArray[1].toString(16).padStart(2, "0")
                + intArray[2].toString(16).padStart(2, "0")
 }
+
+function dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1];
+}
+

@@ -141,10 +141,10 @@ function setAvailableAutos() {
 // //////////////////////////////////////////////////////////////////////
 // LEVELS
 // //////////////////////////////////////////////////////////////////////
+// BASE VALUE 0
+let currentLevel = 1
 
-let currentLevel = 0
-
-let selectedLevel = 0
+let selectedLevel = 1
 let levelsList = [
     {
         name: "Tutorial",
@@ -152,6 +152,8 @@ let levelsList = [
         budget: 1000, // in euro
         currentCost: 0,
         difficulty: "Easy", // Easy, Normal, Hard, Extreme, Impossible
+        difficulty: "Easy",
+        // TODO: maxEdges: number, max ammount of edges allowed on level
 
         cameraScale: 1,
         cameraPosition: [0, 0],
@@ -202,13 +204,105 @@ let levelsList = [
         ],
         physicals: [
             // used for just AND ONLY colliding things, the properties' order is confusing, I know, I'm sorry, I was sad when making these
-            [[-384, -128], "red", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
-            [[ 384, -128], "red", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
-            [[384, 100], "white", "shape", "flag", null, null, [[352, 200], [416, 200], [416, 0], [352, 0]]],
+            [null, "gray", "shape", "polygon", null, null, [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
+            [null, "gray", "shape", "polygon", null, null, [[256, 0], [512, 0], [512, -256], [192, -256]]],
         ],
     },
 
-    // more to come :3 ~~~
+    {    
+        name: "Huge hole",
+        desc: "Its a really huge hole",
+        budget: 30000, // in euro
+        currentCost: 0,
+        difficulty: "easy",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        autoStartPosition: [-384, 16],
+        autoEndPosition: [384, 16],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["w", "r"], 
+        availableAutos: ["Bicycle"],
+
+        vertices: [
+            [-256, 0, "p", [0, 0]],
+            [-215, -150, "p", [0, 0]],
+            [600, 0, "p", [0, 0]],
+            [500, -150, "p", [0, 0]],
+        ],
+        edges: [
+
+        ],
+        connections: [
+
+        ],
+        objects: [
+            ["p", ["gray", 2, "gray"], [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
+            // ["p", ["gray", 2, "gray"], [[256, 0], [512, 0], [512, -256], [192, -256]]],
+            ["p", ["gray", 2, "gray"], [[600, 0], [1000, 0], [1000, -256], [450, -256]]],
+        ],
+        physicals: [
+
+        ],
+       
+    },
+
+    {
+        name: "0",
+        desc: "l",
+        budget: 1e10,
+        currentCost: 0,
+        difficulty: "Hard",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["s"],
+        availableAutos: ["City Car"],
+
+        vertices: [
+
+        ],
+        edges: [
+
+        ],
+        connections: [
+            
+        ],
+        objects: [
+
+        ],
+    },
+
+    {
+        name: "0",
+        desc: "l",
+        budget: 1e10,
+        currentCost: 0,
+        difficulty: "Extreme",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["w", "r", "s"],
+        availableAutos: ["City Car"],
+
+        vertices: [
+
+        ],
+        edges: [
+
+        ],
+        connections: [
+            
+        ],
+        objects: [
+
+        ],
+    },
 ]
 
 function selectNextLevel() {

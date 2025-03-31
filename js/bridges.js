@@ -88,6 +88,7 @@ function loadBridge(localLoad = true) {
     if (bridgeSave !== null && bridgeSave.levels[i] !== null) {
         bridgeSelectedVertex   = null
         previousPlayerSetPoint = null
+        previousPlayerSetPoint = null
         bridgeVertices         = null
         bridgeEdges            = null
         bridgeConnections      = null

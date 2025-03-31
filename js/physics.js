@@ -95,6 +95,7 @@ function setGravity(fv) {
 
 let gravityValue = () => {} // m/s²
 let constraintResolveSubStepAmount = 4
+let collisions = []
 
 // each tick of the game is 1/10 of a second
 const tickTime = 0.1
