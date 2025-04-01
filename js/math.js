@@ -78,6 +78,14 @@ function arrayOfVectorsAddVector(array, vector) {
     return returnArray
 }
 
+function arrayOfVectorsRotate(array, radians) {
+    let returnArray = []
+    for (let i = 0; i < array.length; i++) {
+        returnArray.push(vectorRotate(array[i], radians))
+    }
+    return returnArray
+}
+
 
 
 
@@ -87,6 +95,10 @@ function arrayOfVectorsAddVector(array, vector) {
 
 // funcions assume points as tuples (2-arrays) of coordinates
 // i.e., the vector [0, 0] is represented simply as [0, 0]
+
+function pointsCenter(p0, p1) {
+    return [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2]
+}
 
 // vector from point (x0, y0) to point (x1, y1)
 function vectorFromPoints(p0, p1) {
@@ -111,7 +123,7 @@ function vectorAddReverse(v0, v1){
 }
 
 function vectorSub(v0, v1) {
-    return vectorAdd(v0, vectorNeg(v1))
+    return [v0[0] - v1[0], v0[1] - v1[1]]
 }
 
 function vectorMul(scalar = 2, v) {
@@ -144,6 +156,10 @@ function vectorRotate(v, rad) {
             v[0] * s + v[1] * c]
 }
 
+function vectorRotate90deg(v) {
+    return [-v[1], v[0]]
+}
+
 function dotProduct(v0, v1) {
     return (v0[0] * v1[0]) + (v0[1] * v1[1])
 }
@@ -151,6 +167,13 @@ function dotProduct(v0, v1) {
 // rotate by π/2 radians, and normalize
 function vectorNormal(v) {
     return vectorNormalize([-v[1], v[0]])
+}
+
+function vectorPositive(v) {
+    if (v[0] < 0) {
+        return vectorNeg(v)
+    }
+    return v
 }
 
 function vectorNormalPositive(v) {
@@ -163,7 +186,26 @@ function vectorNormalPositive(v) {
 
 
 
+function pointSegmentDistance(p, a, b) {
+    let ab = vectorSub(b, a)
+    let ap = vectorSub(p, a)
 
+    let proj = dotProduct(ab, ap)
+    let abLength = vectorLength(ab)
+    let d = proj / abLength
+
+    // position of the closest point
+    let closestPoint = [0, 0]
+    if (d <= 0) {
+        closestPoint = a
+    } else if (d >= 1) {
+        closestPoint = b
+    } else {
+        closestPoint = vectorAdd(a, vectorMul(d, ab))
+    }
+
+    return closestPoint
+}
 
 // //////////////////////////////////////////////////////////////////////
 // Separating Axis Theorem
@@ -193,12 +235,16 @@ function doPolygonsCollide(poly0, poly1) {
 
 
 
+    let depth = Infinity // depth to resolve the collision
+    let normal = [0, 0]
+
     let allNormals = normals0.concat(normals1)
     // let allNormals = addArraysOfArrays(normals0, normals1) // optimization, maybe?
 
+    let whichEdge = Infinity
     // see if the normal is perpendicular to the axis of separation
     for (let i = 0; i < allNormals.length; i++) {
-        
+
         // project all shape's points onto the current normal, and set the extremes (min and max)
         let projected0 = []
         for (let j = 0; j < poly0.length; j++) {
@@ -215,18 +261,61 @@ function doPolygonsCollide(poly0, poly1) {
         // check if polygons collide on this normal
         if (extremes0[1] < extremes1[0] || extremes1[1] < extremes0[0]) {
             // they do not collide on this axis => they don't collide at all
-            return false
+            return [[0, 0], 0, Infinity]
+        }
 
-            // return penetration depth?
+        // set minimal vectors to separate shapes
+        let axisDepth = Math.min(extremes0[1] - extremes1[0], extremes1[1] - extremes0[0])
+        if (axisDepth < depth) {
+            depth = axisDepth
+            normal = allNormals[i]
 
+            whichEdge = i
         }
     }
 
-    l("The shapes are colliding!") // TODO: resolve collisions
-    return true
+    depth /= vectorLength(normal)
+    normal = vectorNormalize(normal)
+
+    return [normal, depth, whichEdge]
 }
 
 
+// //////////////////////////////////////////////////////////////////////
+// COLORS
+// //////////////////////////////////////////////////////////////////////
+
+// p in <0, 1>, how far on the line between c0 and c1 the resulting color should be
+function mixColors(p, c0, c1) { // colors as Arrays
+    let cDiff = [c1[0] - c0[0], c1[1] - c0[1], c1[2] - c0[2]]
+    return [clampColorValue(c0[0] + p * cDiff[0]),
+            clampColorValue(c0[1] + p * cDiff[1]),
+            clampColorValue(c0[2] + p * cDiff[2])]
+}
+
+function mixColorsHex(p, hex0, hex1) {
+    return mixColors(p, hexToIntArray(hex0), hexToIntArray(hex1))
+}
+
+function clampColorValue(x) {
+    return Math.min(255, Math.max(0, Math.round(x))) || 0
+}
+
+function hexToIntArray(hexString) {
+    if (hexString[0] === "#") {
+        hexString = hexString.substring(1)
+    }
+
+    return [parseInt(hexString.slice(0, 2), 16),
+            parseInt(hexString.slice(2, 4), 16),
+            parseInt(hexString.slice(4, 6), 16)]
+}
+
+function intArrayToHex(intArray) {
+    return "#" + intArray[0].toString(16).padStart(2, "0")
+               + intArray[1].toString(16).padStart(2, "0")
+               + intArray[2].toString(16).padStart(2, "0")
+}
 
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1];

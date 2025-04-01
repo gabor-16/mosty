@@ -21,6 +21,8 @@ function startSimulating() {
     toggleSimulationPause()
 
     simulationTick = 0
+
+    scroll(0, 0)
 }
 
 function stopSimulating() {
@@ -36,6 +38,15 @@ function stopSimulating() {
     isSimulating = false
     isSimulationPaused = true
     toggleSimulationPause()
+
+    minExtent = 1
+    maxExtent = 1
+}
+
+function killCar(reason) {
+    stopSimulating()
+
+    sendMessage(true, "car" + reason)
 }
 
 function toggleSimulating() {
@@ -48,16 +59,12 @@ function toggleSimulating() {
 
 function toggleSimulationPause() {
     if (isSimulationPaused) {
-        document.getElementById("topMenuSimulationStartedPause").innerText = "⏸"
-
         isSimulationPaused = false
-        
+        document.getElementById("topMenuSimulationStartedPause").innerText = "⏸"
         document.getElementById("simulationState").innerText = "Running"
     } else {
-        document.getElementById("topMenuSimulationStartedPause").innerText = "▶"
-        
         isSimulationPaused = true
-        
+        document.getElementById("topMenuSimulationStartedPause").innerText = "▶"
         document.getElementById("simulationState").innerText = "Paused"
     }
 }
@@ -90,7 +97,6 @@ function setGravity(fv) {
 
 let gravityValue = () => {} // m/s²
 let constraintResolveSubStepAmount = 4
-let collisions = []
 
 // each tick of the game is 1/10 of a second
 const tickTime = 0.1
@@ -150,13 +156,14 @@ function simulateBridge() {
 
 
 
-    // simulationTick += constraintResolveSubStepAmount
     simulationTick += 1
     document.getElementById("simulationTick").innerText = simulationTick
 
     bridgeHasChanged = true
 }
 
+let minExtent = 1
+let maxExtent = 1
 // l0 is the rest distance - basically the distance that we want the points to be at.
 function solveDistanceConstraint(i0, i1, l0, type) {
     let x0 = [bridgeVertices[i0][0], bridgeVertices[i0][1]]
@@ -164,6 +171,28 @@ function solveDistanceConstraint(i0, i1, l0, type) {
 
     let lc = pointDistance(x0, x1) // current distance between points
     let extent = lc / l0
+
+    if (deleteEdgesOnTension && extent >= edgeProperties[type].maxLengthDelta /*adjust?, then change in html*/) {
+        deleteEdgeBetweenPoints(i0, i1)
+        sendMessage(true, "edgeDestroyed")
+
+        return extent
+    }
+
+    if (drawExtent) {
+        setCanvasStrokeColor(intArrayToHex(mixColorsHex(
+            Math.atan(16 * extent - 16) / π + 0.5,
+            CANVASCOLORS[currentStyleName]["red"],
+            CANVASCOLORS[currentStyleName]["green"])))
+        drawLine(x0[0], x0[1], x1[0], x1[1])
+    }
+
+    if (extent < minExtent) {
+        minExtent = extent
+    }
+    if (extent > maxExtent) {
+        maxExtent = extent
+    }
 
     let m0 = vertexProperties[bridgeVertices[i0][2]].mass
     let m1 = vertexProperties[bridgeVertices[i1][2]].mass
@@ -184,8 +213,8 @@ function solveDistanceConstraint(i0, i1, l0, type) {
         dx1 = vectorMul(-w1 * lengthError / (weightCoefficient + (alpha / deltaTime**2)), normalizedPointToPointVector)
     }
 
-    x0 = vectorAdd(x0, vectorMul(deltaTime, dx0))
-    x1 = vectorAdd(x1, vectorMul(deltaTime, dx1))
+    x0 = vectorAdd(x0, vectorMul(0.5 * deltaTime, dx0))
+    x1 = vectorAdd(x1, vectorMul(0.5 * deltaTime, dx1))
 
     if (deltaPositions[i0] === undefined) {
         deltaPositions[i0] = []
@@ -233,7 +262,15 @@ function addPhysical(x, y, type, objectName) {
             let objectSize = autosList[objectName].size
             let objectPoints = autosList[objectName].points
 
-            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0], 0, objectPoints])
+            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0], 0, objectPoints, 0])
+            break
+        }
+
+        case "flag": {
+            let objectSize = flag.size
+            let objectPoints = flag.points
+
+            bridgePhysicals.push([x, y + (objectSize[1] / 2), type, objectName, [0, 0], 0, objectPoints, 0])
             break
         }
 
@@ -246,19 +283,22 @@ function drawPhysical(physicalObject) {
         case "auto": {
             let car = autosList[physicalObject[3]]
 
-            switch (car.name) {
-                case "Bicycle": {
-                    setCanvasStrokeWidth(0)
-                    setCanvasFillColor("black")
-                    drawPolygon(arrayOfVectorsAddVector(car.points, [physicalObject[0], physicalObject[1]]))
-                    ctx.fill()
+            ctx.translate(physicalObject[0], physicalObject[1])
+            ctx.rotate(π + physicalObject[5])
+            ctx.scale(-1, 1)
+            ctx.drawImage(car.img, -car.size[0] / 2, -car.size[1] / 2)
+            ctx.scale(-1, 1)
+            ctx.rotate(-π - physicalObject[5])
+            ctx.translate(-physicalObject[0], -physicalObject[1])
 
-                    setCanvasFillColor("white")
-                    drawText(physicalObject[0], physicalObject[1], "Bicykl", "center")
-                    break;
-                }
+            if (drawDebug) {
+                setCanvasStrokeWidth(0)
+                setCanvasStrokeColor("black")
+                drawPolygon(arrayOfVectorsAddVector(arrayOfVectorsRotate(car.points, physicalObject[5]), [physicalObject[0], physicalObject[1]]))
+                ctx.stroke()
 
-                default: {break}
+                setCanvasFillColor("black")
+                drawText(physicalObject[0], physicalObject[1], car.name, "center")
             }
 
             break
@@ -267,9 +307,21 @@ function drawPhysical(physicalObject) {
         case "shape": {
             switch (physicalObject[3]) {
                 case "polygon": {
-                    setCanvasFillColor(physicalObject[1])
+                    if (drawDebug) {
+                        setCanvasStrokeWidth(2)
+                        setCanvasStrokeColor(physicalObject[1])
+                        drawPolygon(physicalObject[6])
+                        ctx.stroke()
+                    }
+
+                    break
+                }
+
+                case "flag": { // winning thing
+                    setCanvasStrokeWidth(2)
+                    setCanvasStrokeColor(physicalObject[1])
                     drawPolygon(physicalObject[6])
-                    ctx.fill()
+                    ctx.stroke()
 
                     break
                 }
@@ -284,66 +336,147 @@ function drawPhysical(physicalObject) {
     }
 }
 
-let maxCarDistanceFromCenter = 10000
+let maxCarDistanceFromCenter = 100 ** 2 // max distance (in meters from origin) (squared)
 function simulatePhysicals() {
     for (let i = 0; i < bridgePhysicals.length; i++) {
         let p = bridgePhysicals[i]
         let physicalType = p[2]
 
-        switch (physicalType) {
-            case "auto": {
-                let auto = autosList[p[3]]
-
-                p[4] = vectorAdd(p[4], vectorMul(deltaTime, vectorMul(auto.mass, gravityValue(p[0], p[1]))))
-
-                let updatedPosition = vectorAdd([p[0], p[1]], vectorMul(deltaTime, p[4]))
-                p[0] = updatedPosition[0]
-                p[1] = updatedPosition[1]
-
-                // if the car is gone, stop the simulation
-                if (vectorLength([p[0], p[1]] > maxCarDistanceFromCenter)) {
-                    stopSimulating()
-
-                    sendMessage(true, "carLost")
-                }
-            }
-
-            default: {break}
-        }
-
-
-
         // SIMULATE PHYSICAL'S PHYSICS
         // check for collisions, and then make them not colliding
 
         let poly0
+        let center0
+        let isAuto = false
         switch (physicalType) {
             case "auto": {
-                poly0 = arrayOfVectorsAddVector(p[6], [p[0], p[1]])
+                poly0 = arrayOfVectorsAddVector(arrayOfVectorsRotate(p[6], p[5]), [p[0], p[1]])
+                center0 = [p[0], p[1]]
+                isAuto = true
                 break
             }
 
             default: {break}
         }
 
-        if (poly0) { // if the polygon is set
+        if (poly0 !== undefined) { // if the polygon is set
+            let gravitySize = vectorLength(gravityValue(center0[0], center0[1]))
+
             // collisions with other physicals
             for (let j = 0; j < bridgePhysicals.length; j++) {
-                if (j !== i) {
-                    doPolygonsCollide(poly0, bridgePhysicals[j][6])
+                bp = bridgePhysicals[j]
+
+                if (j != i) {
+                    let collider = doPolygonsCollide(poly0, bp[6], center0, bp[0])
+                    let moveVector = vectorMul(collider[1], collider[0])
+                    if (moveVector[0] !== 0 || moveVector[1] !== 0) {
+                        if (bp[3] === "flag") {
+                            win()
+                            return true
+                        }
+
+                        bp[0] = vectorAdd(bp[0], moveVector)
+
+                        let newAcc = vectorAdd(p[4], vectorMul(-deltaTime * gravitySize, moveVector))
+                        p[4] = newAcc // set acceleration
+
+                        let newPos = vectorAdd([p[0], p[1]], vectorNeg(moveVector))
+                        p[0] = newPos[0]
+                        p[1] = newPos[1]
+
+                        if (isAuto) {
+                            let colidedEdge = vectorRotate90deg(collider[0])
+                            let collidedEdgeAngle = Math.atan2(colidedEdge[1], colidedEdge[0])
+
+                            if (Math.abs(collidedEdgeAngle) <= autosList[p[3]].maxRoadAngle) {
+                                p[4] = vectorMul(0.5, p[4])
+
+                                // change auto's rotation
+                                p[5] = 0.5 * p[5] + collidedEdgeAngle
+                            }
+                        }
+                    }
                 }
             }
 
             // collisions with the bridge
             for (let j = 0; j < bridgeEdges.length; j++) {
-                let e = bridgeEdges[i]
-    
-                let v0 = bridgeVertices[e[0]]
-                let v1 = bridgeVertices[e[1]]
-    
-                let edgePoints = [[v0[0], v0[1]], [v1[0], v1[1]]]
-                doPolygonsCollide(poly0, edgePoints)
+                let e = bridgeEdges[j]
+
+                if (edgeProperties[e[2]].isRoad) {
+                    let v0 = bridgeVertices[e[0]]
+                    let v1 = bridgeVertices[e[1]]
+
+                    let edgePoints = [[v0[0], v0[1]], [v1[0], v1[1]]]
+                    let collider = doPolygonsCollide(poly0, edgePoints, center0, pointsCenter([v0[0], v0[1]], [v1[0], v1[1]]))
+                    let moveVector = vectorMul(collider[1] * 0.5, collider[0])
+
+                    if (moveVector[0] !== 0 || moveVector[1] !== 0) {
+                        let normal = vectorMul(gravitySize, vectorNormalPositive(vectorFromPoints(v0, v1)))
+                        let newAcc = vectorAdd(p[4], normal)
+                        p[4] = newAcc // set acceleration
+
+                        let newPos = vectorAdd([p[0], p[1]], normal)
+                        p[0] = newPos[0]
+                        p[1] = newPos[1]
+
+                        // move bridge vertices ?
+                        let negNormal = vectorNeg(normal)
+                        if (!vertexProperties[v0[2]].isSolid) {
+                            let v0move = vectorAdd([v0[0], v0[1]], negNormal)
+                            v0[0] = v0move[0]
+                            v0[1] = v0move[1]
+                        }
+
+                        if (!vertexProperties[v1[2]].isSolid) {
+                            let v1move = vectorAdd([v1[0], v1[1]], negNormal)
+                            v1[0] = v1move[0]
+                            v1[1] = v1move[1]
+                        }
+
+                        let collidedEdge = vectorFromPoints(v0, v1)
+                        let collidedEdgeAngle = Math.atan2(collidedEdge[1], collidedEdge[0])
+                        if (Math.abs(collidedEdgeAngle) <= autosList[p[3]].maxRoadAngle) {
+                            p[4] = vectorMul(0.5, p[4])
+                            // p[4] = vectorAdd(p[4], vectorRotate([1, 0], collidedEdgeAngle))
+
+                            // change auto's rotation
+                            let collidedEdgeAngle = Math.atan2(v1[1] - v0[1], v1[0] - v0[0])
+                            p[5] = 0.5 * p[5] + collidedEdgeAngle
+                        }
+                    }
+                }
             }
         }
+        
+        movePhysicals(p)
+    }
+}
+
+function movePhysicals(physical) {
+    switch (physical[2]) {
+        case "auto": {
+            let auto = autosList[physical[3]]
+
+            // apply gravity
+            physical[4] = vectorAdd(physical[4], vectorMul(deltaTime, vectorMul(auto.mass, gravityValue(physical[0], physical[1]))))
+
+            // rotate by angular velocity
+            physical[5] += physical[7]
+
+            // move in the direction the auto is facing
+            let angle = physical[5]
+            let directionVector = vectorMul(auto.speed, vectorFromPoints([0, 0], [Math.cos(angle), Math.sin(angle)]))
+            let updatedPosition = vectorAdd([physical[0], physical[1]], vectorMul(deltaTime, vectorAdd(physical[4], directionVector)))
+            physical[0] = updatedPosition[0]
+            physical[1] = updatedPosition[1]
+
+            // if the car is *gone*, stop the simulation
+            if (vectorLength([physical[0], physical[1]]) >= maxCarDistanceFromCenter) {
+                killCar("Lost")
+            }
+        }
+
+        default: {break}
     }
 }
