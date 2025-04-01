@@ -8,6 +8,7 @@ Dostępne jest wiele motywów kolorystycznych wraz z dodatkowymi ustawieniami.
 Każdy gracz może dostosować grę do własnych potrzeb. Każdy aspekt gry da się w jakiś sposób zmodyfikować, każdy znajdzie coś dla siebie.
 Możliwe jest zapisywanie oraz wczytywanie zapisanych przez użytkownika konstrukcji.
 
+Czy uda Ci się stworzyć idealny most, czy raczej spektakularnie zawalisz całą konstrukcję? 😅 Sprawdź swoje umiejętności inżynieryjne w Most(l)y Done! 🚧
 ## Pobieranie
 
 Aby pobrać gre należy użyć:
