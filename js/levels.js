@@ -142,9 +142,9 @@ function setAvailableAutos() {
 // LEVELS
 // //////////////////////////////////////////////////////////////////////
 // BASE VALUE 0
-let currentLevel = 1
+let currentLevel = 0
 
-let selectedLevel = 1
+let selectedLevel = 0
 let levelsList = [
     {
         name: "Tutorial",
@@ -210,6 +210,44 @@ let levelsList = [
     },
 
     {    
+        name: "There is where the fun begins",
+        desc: "There is where the fun begins",
+        budget: 30000, // in euro
+        currentCost: 0,
+        difficulty: "easy",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        autoStartPosition: [-384, 16],
+        autoEndPosition: [1500, 16],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["w", "r"], 
+        availableAutos: ["Bicycle"],
+
+        vertices: [
+            [-256, 0, "p", [0, 0]],
+            [-215, -150, "p", [0, 0]],
+            [1400, 0, "p", [0, 0]],
+            [1330, -150, "p", [0, 0]],
+        ],
+        edges: [
+
+        ],
+        connections: [
+
+        ],
+        objects: [
+            ["p", ["gray", 2, "gray"], [[-256, 0], [-600, 0], [-600, -256], [-192, -256]]],
+            ["p", ["gray", 2, "gray"], [[1750, 0], [1400, 0], [1300, -256], [1750, -256]]],
+        ],
+        physicals: [
+
+        ],
+       
+    },
+
+    {
         name: "Huge hole",
         desc: "Its a really huge hole",
         budget: 30000, // in euro
@@ -219,17 +257,17 @@ let levelsList = [
         cameraScale: 1,
         cameraPosition: [0, 0],
         autoStartPosition: [-384, 16],
-        autoEndPosition: [384, 16],
+        autoEndPosition: [1800, 16],
         gravity: [0, -9.807],
 
         allowedEdges: ["w", "r"], 
-        availableAutos: ["Bicycle"],
+        availableAutos: ["Bicycle"], //Tu damy auto 
 
         vertices: [
             [-256, 0, "p", [0, 0]],
             [-215, -150, "p", [0, 0]],
-            [600, 0, "p", [0, 0]],
-            [500, -150, "p", [0, 0]],
+            [1750, 0, "p", [0, 0]],
+            [1660, -150, "p", [0, 0]],
         ],
         edges: [
 
@@ -240,7 +278,90 @@ let levelsList = [
         objects: [
             ["p", ["gray", 2, "gray"], [[-256, 0], [-512, 0], [-512, -256], [-192, -256]]],
             // ["p", ["gray", 2, "gray"], [[256, 0], [512, 0], [512, -256], [192, -256]]],
-            ["p", ["gray", 2, "gray"], [[600, 0], [1000, 0], [1000, -256], [450, -256]]],
+            ["p", ["gray", 2, "gray"], [[2048, 0], [1750, 0], [1600, -256], [2048, -256]]],
+        ],
+        physicals: [
+
+        ],    
+    },
+
+    {
+        name: "Uphill road",
+        desc: "Uphill road",
+        budget: 30000, // in euro
+        currentCost: 0,
+        difficulty: "easy",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        autoStartPosition: [-384, 16],
+        autoEndPosition: [1600, 16],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["w", "r"], 
+        availableAutos: ["Bicycle"],
+
+        vertices: [
+            [-256, 0, "p", [0, 0]],
+            [-215, -150, "p", [0, 0]],
+            [1400, 250, "p", [0, 0]],
+            [1340, 100, "p", [0, 0]],
+            [875, -200, "p", [0, 0]],
+            [825, -200, "p", [0, 0]],
+        ],
+        edges: [
+
+        ],
+        connections: [
+
+        ],
+        objects: [
+            ["p", ["gray", 2, "gray"], [[-256, 0], [-600, 0], [-600, -256], [-192, -256]]],
+            ["p", ["gray", 2, "gray"], [[1750, 250], [1400, 250], [1200, -256], [1750, -256]]],
+            ["p", ["gray", 2, "gray"], [[875, -200], [825, -200], [800, -256], [900, -256]]],
+        ],
+        physicals: [
+
+        ],
+       
+    },
+    
+    {
+        name: "Mountain",
+        desc: "Mountain",
+        budget: 30000, // in euro
+        currentCost: 0,
+        difficulty: "easy",
+
+        cameraScale: 1,
+        cameraPosition: [0, 0],
+        autoStartPosition: [-384, 16],
+        autoEndPosition: [1500, 16],
+        gravity: [0, -9.807],
+
+        allowedEdges: ["w", "r"], 
+        availableAutos: ["Bicycle"],
+
+        vertices: [
+            [-256, 0, "p", [0, 0]],
+            [-215, -150, "p", [0, 0]],
+            [1650, 0, "p", [0, 0]],
+            [1620, -150, "p", [0, 0]],
+            [600, 300, "p", [0, 0]],
+            [800, 300, "p", [0, 0]],
+            [575, 150, "p", [0, 0]],
+            [825, 150, "p", [0, 0]],
+        ],
+        edges: [
+
+        ],
+        connections: [
+
+        ],
+        objects: [
+            ["p", ["gray", 2, "gray"], [[-256, 0], [-600, 0], [-600, -256], [-192, -256]]],
+            ["p", ["gray", 2, "gray"], [[2000, 0], [1650, 0], [1600, -256], [2000, -256]]],
+            ["p", ["gray", 2, "gray"], [[600, 300], [800, 300], [900, -256], [500, -256]]],
         ],
         physicals: [
 
@@ -249,60 +370,51 @@ let levelsList = [
     },
 
     {
-        name: "0",
-        desc: "l",
-        budget: 1e10,
+        name: "Final",
+        desc: "Final",
+        budget: 30000, // in euro
         currentCost: 0,
-        difficulty: "Hard",
+        difficulty: "easy",
 
         cameraScale: 1,
         cameraPosition: [0, 0],
+        autoStartPosition: [-384, 320],
+        autoEndPosition: [1500, 16],
         gravity: [0, -9.807],
 
-        allowedEdges: ["s"],
-        availableAutos: ["City Car"],
+        allowedEdges: ["w", "r"], 
+        availableAutos: ["Bicycle"],
 
         vertices: [
-
+            [-256, 300, "p", [0, 0]],
+            [-240, 150, "p", [0, 0]],
+            [2650, 0, "p", [0, 0]],
+            [2590, -150, "p", [0, 0]],
+            [800, 500, "p", [0, 0]],
+            [600, 500, "p", [0, 0]],
+            [857, 350, "p", [0, 0]],
+            [582, 350, "p", [0, 0]],
+            [1325, -200, "p", [0, 0]],
+            [1375, -200, "p", [0, 0]],
         ],
         edges: [
 
         ],
         connections: [
-            
+
         ],
         objects: [
+            ["p", ["gray", 2, "gray"], [[-256, 300], [-600, 300], [-600, -256], [-192, -256]]],
+            ["p", ["gray", 2, "gray"], [[3000, 0], [2650, 0], [2550, -256], [3000, -256]]],
+            ["p", ["gray", 2, "gray"], [[800, 500], [600, 500], [500, -256], [1100, -256]]],
+            ["p", ["gray", 2, "gray"], [[1325, -200], [1375, -200], [1400, -256], [1300, -256]]],
+        ],
+        physicals: [
 
         ],
-    },
+    },   
+    
 
-    {
-        name: "0",
-        desc: "l",
-        budget: 1e10,
-        currentCost: 0,
-        difficulty: "Extreme",
-
-        cameraScale: 1,
-        cameraPosition: [0, 0],
-        gravity: [0, -9.807],
-
-        allowedEdges: ["w", "r", "s"],
-        availableAutos: ["City Car"],
-
-        vertices: [
-
-        ],
-        edges: [
-
-        ],
-        connections: [
-            
-        ],
-        objects: [
-
-        ],
-    },
 ]
 
 function selectNextLevel() {
