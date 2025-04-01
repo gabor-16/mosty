@@ -6,17 +6,405 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dokumentacja Most(l)y Done</title>
     <link rel="stylesheet" href="../css/documentation.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
-    <div id="contents">
-        <h1>Spis treści</h1>
-        <ul>
-            <li><a href="#contents">Spis treści</a></li>
-            <li><a href="#introduction">Wstęp</a>
-                <ul>
-                    <li><a href="#summary">Krótki opis gry</a></li>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <button id="scrollToTop">⬆️ Na górę</button>
+    <div id="sidebar">
+        <a href="#wstep">Wstęp</a>
+        <a href="#instalacja">Instalacja</a>
+        <a href="#funkcje">Uruchomienie</a>
+        <a href="#funckjePlikow">Funkcje plików</a>
+        <a href="#algorytmy">Zastosowane algorytmy</a>
+        <a href="#testy">Testy</a>
+        <a href="#bledy">Napotkane błędy</a>
+        <a href="#podsumowanie">Podsumowanie</a>
+    </div>
+    <div class="displayFlex justifyContentCenter flexDirectionColumn">
+        <div  class="width90 displayFlex justifyContentCenter marginAuto">
+            <img src="images/MOSTY.png" class="roundedCorners boxShadow" style="margin-top: 70px; height: 350px; width: 80%;">
+        </div>
+            <div class="marginTop50 width60 marginAuto">
+                <div class="width60">
+                    <span class="fontWeightBold fontSizeLarge">Szybka nawigacja</span>
+                </div>
+                <div class="displayFlex flexWrapWrap">
+                    <a href="#wstep" class="kafelek">
+                        <p>Wstęp</p>
+                        <img src="images/icons/presentation.png" alt="introduction">
+                    </a>
+                    <a href="#instalacja" class="kafelek">
+                        <p>Instalacja</p>
+                        <img src="images/icons/download.png" alt="introduction">
+                    </a>
+                    <a href="#uruchomienie" class="kafelek">
+                        <p>Uruchomienie</p>
+                        <img src="images/icons/app.png" alt="introduction">
+                    </a>
+                    <a href="#funckjePlikow" class="kafelek">
+                        <p>Funkcje plików</p>
+                        <img src="images/icons/folder.png" alt="introduction">
+                    </a>
+                    <a href="#algorytmy" class="kafelek">
+                        <p>Zastosowane algorytmy</p>
+                        <img src="images/icons/algorithm.png" alt="introduction">
+                    </a>
+                    <a href="#testy" class="kafelek">
+                        <p>Testy</p>
+                        <img src="images/icons/check-list.png" alt="introduction">
+                    </a>
+                    <a href="#bledy" class="kafelek">
+                        <p>Napotkane błędy</p>
+                        <img src="images/icons/warning.png" alt="introduction">
+                    </a>
+                    <a href="#podsumowanie" class="kafelek">
+                        <p>Podsumowanie</p>
+                        <img src="images/icons/light-bulb.png" alt="introduction">
+                    </a>
+                </div>
+            </div>
+        <div class="marginTop70 width60 marginAuto">
+            <span class="fontSize70 fontWeightBold scrollMargin" id="wstep">Wstęp</span>
+            <p style="font-size: 18px; ">
+                To jest dokumentacja do gry Most(l)y Done. Zawarte tu są informacje dotyczące pobierania programu z
+                repozytorium, użytych algorytmów oraz błedy które napotkaliśmy w czasie trwania projektu.
+                Na dokumentacje do gry składa się ten plik, obrazy w folderze doc a także komentarze zawarte w plikach kodu.
+            </p>
+            <span class="fontSize30 fontWeightBold">Jak to się zaczeło</span>
+            <p style="font-size: 18px; ">
+                Zaczęło się niewinnie – chcieliśmy stworzyć grę o budowaniu mostów, ale zamiast tego zbudowaliśmy... mnóstwo bugów. 😅 Jednak w miarę postępu prac udało nam się stworzyć coś naprawdę fajnego!
+                Most(l)y Done to gra, w której testujesz swoją inżynieryjną kreatywność, projektując mosty zdolne do utrzymania przejeżdżających pojazdów. Brzmi prosto? Poczekaj, aż zobaczysz poziomy z ograniczonym budżetem...
+            </p>
+            <span class="fontSize30 fontWeightBold">Krótki opis gry</span>
+            <p style="font-size: 18px; ">
+                Most(l)y Done to gra logiczno-fizyczna inspirowana klasyką gatunku – <a target="_blank" href="https://store.steampowered.com/app/367450/Poly_Bridge/">Poly Bridge</a>. Twoim zadaniem jest budowa mostów, które muszą wytrzymać przejazd pojazdów na drugą stronę. Brzmi prosto? Tylko do momentu, aż skończy się budżet lub Twój most zawali się pod własnym ciężarem!
+                <br><br>
+
+                Kluczowe mechaniki:
+                <ul class="customList" style="content: '✅';">
+                    <li data-icon="✅">Tworzenie konstrukcji z różnych materiałów (stal, drewno, droga)</li>
+                    <li data-icon="✅">Realistyczna fizyka mostów – źle zaprojektowane mosty się zawalają</li>
+                    <li data-icon="✅">Ograniczony budżet – każda belka się liczy!</li>
                 </ul>
+                Czy uda Ci się stworzyć idealny most, czy raczej spektakularnie zawalisz całą konstrukcję? 😅 Sprawdź swoje umiejętności inżynieryjne w Most(l)y Done! 🚧
+                
+            </p>
+
+            <span class="fontSize50 fontWeightBold" id="instalacja">Instalacja</span>
+            <p style="font-size: 18px; ">
+                Do korzystania nie są potrzebne żadne dodatkowe zależności. Potrzebna jest tylko działająca przeglądarka i
+                dostęp do internetu przy pobieraniu.<br>
+                Grę najpierw należy pobrać. Wszystkie pliki gry znajdują się na repozytorium na githubie. Są dwa sposoby aby
+                pobrać repozytorium.
+            </p>
+            <span class="fontSize30 fontWeightBold">Pobieranie ze strony repozytorium</span>
+            <p style="font-size: 18px; ">
+                Na początku kliknij w przycisk
+                <a target="_blank" href="https://github.com/gabor-16/mosty">
+                    <label class="roundedCorners guziczek">
+                        Repozytorium Most(l)y 
+                    </label>
+                </a>
+                Po przekierowaniu naciśnij przycisk <em>Code</em> a następnie <em>Download ZIP</em><br>
+                <!-- <img src="" alt=""><br> dodaj tu ktoś obrazek z tego gita-->
+                Następnie rozpakuj pobrany plik i dwukrotnie naciśnij na plik <em>main.html</em>
+
+            </p>
+            <span class="fontSize30 fontWeightBold">Pobieranie przez git</span>
+            <p style="font-size: 18px; ">
+                
+                Używając wiersza poleceń w wybranym przez nas folderze używamy polecenia git clone z adresem repozytorium.
+                Pobrany zostanie folder zawierający wszystkie pliki.
+
+                <div class="code">
+                    <div class="codeTop">
+                        <div style="width: 95%; height: 80%; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #FFF2F2;">bash</span>
+                            <div>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="green"></circle>
+                                </svg>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="yellow"></circle>
+                                </svg>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="red"></circle>
+                                </svg>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="codeBottom" style="height: 50px;">
+                        <div class="codeCell">git <span style="color: orange;">&nbsp;clone&nbsp;</span> https://github.com/gabor-16/mosty</div>
+                    </div>
+                </div>
+
+            </p>
+            <span class="fontSize50 fontWeightBold" id="uruchomienie">Uruchomienie gry</span>
+            <p>
+                Aby uruchomić program należy otworzyć plik <em>main.html</em> w przeglądarce. Po załadowaniu pokaże się samouczek. Poziomy można wybierać dowolnie w menu wyboru poziomów.
+            </p>
+
+            <span class="fontSize50 fontWeightBold" id="funckjePlikow">Funckje plików</span>
+            <p>
+                <a href="../js/bridges.js" class="guziczek roundedCorners" target="_blank">Bridges</a>
+                W tym pliku zawarta jest główna logika gry. Zaweira on następująco:
+                <ul class="customList"> 
+                    <li data-icon="⭐">dane o punktach i połączeniach mostu oraz funkcje do ich edycji</li>
+                    <li data-icon="⭐">zpis i wczytywanie mostu</li>
+                    <li data-icon="⭐">funkcje rysujące most, punkty i połączenia</li>
+                    <li data-icon="⭐">funkcje interakcji z grą (zmiana ustawień, zaznaczanie)</li>
+                    <li data-icon="⭐">informacje o dostępnych stylach</li>
+                    <li data-icon="⭐">funkcje pętli gry</li>
+                    <li data-icon="⭐">funkcje dla elementów menu (guzików, pola wyboru)</li>
+                </ul>
+                <a href="../js/canvas.js" class="guziczek roundedCorners" target="_blank">Canvas</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">rysowanie okna gry i jego elementów</li>
+                    <li data-icon="⭐">informacje o stylach kanwy</li>
+                    <li data-icon="⭐">transformacjach kanwy</li>
+                </ul>
+                <a href="../js/levels.js" class="guziczek roundedCorners" target="_blank">Levels</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">informacje o poziomach: nazwa, punkty budowy, budżet, trudność, dozwolone samochody i belki, podłoże</li>
+                    <li data-icon="⭐">inforamcje o samochodach: nazwa, masa, prędkość, rozmiar</li>
+                    <li data-icon="⭐">funkcje do wyboru samochodów oraz poziomów</li>
+                </ul>
+                <a href="../js/math.js" class="guziczek roundedCorners" target="_blank">Math</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">funkcje do wykonywania obliczeń matematycznych: zaokrąglanie, obliczenia na wektorach</li>
+                    <li data-icon="⭐">funkcje do wykrywania kolizji</li>
+                </ul>
+                <a href="../js/menus.js" class="guziczek roundedCorners" target="_blank">Menus</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">funkcje do wypisywania informacji w oknie dialogowym</li>
+                </ul>
+                <a href="../js/music.js" class="guziczek roundedCorners" target="_blank">Music</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">listę dostępnych ścieżek dźwiękowych</li>
+                    <li data-icon="⭐">funkcje do odtwarzania ścieżek dźwiękowych</li>
+                </ul>
+                <a href="../js/physics.js" class="guziczek roundedCorners" target="_blank">Physics</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">funkcje symulacji fizyki i jej przełączania</li>
+                    <li data-icon="⭐">wartość gravitacji i obliczenia na niej</li>
+                    <li data-icon="⭐">symulację fizyki mostu</li>
+                    <li data-icon="⭐">funkcje do ograniczania długości belek</li>
+                    <li data-icon="⭐">symulacje fizyki obiektów fizycznych (samochodów)</li>
+                </ul>
+                <a href="../js/tests.js" class="guziczek roundedCorners" target="_blank">Tests</a>
+                <ul class="customList"> 
+                    <li data-icon="⭐">testy do sprawdzania poprawności wykonywania się funkcji, byłyby ale zabrakło czasu</li>
+                </ul>
+            </p>
+            <span class="fontSize50 fontWeightBold" id="algorytmy">Algorytmy</span>
+            <p>
+                Tutaj znajdują się opisy algorytmów użytych do stworzenia gry.<br><br>
+                <span style="font-size: 30px; font-weight: bold;">Ograniczenie długości belek między punktami mostu</span><br><br>
+                Funkcja solveDistanceConstraint w physics.js sprawia, że dwa dane punkty oddalone są od siebie o preferowaną długość. Funkcja oblicza odległość pomiedzy połączonymi punktami, a następnie przemieszcza je o wektor obliczany na podstawie stosunku ich mas.
+                <br><br>
+                Obraz przedstawiający obliczenia które wykonuje funkcja, a także model przemieszczenia punktów.
+                <br><br><br>
+                <img src=".//images/doc images/PBD.png" alt="Position Based Dynamics" class="imgBorder">
+                <a href="https://www.youtube.com/watch?v=jrociOAYqxA" class="guziczek roundedCorners" target="_blank">Link do filmu tłumaczącego</a><br>
+                Przykład zastosowania:
+
+                <div class="code">
+                    <div class="codeTop">
+                        <div style="width: 95%; height: 80%; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #FFF2F2;">javascript</span>
+                            <div>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="green"></circle>
+                                </svg>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="yellow"></circle>
+                                </svg>
+                                <svg height="50px" width="26px">
+                                    <circle cx="13" cy="25" r="7" fill="red"></circle>
+                                </svg>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="codeBottom" style="height: 150px;">
+                        <div class="codeCell">
+                            for (let i = 0; i < bridgeEdges.length; i++) {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;let e = bridgeEdges[i]<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;let extent = solveDistanceConstraint(e[0], e[1], e[3], e[2])<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+                Plik: <em><a href="../js/physics.js" target="_blank">physics.js</a></em> linijka: 123
+            </p>
+            <span class="fontSize50 fontWeightBold" id="testy">Testy</span>
+            <p>Tutaj znajdują się opisy oraz przykłady używania testów znajdujących się w tests.js. Testy nie zostały stworzone z przyczyny braku czasu.</p>
+            <span class="fontSize50 fontWeightBold" id="bledy">Napotkane błędy</span>
+            <p>
+                Ta sekcja dokumentacji jest poświęcona błędom, które napotkaliśmy na swojej drodze podczas tworzenia gry. Nie zawiera ona istotnych informacji na temat gry ale uznaliśmy, że ją dodamy aby udokumentować niektóre ciekawe błędy, które stworzyliśmy.
+                <br><br>
+                Pomijając oczywiste problemy typu konflikty lub błędy robione przez nas w plikach (rekordziście udało się zrobić tyle że naprawa potrwała dobre 30 minut)
+                 to z bardziej interesujących błedów będą opisane w tej sekcji dokumentacji.<br><br>
+
+                <span style="font-size: 30px; font-weight: bold;">Sklonowanie samochodu</span>
+                <p>Podczas tworzenia funkcji do rysowania samochodu oraz symulacji jego grawitacji było potrzebne obrócenie samochodu aby rysunek poprawnie się wyświetlał, podczas próbowania różnych rozwiązań udało się osiągnąć sytuację przedstawioną na obrazku
+                    <br><br><img src="images/doc images/carMitosis.png" style="width: 350px; height: 350px;" class="imgBorder"><br><br>
+
+                    Jeszcze ciekawsze było ich zachowanie albowiem odpychały się, dolny leciał na dół, a górny w górę. Po zmianach w funkcji gravitacji nie udało się powtórzyć tego błędu
+                    <br><br>
+                    Podczas tego samego testowania z funkcją rysowania samochodu udało się osiągnąć ciekawy efekt.<br><br>
+                    <img src="images/doc images/carCloning.png" style="width: 350px; height: 350px;" class="imgBorder"><br><br>
+
+                    Napotkaliśmy również na kolejny problem z rysowaniem samochodu, mianowice samochód nie chciał się rysować po odświeżeniu strony więc postanowiliśmy 
+                    funkcje odpowiedzialną za rysowanie samochodu wywoływać dwa razy<br><br> 
+
+                    <div class="code">
+                        <div class="codeTop">
+                            <div style="width: 95%; height: 80%; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="color: #FFF2F2;">javascript</span>
+                                <div>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="green"></circle>
+                                    </svg>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="yellow"></circle>
+                                    </svg>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="red"></circle>
+                                    </svg>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="codeBottom" style="height: 80px;">
+                            <div class="codeCell">
+                                drawCar()<br>
+                                drawCar() // nie potrzebne dwukrotne wywołanie
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>Jak to zostało ostatecznie zaimplementowane<br><br>
+                    
+                    <div class="code">
+                        <div class="codeTop">
+                            <div style="width: 95%; height: 80%; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="color: #FFF2F2;">javascript</span>
+                                <div>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="green"></circle>
+                                    </svg>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="yellow"></circle>
+                                    </svg>
+                                    <svg height="50px" width="26px">
+                                        <circle cx="13" cy="25" r="7" fill="red"></circle>
+                                    </svg>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                        <div class="codeBottom" style="height: 420px;">
+                            <div class="codeCell">
+                                case "shape": {<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;switch (physicalObject[3]) {<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case "polygon": {<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setCanvasFillColor(physicalObject[1])<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;drawPolygon(physicalObject[6])<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ctx.fill()<br><br>
+                        
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+                        
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default: {break}<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+                        
+                                            &nbsp;&nbsp;&nbsp;&nbsp;break<br>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    Plik: <em><a href="../js/physics.js" target="_blank">physics.js</a></em> linijka: 267
+                </p>
+            </p>
+            <span style="font-size: 30px; font-weight: bold;">Obraca się? Obraca</span>
+            <p>
+                Podczas implementowania funkcji odpowiadającej za obrót pojazdu, obiekt który symulował samochód zaczął się niekontrolowanie obracać i odbijać od podłoża.<br><br>
+                <video src="images/doc images/gyroZeppeliCar.mp4" controls width="450" height="250" class="imgBorder"></video><br><br>
+                Błąd powstał w wyniku testowania czy funkcja obracania działa.
+            </p>
+            <span class="fontSize50 fontWeightBold" id="podsumowanie">Podsumowanie</span>
+            <p>
+                Przez cały projekt towarzyszyło nam wiele przeciwności, takich jak: brak czasu wynikający czy to z spędzania większości dnia w szkole, chęci zajęcia się czymś innym, wyjścia z przyjaciółmi bądź ograniczony czas.
+                Mimo tego chcieliśmy sprostać zadaniu przez dopiększanie kążdego szczegółu. Napewno nauczyło nas to wielu rzeczy, przedwszystkim większa wiedza na temat programowania czy fizyki.
+                Nie mogę zapomnieć o długich rozmowach, rozmyślaniach i pracy czy to w szkole czy na discordzie oraz śmiechu temu towarzyszącego.
+            </p>
+
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 250,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        const scrollToTopBtn = document.getElementById("scrollToTop");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add("show");
+            } else {
+                scrollToTopBtn.classList.remove("show");
+            }
+        });
+
+        scrollToTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+
+        const sideBar = document.getElementById("sidebar");
+
+        window.addEventListener("scroll", () => {
+            if(window.scrollY>800){
+                sideBar.classList.add("show")
+            }else {
+                sideBar.classList.remove("show")
+            }
+        });
+
+
+        window.onscroll = function() {
+            var scrollTop = document.documentElement.scrollTop;
+            var scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (scrollTop / scrollHeight) * 100;
+            document.getElementById("progressBar").style.width = scrolled + "%";
+        };
+
+
+    </script>
+    
             </li>
             <li><a href="#instalation">Instalacja</a>
                 <ul>
