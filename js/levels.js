@@ -143,7 +143,7 @@ let autosList = {
 
         speed: 10,
         maxRoadAngle: 0.25 * π,
-        img: document.getElementById("autoImageAudi"),
+        img: document.getElementById("autoImageTir"),
         size: [600, 127],
         points: [
             // im not changing the hitboxes
