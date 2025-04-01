@@ -365,7 +365,7 @@ let levelsList = [
         autoEndPosition: [1800, 16],
         gravity: gravityEarth,
 
-        allowedEdges: ["w", "r"], 
+        allowedEdges: ["w", "r", "s"], 
         availableAutos: ["Bicycle", "Aksiam", "Pasat", "Audi", "Motor", "Tir"], //Tu damy auto 
 
         vertices: [
@@ -405,7 +405,7 @@ let levelsList = [
         autoEndPosition: [1600, 16],
         gravity: gravityEarth,
 
-        allowedEdges: ["w", "r"], 
+        allowedEdges: ["w", "r", "s"], 
         availableAutos: ["Bicycle", "Aksiam", "Pasat", "Audi", "Motor", "Tir"],
 
         vertices: [
@@ -450,7 +450,7 @@ let levelsList = [
         autoEndPosition: [1500, 16],
         gravity: gravityEarth,
 
-        allowedEdges: ["w", "r"], 
+        allowedEdges: ["w", "r", "s"], 
         availableAutos: ["Bicycle", "Aksiam", "Pasat", "Audi", "Motor", "Tir"],
 
         vertices: [
@@ -498,7 +498,7 @@ let levelsList = [
         autoEndPosition: [1500, 16],
         gravity: gravityEarth,
 
-        allowedEdges: ["w", "r"], 
+        allowedEdges: ["w", "r", "s"], 
         availableAutos: ["Bicycle", "Aksiam", "Pasat", "Audi", "Motor", "Tir"],
 
         vertices: [
