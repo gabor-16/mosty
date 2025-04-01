@@ -109,6 +109,8 @@ function win() {
 // //////////////////////////////////////////////////////////////////////
 
 let currentMessageId = 0
+let messagesMaxAmount = 10
+let messagesArray = []
 function sendMessage(isSaved, text) {
     if (isSaved) {
         text = userMessages[text]
@@ -116,19 +118,45 @@ function sendMessage(isSaved, text) {
 
     console.log("Message no.", currentMessageId + ":", text)
 
-    let previousText = document.getElementById("messageLog").innerHTML
-    document.getElementById("messageLog").innerHTML = "<p>" + text + "</p>" + previousText
+    messagesArray.unshift(text)
+    fixMessagesLenght()
+
+    writeMessages()
 
     currentMessageId++
 }
 
+function fixMessagesLenght() {
+    if (messagesArray.length > messagesMaxAmount) {
+        let overflow = messagesArray.length - messagesMaxAmount
+        messagesArray.splice(-overflow, overflow)
+
+        writeMessages()
+    }
+}
+
+function writeMessages() {
+    let messagesText = ""
+    for (let i = 0; i < messagesArray.length; i++) {
+        messagesText += "<p>" + messagesArray[i] + "</p>"
+    }
+
+    document.getElementById("messageLog").innerHTML = messagesText
+}
+
 function clearMessages() {
+    messagesArray = []
     document.getElementById("messageLog").innerHTML = ""
 }
 
 function copyMessages() {
     let copyText = document.getElementById("messageLog").innerText
     navigator.clipboard.writeText(copyText)
+}
+
+function setMaxMessages() {
+    messagesMaxAmount = document.getElementById("messagesMaxAmount").value
+    fixMessagesLenght()
 }
 
 function error(message) {

@@ -21,6 +21,8 @@ function startSimulating() {
     toggleSimulationPause()
 
     simulationTick = 0
+
+    scroll(0, 0)
 }
 
 function stopSimulating() {
@@ -95,7 +97,6 @@ function setGravity(fv) {
 
 let gravityValue = () => {} // m/s²
 let constraintResolveSubStepAmount = 4
-let collisions = []
 
 // each tick of the game is 1/10 of a second
 const tickTime = 0.1
@@ -179,7 +180,10 @@ function solveDistanceConstraint(i0, i1, l0, type) {
     }
 
     if (drawExtent) {
-        setCanvasStrokeColor(intArrayToHex(mixColorsHex(Math.atan(16 * extent - 16) / π + 0.5, "#ff0000", "#00ff00")))
+        setCanvasStrokeColor(intArrayToHex(mixColorsHex(
+            Math.atan(16 * extent - 16) / π + 0.5,
+            CANVASCOLORS[currentStyleName]["red"],
+            CANVASCOLORS[currentStyleName]["green"])))
         drawLine(x0[0], x0[1], x1[0], x1[1])
     }
 
@@ -279,19 +283,22 @@ function drawPhysical(physicalObject) {
         case "auto": {
             let car = autosList[physicalObject[3]]
 
-            switch (car.name) {
-                case "Bicycle": {
-                    setCanvasStrokeWidth(0)
-                    setCanvasFillColor("black")
-                    drawPolygon(arrayOfVectorsAddVector(arrayOfVectorsRotate(car.points, physicalObject[5]), [physicalObject[0], physicalObject[1]]))
-                    ctx.fill()
+            ctx.translate(physicalObject[0], physicalObject[1])
+            ctx.rotate(π + physicalObject[5])
+            ctx.scale(-1, 1)
+            ctx.drawImage(car.img, -car.size[0] / 2, -car.size[1] / 2)
+            ctx.scale(-1, 1)
+            ctx.rotate(-π - physicalObject[5])
+            ctx.translate(-physicalObject[0], -physicalObject[1])
 
-                    setCanvasFillColor("white")
-                    drawText(physicalObject[0], physicalObject[1], car.name, "center")
-                    break;
-                }
+            if (drawDebug) {
+                setCanvasStrokeWidth(0)
+                setCanvasStrokeColor("black")
+                drawPolygon(arrayOfVectorsAddVector(arrayOfVectorsRotate(car.points, physicalObject[5]), [physicalObject[0], physicalObject[1]]))
+                ctx.stroke()
 
-                default: {break}
+                setCanvasFillColor("black")
+                drawText(physicalObject[0], physicalObject[1], car.name, "center")
             }
 
             break
@@ -334,8 +341,6 @@ function simulatePhysicals() {
     for (let i = 0; i < bridgePhysicals.length; i++) {
         let p = bridgePhysicals[i]
         let physicalType = p[2]
-
-        movePhysicals(p)
 
         // SIMULATE PHYSICAL'S PHYSICS
         // check for collisions, and then make them not colliding
@@ -383,10 +388,12 @@ function simulatePhysicals() {
                             let colidedEdge = vectorRotate90deg(collider[0])
                             let collidedEdgeAngle = Math.atan2(colidedEdge[1], colidedEdge[0])
 
-                            p[4] = vectorMul(0.5, p[4])
+                            if (Math.abs(collidedEdgeAngle) <= autosList[p[3]].maxRoadAngle) {
+                                p[4] = vectorMul(0.5, p[4])
 
-                            // change auto's rotation
-                            p[5] = 0.5 * p[5] + collidedEdgeAngle
+                                // change auto's rotation
+                                p[5] = 0.5 * p[5] + collidedEdgeAngle
+                            }
                         }
                     }
                 }
@@ -427,15 +434,22 @@ function simulatePhysicals() {
                             v1[1] = v1move[1]
                         }
 
-                        p[4] = vectorMul(0.5, p[4])
+                        let collidedEdge = vectorFromPoints(v0, v1)
+                        let collidedEdgeAngle = Math.atan2(collidedEdge[1], collidedEdge[0])
+                        if (Math.abs(collidedEdgeAngle) <= autosList[p[3]].maxRoadAngle) {
+                            p[4] = vectorMul(0.5, p[4])
+                            // p[4] = vectorAdd(p[4], vectorRotate([1, 0], collidedEdgeAngle))
 
-                        // change auto's rotation
-                        let collidedEdgeAngle = Math.atan2(v1[1] - v0[1], v1[0] - v0[0])
-                        p[5] = 0.5 * p[5] + collidedEdgeAngle
+                            // change auto's rotation
+                            let collidedEdgeAngle = Math.atan2(v1[1] - v0[1], v1[0] - v0[0])
+                            p[5] = 0.5 * p[5] + collidedEdgeAngle
+                        }
                     }
                 }
             }
         }
+        
+        movePhysicals(p)
     }
 }
 

@@ -10,12 +10,12 @@
     <!-- <link type="image/x-icon"   rel="icon"          href="img/fav.png"> -->
     <link type="text/css"       rel="stylesheet"    href="css/styles.css">
 
+    <script defer src="js/math.js"></script>
     <script defer src="js/physics.js"></script>
     <script defer src="js/bridges.js"></script> <!-- the main file -->
     <script defer src="js/levels.js"></script>
     <script defer src="js/menus.js"></script>
     <script defer src="js/canvas.js"></script>
-    <script defer src="js/math.js"></script>
 
     <script defer src="js/music.js"></script>
     <script defer src="js/tests.js"></script>
@@ -326,6 +326,8 @@
                     <p>Driven by: <span id="optionsAutoSelectorStig" class="big difficult emphasis"></span></p>
                 </div>
             </div>
+            <hr class="noTop">
+            <p>Maximal Road Slope: <span class="emphasis"><span id="optionsAutoMaxAngle"></span>rad</span></p>
             <hr class="noTop">
             <p id="optionsAutoDescription"></p>
         </div>
@@ -690,23 +692,36 @@
                     </div>
                 </div>
                 <div id="messageContainer" class="floatLeft topMarginSmall rightMargin">
-                    <div id="messageLogButtons" class="shadow outline grid2-2rem fitContent">
-                        <div class="relative">
-                            <button id="messageLogClear" class="menuButton borderRadiusTabLeft">&times;</button>
-                            <div class="buttonDescription buttonDescriptionLeft">
-                                <label for="messageLogClear">
-                                    <p><b>Clear Message Log</b></p>
-                                    <p>Clears all sent Messages.</p>
-                                </label>
+                    <div class="flex flexGap flexAlign">
+                        <div id="messageLogButtons" class="shadow outline grid2-2rem fitContent">
+                            <div class="relative">
+                                <button id="messageLogClear" class="menuButton borderRadiusTabLeft">&times;</button>
+                                <div class="buttonDescription buttonDescriptionLeft">
+                                    <label for="messageLogClear">
+                                        <p><b>Clear Message Log</b></p>
+                                        <p>Clears all sent Messages.</p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <button id="messageLogCopy" class="menuButton borderRadiusTabRight">c</button>
+                                <div class="buttonDescription buttonDescriptionLeft">
+                                    <label for="messageLogCopy">
+                                        <p><b>Copy Message Log</b></p>
+                                        <p>Copies the entire Message Log to the System Clipboard.</p>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <div class="relative">
-                            <button id="messageLogCopy" class="menuButton borderRadiusTabRight">c</button>
-                            <div class="buttonDescription buttonDescriptionLeft">
-                                <label for="messageLogCopy">
-                                    <p><b>Copy Message Log</b></p>
-                                    <p>Copies the entire Message Log to the System Clipboard.</p>
-                                </label>
+                        <div class="shadow outline leftMarginSmall">
+                            <div class="relative">
+                                <input type="number" id="messagesMaxAmount" class="menuButton" min="0" value="16">
+                                <div class="buttonDescription buttonDescriptionTop">
+                                    <label for="messagesMaxAmount">
+                                        <p><b>Set Maximal Amount of Messages</b></p>
+                                        <p>Sets the maximal amount of Messages visible at one time.</p>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -741,6 +756,7 @@
                                 <div class="buttonDescription buttonDescriptionRight">
                                     <label for="audioLogNext">
                                         <p><b>Next Song</b></p>
+                                        <p class="small">You can skip more than 6 times.</p>
                                         <p>Keybind: <kbd>.</kbd></p>
                                     </label>
                                 </div>
@@ -748,7 +764,7 @@
                         </div>
 
                         <div class="relative width high">
-                            <audio class="flexGrow" id="audioLogMusic" src="mus/loop beepbox FM expert layered.mp3" controls></audio>
+                            <audio class="flexGrow" id="audioLogMusic" controls></audio>
                             <div class="buttonDescription buttonDescriptionTop">
                                 <label for="audioLogMusic">
                                     <p><b>Change the Simulation Speed</b></p>
@@ -840,7 +856,14 @@
     </div>
 </div>
 
-
+<div id="autosGallery" class="blank">
+    <img id="autoImageBicycle" src="img/cars/bicycle.png">
+    <img id="autoImageAksiam" src="img/cars/aksiam.png">
+    <img id="autoImageAudi" src="img/cars/audica.png">
+    <img id="autoImageMotor" src="img/cars/motur.png">
+    <img id="autoImagePasat" src="img/cars/pasacik.png">
+    <img id="autoImageTir" src="img/cars/optimumprim.png">
+</div>
 
 </div>
     

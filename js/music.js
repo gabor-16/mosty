@@ -1,25 +1,28 @@
 
 
 
-let soundsList = [ // list of playable files in mus/ as arrays of [filename, id]
-    ["loop0.wav", "Chiptune for the Poor", "DJ I'm done with this."],
-    ["loop1.wav", "Chiptune for the Poor, but shorter (like their lives)", "The Corporate"],
-    ["loop2.wav", "Elevator Music Extreme", "The Elevator Music Orchestra"],
-    
-    ["loop beepbox FM expert.mp3", "Hell", "Satan"],
-    ["loop beepbox FM expert layered.mp3", "Hell, but there's more pain", "God"],
+let soundsList = [ // list of playable files in music/ as arrays of [filename, id]
+    ["soundtrack1.mp3", "The High Noon", "Piotr z Żelaza"],
+    ["soundtrack2.mp3", "Building Time", "Piotr z Żelaza"],
 
-    // vvv Actual songs              ^^^ Mental ilnesses
-    ["loop5.wav", "Happy Happy", ""],
-    ["loop3.wav", "What is this drumming?", ""],
-    ["loop4.wav", "A cruise", ""],
-    ["loop6.wav", "Boring Gutuiare- Giture? Gietuer; Guitar.", ""],
-    ["loop7.wav", "Flute on a Cementary", ""],
-    ["loop8.wav", "This City is breathing (in the Rain)", ""],
-    ["loop9.wav", "when the car flies too far", ""],
-    ["loop10.wav", "Electrocuted on purpose", ""],
-    ["loop11.wav", "Ascending?", ""],
-    ["loop12.wav", "Parrots and Caves", ""],
+    // ["loop0.wav", "Chiptune for the Poor", "DJ I'm done with this."],
+    // ["loop1.wav", "Chiptune for the Poor, but shorter (like their lives)", "The Corporate"],
+    // ["loop2.wav", "Elevator Music Extreme", "The Elevator Music Orchestra"],
+    
+    // ["loop beepbox FM expert.mp3", "Hell", "Satan"],
+    // ["loop beepbox FM expert layered.mp3", "Hell, but there's more pain", "God"],
+
+    // // vvv Actual songs              ^^^ Mental ilnesses
+    // ["loop5.wav", "Happy Happy", ""],
+    // ["loop3.wav", "What is this drumming?", ""],
+    // ["loop4.wav", "A cruise", ""],
+    // ["loop6.wav", "Boring Gutuiare- Giture? Gietuer; Guitar.", ""],
+    // ["loop7.wav", "Flute on a Cementary", ""],
+    // ["loop8.wav", "This City is breathing (in the Rain)", ""],
+    // ["loop9.wav", "when the car flies too far", ""],
+    // ["loop10.wav", "Electrocuted on purpose", ""],
+    // ["loop11.wav", "Ascending?", ""],
+    // ["loop12.wav", "Parrots and Caves", ""],
 ]
 
 let currentSong = 0
@@ -32,7 +35,7 @@ let autoplayMusic = false
 const musicEl = document.getElementById("audioLogMusic")
 function changeMusic(musicId) {
     let mus = soundsList[musicId]
-    musicEl.src = "mus/" + mus[0]
+    musicEl.src = "music/" + mus[0]
     musicEl.volume = primaryVolume
 
     document.getElementById("audioLogNumber").innerText = musicId

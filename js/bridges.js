@@ -88,7 +88,6 @@ function loadBridge(localLoad = true) {
     if (bridgeSave !== null && bridgeSave.levels[i] !== null) {
         bridgeSelectedVertex   = null
         previousPlayerSetPoint = null
-        previousPlayerSetPoint = null
         bridgeVertices         = null
         bridgeEdges            = null
         bridgeConnections      = null
@@ -1001,6 +1000,7 @@ window.onload = function() {
     document.getElementById("drawDebug").addEventListener("change", setDrawDebug)
     document.getElementById("deleteEdgesOnTension").addEventListener("change", setDeleteEdgesOnTension)
     document.getElementById("drawExtent").addEventListener("change", setDrawExtent)
+    document.getElementById("messagesMaxAmount").addEventListener("change", setMaxMessages)
 
     document.getElementById("profileName").addEventListener("change", setProfileName)
 
@@ -1020,6 +1020,7 @@ window.onload = function() {
     setDrawDebug()
     setDeleteEdgesOnTension()
     setDrawExtent()
+    setMaxMessages()
 
     setProfileName()
     changeSimulationSpeed()
@@ -1034,8 +1035,6 @@ window.onload = function() {
 
     toggleMenuLevels()
     playSelectedLevel()
-
-    loadBridge(true)
 }
 
 window.onkeyup = (event) => {
@@ -1187,6 +1186,3 @@ window.onkeydown = (event) => {
         }
     }
 }
-
-
-
