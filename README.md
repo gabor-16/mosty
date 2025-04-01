@@ -26,3 +26,10 @@ Aby uruchomić grę należy otworzyć plik mian.html w przeglądarce. Pojawi si�
 ## Dokumentacja
 
 Dokumentacja do gry znajduję się w folderze doc w pliku documentation.html
+
+## Autorzy
+Dawid (gabor16) - Lider drużyny, programista, ten od naprawiania githuba
+Hubert (velllectroniq) - Główny programista
+Piotr N. (PI0T3R-krzywy) - Drugi Programista
+Piotr P. (Piotr-Stalowy) - Projektant poziomów, kompozytor
+Adam - Projektant grafiki
